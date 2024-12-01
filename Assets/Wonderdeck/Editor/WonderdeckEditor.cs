@@ -1,14 +1,18 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+
 public class WonderdeckEditor : EditorWindow
 {
-    private Button addCardButton;
-    
+    private Button _addCardButton;
+    private Button _currentlySelectedCardButton;
+
+
+    private VisualElement _inspectorContent;
+
     
     [MenuItem("Wonderdeck/Wonderdeck Editor")]
     public static void ShowEditor()
@@ -25,12 +29,14 @@ public class WonderdeckEditor : EditorWindow
         visualTree.CloneTree(rootVisualElement);
         InitScrollView();
         InitAddCardButton();
+        _inspectorContent = rootVisualElement.Q<VisualElement>("InspectorContent");
+        _inspectorContent.Clear();
     }
 
     private void InitAddCardButton()
     {
-        addCardButton = rootVisualElement.Q<Button>("AddCardButton");
-        addCardButton.clicked += AddCardButtonClicked;
+        _addCardButton = rootVisualElement.Q<Button>("AddCardButton");
+        _addCardButton.clicked += AddCardButtonClicked;
     }
 
     private void AddCardButtonClicked()
@@ -53,22 +59,33 @@ public class WonderdeckEditor : EditorWindow
             CardSO card = AssetDatabase.LoadAssetAtPath<CardSO>(path);
             if (card == null)
                 return;
-            var button = new Button(() => OnCardButtonClicked(card))
-            {
-                text = card.name
-            };
+            var button = new Button();
+            button.text = card.name;
+            button.clicked += () => OnCardButtonClicked(card, button);
             scrollView.Add(button);
         }
     }
 
     private void OnDestroy()
     {
-        if (addCardButton != null)
-            addCardButton.clicked -= AddCardButtonClicked;
+        if (_addCardButton != null)
+            _addCardButton.clicked -= AddCardButtonClicked;
     }
 
-    private void OnCardButtonClicked(CardSO card)
+    private void OnCardButtonClicked(CardSO card, Button btn)
     {
-        Debug.Log("Debug hello!");
+        _inspectorContent.Clear();
+        _currentlySelectedCardButton = btn;
+        card.NameChangedEvent -= OnNameChangedEvent;
+        var inspectorElement = new InspectorElement(card);
+        _inspectorContent.Add(inspectorElement);
+        card.NameChangedEvent += OnNameChangedEvent;
+    }
+
+    private void OnNameChangedEvent(object sender, string e)
+    {
+        if (_currentlySelectedCardButton == null)
+            return;
+        _currentlySelectedCardButton.text = e;
     }
 }

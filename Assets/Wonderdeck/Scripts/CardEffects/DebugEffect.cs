@@ -2,20 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DebugEffect : ICardEffect
+
+[CreateAssetMenu(fileName = "New AddValueEffect", menuName = "Wonderdeck/Card Effects/[CARD EFFECT] Debug Effect")]
+public class DebugEffect : ScriptableObject, ICardEffect
 {
-    public void OnDraw()
+    public void OnExecute()
     {
-        Debug.Log("DebugEffect OnDraw");
-    }
-
-    public void OnPlay()
-    {
-        Debug.Log("DebugEffect OnPlay");
-    }
-
-    public void OnDiscard()
-    {
-        Debug.Log("DebugEffect OnDiscard");
+        Debug.Log("Execute");
     }
 }

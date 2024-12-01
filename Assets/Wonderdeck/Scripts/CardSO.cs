@@ -1,18 +1,27 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 
 [CreateAssetMenu(fileName = "Card", menuName = "Wonderdeck/Card")]
-public class CardSO : ScriptableObject
-{
-    public Sprite CardFace;
-    public float CardValue;
+public class CardSO : ScriptableObject {
     
-    [SerializeReference]
-    public List<ICardEffect> DrawCardEffects = new List<ICardEffect>();
-    [SerializeReference]
-    public List<ICardEffect> PlayCardEffects = new List<ICardEffect>();
-    [SerializeReference]
-    public List<ICardEffect> DiscardCardEffects = new List<ICardEffect>();
+    public event EventHandler<string> NameChangedEvent;
+    
+    public Sprite CardFace;
+    public Sprite CardBack;
+    
+
+    public List<ScriptableObject> DrawCardEffects = new List<ScriptableObject>();
+    public List<ScriptableObject> PlayCardEffects = new List<ScriptableObject>();
+    public List<ScriptableObject> DiscardCardEffects = new List<ScriptableObject>();
+
+    private void OnEnable()
+    {
+        if (CardFace == null) CardFace = Resources.Load<Sprite>("FaceCard");
+        if (CardBack == null) CardBack = Resources.Load<Sprite>("BackCard");
+    }
+
+    public void OnNameChanged(string newName) => NameChangedEvent?.Invoke(this, newName);
 }

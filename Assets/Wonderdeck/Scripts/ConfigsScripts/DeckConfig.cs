@@ -6,5 +6,5 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "DeckConfig", menuName = "Wonderdeck/DeckConfig")]
 public class DeckConfig : ScriptableObject
 {
-    public List<Card> cards = new List<Card>();
+    public List<CardSO> cards = new List<CardSO>();
 }

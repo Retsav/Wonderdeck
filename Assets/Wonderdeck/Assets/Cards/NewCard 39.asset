@@ -10,16 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4473df207fef80d40abb6400af3ab2fa, type: 3}
-  m_Name: Card
+  m_Name: NewCard 39
   m_EditorClassIdentifier: 
   CardFace: {fileID: 0}
   CardValue: 0
-  DrawCardEffects:
-  - rid: -2
+  DrawCardEffects: []
   PlayCardEffects: []
   DiscardCardEffects: []
   references:
     version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
+    RefIds: []
