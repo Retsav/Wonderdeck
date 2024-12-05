@@ -12,11 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4473df207fef80d40abb6400af3ab2fa, type: 3}
   m_Name: NewCard 11
   m_EditorClassIdentifier: 
-  CardFace: {fileID: 0}
-  CardValue: 0
+  cardId: d0c6c3be-49b6-47a0-8283-29c0b8a18e81
+  CardFace: {fileID: 21300000, guid: 60f513f2c00304a4bba18796b7052674, type: 3}
+  CardBack: {fileID: 21300000, guid: b5c06a18d36928b49b7b1843d2d9750d, type: 3}
   DrawCardEffects: []
   PlayCardEffects: []
   DiscardCardEffects: []
-  references:
-    version: 2
-    RefIds: []

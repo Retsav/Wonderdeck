@@ -5,10 +5,10 @@ using UnityEngine;
 
 
 [CreateAssetMenu(fileName = "Card", menuName = "Wonderdeck/Card")]
-public class CardSO : ScriptableObject {
-    
+public class CardSO : ScriptableObject
+{
+    public string cardId; 
     public event EventHandler<string> NameChangedEvent;
-    
     public Sprite CardFace;
     public Sprite CardBack;
     

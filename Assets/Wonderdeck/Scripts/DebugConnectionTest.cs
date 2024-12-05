@@ -4,24 +4,20 @@ using System.Collections.Generic;
 using FishNet.Object;
 using FishNet.Transporting;
 using UnityEngine;
+using Zenject;
 
 public class DebugConnectionTest : NetworkBehaviour
 {
-    public override void OnStartNetwork()
+    private IPlayersService _playersService;
+
+    [Inject]
+    private void ResolveDependencies(IPlayersService playersService)
     {
-        SendMessageServerRpc();
+        _playersService = playersService;
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    private void SendMessageServerRpc()
+    private void Start()
     {
-        Debug.Log("1");
-        SendMessageObserverRpc();
-    }
-
-    [ObserversRpc]
-    private void SendMessageObserverRpc()
-    {
-        Debug.Log("2");
+        
     }
 }

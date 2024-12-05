@@ -52,6 +52,6 @@ public class PlayerSpawner : NetworkBehaviour
 
     private void OnDestroy()
     {
-        _networkManager.SceneManager.OnClientLoadedStartScenes -= OnClientLoaded;
+        if(_networkManager != null) _networkManager.SceneManager.OnClientLoadedStartScenes -= OnClientLoaded;
     }
 }

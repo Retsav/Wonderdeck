@@ -2,6 +2,7 @@
     <Style src="project://database/Assets/Wonderdeck/Assets/UI%20Toolkit/CardInspector.uss?fileID=7433441132597879392&amp;guid=44d13ab5075c1694e83e9b23197c9fb6&amp;type=3#CardInspector" />
     <ui:VisualElement name="CardInspector" style="flex-grow: 1;">
         <ui:TextField picking-mode="Ignore" label="Name" value="Name" name="CardName" style="height: 29px; width: 335px; font-size: 12px; margin-top: 0; margin-right: 0; margin-bottom: 10px; margin-left: 0;" />
+        <ui:TextField picking-mode="Ignore" label="CardID" value="ID" name="CardID" style="height: 29px; width: 335px; font-size: 12px; margin-top: 0; margin-right: 0; margin-bottom: 10px; margin-left: 0;" />
         <ui:VisualElement name="CardSpriteContainer" style="flex-grow: 1; height: 134px; max-height: 150px; margin-top: 0; align-items: center; justify-content: flex-end; flex-direction: row; margin-bottom: 10px;">
             <ui:VisualElement name="CardSpriteSelectionContainer" style="flex-grow: 1; max-width: 100%; max-height: 100%; width: 100%; height: 100%; min-width: 100px; min-height: 100px; align-items: flex-start; padding-top: 28px;">
                 <uie:ObjectField label="Card Face" allow-scene-objects="false" name="CardFaceObjectField" style="width: 199px; max-height: 30px;" />

@@ -44,6 +44,8 @@ public class WonderdeckEditor : EditorWindow
         var newCardSO = (CardSO)CreateInstance(typeof(CardSO));
         string path = AssetDatabase.GenerateUniqueAssetPath("Assets/Wonderdeck/Assets/Cards/NewCard.asset");
         AssetDatabase.CreateAsset(newCardSO, path);
+        newCardSO.cardId = Guid.NewGuid().ToString();
+        EditorUtility.SetDirty(newCardSO);
         Debug.Log("Added Card!");
         InitScrollView();
     }

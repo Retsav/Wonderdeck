@@ -12,6 +12,7 @@ public class CardSOEditor : Editor
 {
     private TemplateContainer _root;
     private TextField _textField;
+    private TextField _cardIDField;
     
     private VisualElement _cardFaceSprite;
     private VisualElement _cardBackSprite;
@@ -175,6 +176,16 @@ public class CardSOEditor : Editor
         _textField = _root.Q<TextField>("CardName");
         _textField.value = _cardTarget.name;
         _textField.RegisterCallback<FocusOutEvent>(ModifyName);
+        _cardIDField = _root.Q<TextField>("CardID");
+        _cardIDField.value = _cardTarget.cardId;
+        _cardIDField.RegisterCallback<FocusOutEvent>(ModifyID);
+    }
+
+    private void ModifyID(FocusOutEvent evt)
+    {
+        Undo.RecordObject(_cardTarget, "Modify Card ID");
+        _cardTarget.cardId = _cardIDField.value;
+        EditorUtility.SetDirty(_cardTarget);
     }
 
     private void ModifyName(FocusOutEvent evt)
@@ -190,6 +201,7 @@ public class CardSOEditor : Editor
     private void OnDestroy()
     {
         if(_textField != null) _textField.UnregisterCallback<FocusOutEvent>(ModifyName);
+        if(_cardIDField != null) _cardIDField.UnregisterCallback<FocusOutEvent>(ModifyID);
         if(_cardBackObjectField != null) _cardBackObjectField.UnregisterValueChangedCallback(UpdateCardSprites);
         if (_cardFaceObjectField != null) _cardFaceObjectField.UnregisterValueChangedCallback(UpdateCardSprites);
     }
