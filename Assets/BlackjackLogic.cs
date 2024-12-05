@@ -75,6 +75,14 @@ public class BlackjackLogic : NetworkBehaviour
          _clientCardDataFirstPlayer = CreateCardData(_firstPlayerCards);
          _clientCardDataSecondPlayer = CreateCardData(_secondPlayerCards);
          DealCardsObserverRpc(_clientCardDataFirstPlayer.ToList(), _clientCardDataSecondPlayer.ToList());
+         foreach (var cardData in _clientCardDataFirstPlayer)
+         {
+            Debug.Log($"[SERVER] First Player Card: {cardData.CardName}");
+         }
+         foreach (var cardData in _clientCardDataSecondPlayer)
+         {
+            Debug.Log($"[SERVER] Second Player Card: {cardData.CardName}");
+         }
       }
    }
 
@@ -89,7 +97,7 @@ public class BlackjackLogic : NetworkBehaviour
       for (int i = 0; i < cardsList.Count; i++)
       {
          var card = cardsList[i];
-         var cardData = new CardClientData(card.name, card.cardId, card.CardFace, card.CardBack);
+         var cardData = new CardClientData(card.name, card.cardId, card.cardFacePath, card.cardBackPath);
          clientCardData.Add(cardData);
       }
       return clientCardData;
@@ -99,7 +107,6 @@ public class BlackjackLogic : NetworkBehaviour
    [ObserversRpc]
    private void DealCardsObserverRpc(List<CardClientData> firstPlayerCardData, List<CardClientData> secondPlayerCardData)
    {
-      Debug.Log("DealCardsObserverRpc");
       _blackjackService.OnCardsUpdated(new CardsDataUpdatedEventArgs(firstPlayerCardData, PlayerType.Player1));
       _blackjackService.OnCardsUpdated(new CardsDataUpdatedEventArgs(secondPlayerCardData, PlayerType.Player2));
    }

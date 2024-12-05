@@ -18,3 +18,5 @@ MonoBehaviour:
   DrawCardEffects: []
   PlayCardEffects: []
   DiscardCardEffects: []
+  cardFacePath: FaceCard
+  cardBackPath: BackCard

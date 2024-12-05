@@ -9,6 +9,7 @@ public class CardSO : ScriptableObject
 {
     public string cardId; 
     public event EventHandler<string> NameChangedEvent;
+    
     public Sprite CardFace;
     public Sprite CardBack;
     
@@ -17,6 +18,9 @@ public class CardSO : ScriptableObject
     public List<ScriptableObject> PlayCardEffects = new List<ScriptableObject>();
     public List<ScriptableObject> DiscardCardEffects = new List<ScriptableObject>();
 
+    public string cardFacePath;
+    public string cardBackPath;
+    
     private void OnEnable()
     {
         if (CardFace == null) CardFace = Resources.Load<Sprite>("FaceCard");

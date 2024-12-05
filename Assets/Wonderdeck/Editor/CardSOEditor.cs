@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -29,6 +30,8 @@ public class CardSOEditor : Editor
     private DropdownField _cardPlayDropdownField;
     private DropdownField _cardDiscardDropdownField;
     private Type[] _effectTypes;
+    
+    private const string ResourcesFolderPath = "Assets/Wonderdeck/Assets/Resources/";
     public override VisualElement CreateInspectorGUI()
     {
         _cardTarget = _cardTarget ? _cardTarget : (CardSO)target;
@@ -56,6 +59,9 @@ public class CardSOEditor : Editor
         InitTextField();
         InitSpriteContainer();
         InitEffectsLists();
+        SetSpritePath(_cardTarget.CardBack, ref _cardTarget.cardBackPath, ResourcesFolderPath);
+        SetSpritePath(_cardTarget.CardFace, ref _cardTarget.cardFacePath, ResourcesFolderPath);
+        EditorUtility.SetDirty(_cardTarget);
     }
 
     private void InitEffectsLists()
@@ -169,6 +175,38 @@ public class CardSOEditor : Editor
     {
         _cardBackSprite.style.backgroundImage = _cardTarget.CardBack != null ? new StyleBackground(_cardTarget.CardBack.texture) : null;
         _cardFaceSprite.style.backgroundImage = _cardTarget.CardFace != null ? new StyleBackground(_cardTarget.CardFace.texture) : null;
+        UpdateCardPaths();
+    }
+    
+    private void UpdateCardPaths()
+    {
+        SetSpritePath(_cardTarget.CardBack, ref _cardTarget.cardBackPath, ResourcesFolderPath);
+        SetSpritePath(_cardTarget.CardFace, ref _cardTarget.cardFacePath, ResourcesFolderPath);
+    }
+
+
+
+    private void SetSpritePath(Sprite sprite, ref string pathField, string resourcesFolderPath)
+    {
+        if (sprite != null)
+        {
+            string fullPath = AssetDatabase.GetAssetPath(sprite);
+            if (fullPath.StartsWith(resourcesFolderPath))
+            {
+                string relativePath = fullPath.Replace(resourcesFolderPath, "");
+                pathField = Path.ChangeExtension(relativePath, null); 
+            }
+            else
+            {
+                Debug.LogError($"Sprite is not located in the Resources folder. Path {fullPath} cannot be saved.");
+                pathField = string.Empty;
+            }
+        }
+        else
+        {
+            Debug.LogError($"Sprite is null");
+            pathField = string.Empty;
+        }
     }
 
     private void InitTextField()

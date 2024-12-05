@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: Laba laba
   m_EditorClassIdentifier: 
   cardId: 05dcbcd2-e8eb-4850-bb9d-d7b9be4b6a29
-  CardFace: {fileID: 21300000, guid: 9f392fdb366cd42408f283227989684c, type: 3}
-  CardBack: {fileID: 21300000, guid: cc43c1385315d554ba6b0a5cad49aa19, type: 3}
+  CardFace: {fileID: 21300000, guid: 60f513f2c00304a4bba18796b7052674, type: 3}
+  CardBack: {fileID: 21300000, guid: b5c06a18d36928b49b7b1843d2d9750d, type: 3}
   DrawCardEffects: []
   PlayCardEffects: []
   DiscardCardEffects: []
+  cardFacePath: FaceCard
+  cardBackPath: BackCard
