@@ -1770,6 +1770,8 @@ GameObject:
   - component: {fileID: 1596891125}
   - component: {fileID: 1596891124}
   - component: {fileID: 1596891123}
+  - component: {fileID: 1596891127}
+  - component: {fileID: 1596891126}
   m_Layer: 0
   m_Name: BlackJackLogic
   m_TagString: Untagged
@@ -1857,6 +1859,36 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1596891126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1596891122}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd123a3c5b9300b4d8e3b99584425d44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 1596891124}
+  _networkObjectCache: {fileID: 0}
+--- !u!114 &1596891127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1596891122}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88030ce62c2ac194c834f5940ef2b1b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 1596891124}
+  _networkObjectCache: {fileID: 0}
 --- !u!4 &1632449539 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4734617847762445616, guid: 036596ffb6cfe934b943fb51bdf606fc,

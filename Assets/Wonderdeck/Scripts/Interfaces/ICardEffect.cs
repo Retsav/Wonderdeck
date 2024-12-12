@@ -4,5 +4,6 @@ using UnityEngine;
 
 public interface ICardEffect
 {
-    void OnExecute();
+    
+    void OnExecute(PlayerType playerType);
 }

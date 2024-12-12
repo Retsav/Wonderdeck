@@ -20,9 +20,7 @@ public class BlackjackLogic : NetworkBehaviour
    private BlackjackConfig _blackjackConfig;
 
    private NetworkManager _networkManager;
-
-   private List<CardSO> _firstPlayerCards = new List<CardSO>();
-   private List<CardSO> _secondPlayerCards = new List<CardSO>();
+   
    private HashSet<CardClientData> _clientCardDataFirstPlayer = new HashSet<CardClientData>();
    private HashSet<CardClientData> _clientCardDataSecondPlayer = new HashSet<CardClientData>();
    
@@ -69,20 +67,20 @@ public class BlackjackLogic : NetworkBehaviour
    {
       if (AreBothPlayersConnected())
       {
-         _firstPlayerCards = DealCards(_blackjackConfig.cardsToDeal);
-         _secondPlayerCards = DealCards(_blackjackConfig.cardsToDeal);
+         _blackjackService.FirstPlayerCards = DealCards(_blackjackConfig.cardsToDeal);
+         _blackjackService.SecondPlayerCards = DealCards(_blackjackConfig.cardsToDeal);
          StartGameObserverRpc();
-         _clientCardDataFirstPlayer = CreateCardData(_firstPlayerCards);
-         _clientCardDataSecondPlayer = CreateCardData(_secondPlayerCards);
+         _clientCardDataFirstPlayer = CreateCardData(_blackjackService.FirstPlayerCards);
+         _clientCardDataSecondPlayer = CreateCardData(_blackjackService.SecondPlayerCards);
          DealCardsObserverRpc(_clientCardDataFirstPlayer.ToList(), _clientCardDataSecondPlayer.ToList());
-         foreach (var cardData in _clientCardDataFirstPlayer)
+         /*foreach (var cardData in _clientCardDataFirstPlayer)
          {
             Debug.Log($"[SERVER] First Player Card: {cardData.CardName}");
          }
          foreach (var cardData in _clientCardDataSecondPlayer)
          {
             Debug.Log($"[SERVER] Second Player Card: {cardData.CardName}");
-         }
+         }*/
       }
    }
 
@@ -162,4 +160,11 @@ public enum BlackjackState
    Player1Turn,
    Player2Turn,
    Intermission
+}
+
+public enum PlayType
+{
+   Draw,
+   Play,
+   Discard
 }

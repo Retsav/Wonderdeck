@@ -10,33 +10,45 @@ public class PlayerHand : NetworkBehaviour
     private IBlackjackService _blackjackService;
     private List<CardClientData> _currentHand = new List<CardClientData>();
     private PlayerType _playerType;
+    
 
     [Inject]
     private void ResolveDependencies(IBlackjackService blackjackService)
     {
         _blackjackService = blackjackService;
-        _blackjackService.CardsUpdated += OnCardsUpdated;
     }
 
     public override void OnStartClient()
     {
-        if (NetworkManager.ClientManager.Connection.IsHost)
-            _playerType = PlayerType.Player1;
-        else
-            _playerType = PlayerType.Player2;
+        if (!IsOwner) return;
+        SubscribeToEvents();
     }
 
-    private void OnDestroy() => _blackjackService.CardsUpdated -= OnCardsUpdated;
 
-    private void OnCardsUpdated(object sender, CardsDataUpdatedEventArgs e)
+    [ServerRpc(RequireOwnership = true)]
+    private void SubscribeToEvents()
+    {
+        _playerType = NetworkManager.ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2;
+        _blackjackService.CardsUpdated += OnCardsDraw;
+    }
+
+    private void OnDestroy() => _blackjackService.CardsUpdated -= OnCardsDraw;
+
+    private void OnCardsDraw(object sender, CardsDataUpdatedEventArgs e)
     {
         if (e.PlayerType != _playerType)
             return;
         _currentHand = e.Cards;
-        Debug.Log($"OnCardsUpdated: {e.PlayerType}: Cards Args Count: {e.Cards.Count}");
-        foreach (var cardClientData in _currentHand)
-        {
-            Debug.Log($"{e.PlayerType} Card: {cardClientData.CardName}");
-        }
+        foreach (var cardClientData in _currentHand) RequestCardPlay(_playerType, PlayType.Draw, cardClientData.CardID);
+        
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void RequestCardPlay(PlayerType playerType, PlayType playType, string cardId)
+    {
+        if (IsOwner) return;
+        if (playerType != _playerType || string.IsNullOrEmpty(cardId)) return;
+        Debug.Log("Requesting card play for player " + _playerType + " with id: " + cardId);
+        _blackjackService.OnCardPlayed(new CardPlayedEventArgs(cardId, _playerType, playType));
     }
 }
