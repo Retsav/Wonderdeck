@@ -6,10 +6,11 @@ using UnityEngine;
 
 public interface IBlackjackService
 {
-    public List<CardSO> FirstPlayerCards { get; set; }
-    public List<CardSO> SecondPlayerCards { get; set; }
+    public List<string> FirstPlayerCards { get; set; }
+    public List<string> SecondPlayerCards { get; set; }
     public int FirstPlayerScore { get; set; }
     public int SecondPlayerScore { get; set; }
+    public BlackjackState BlackjackState { get; set; }
     
     public event EventHandler<CardsDataUpdatedEventArgs> CardsUpdated;
     public void OnCardsUpdated(CardsDataUpdatedEventArgs args);
@@ -18,6 +19,18 @@ public interface IBlackjackService
     public event EventHandler<CardPlayedEventArgs> CardPlayed;
     public void OnCardPlayed(CardPlayedEventArgs args);
     public CardSO GetCardByID(string id, NetworkConnection conn, PlayerType playerType);
+    public CardSO GetCardByID(string id);
+    public event EventHandler<GameStateSetEventArgs> GameStateSet;
+    public void OnGameStateSet(BlackjackState state);
+}
+
+public class GameStateSetEventArgs : EventArgs
+{
+    public BlackjackState State { get; private set; }
+    public GameStateSetEventArgs(BlackjackState state)
+    {
+        State = state;
+    }
 }
 
 public class CardsDataUpdatedEventArgs : EventArgs
@@ -57,3 +70,9 @@ public class CardPlayedEventArgs : EventArgs
 }
 
 public enum PlayerType { Player1, Player2 }
+public enum BlackjackState
+{
+    Player1Turn,
+    Player2Turn,
+    Intermission
+}

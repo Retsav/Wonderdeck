@@ -26,11 +26,11 @@ public class BlackjackCardResolver : NetworkBehaviour
     private void OnCardPlayed(object sender, CardPlayedEventArgs e)
     {
         CardSO card = _blackjackService.GetCardByID(e.CardID, NetworkManager.ClientManager.Connection, e.PlayerType);
-        if (card == null)
+        /*if (card == null)
         {
             Debug.LogError($"Could not find card with ID {e.CardID}");
             return;
-        }
+        }*/
 
         switch (e.PlayType)
         {

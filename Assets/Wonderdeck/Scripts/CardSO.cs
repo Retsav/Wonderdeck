@@ -2,12 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 
 [CreateAssetMenu(fileName = "Card", menuName = "Wonderdeck/Card")]
 public class CardSO : ScriptableObject
 {
-    public string cardId; 
+    [FormerlySerializedAs("cardId")] public string CardId; 
     public event EventHandler<string> NameChangedEvent;
     
     public Sprite CardFace;
@@ -20,6 +21,8 @@ public class CardSO : ScriptableObject
 
     public string cardFacePath;
     public string cardBackPath;
+
+
     
     private void OnEnable()
     {

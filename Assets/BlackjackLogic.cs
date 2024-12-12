@@ -13,18 +13,15 @@ using Random = System.Random;
 
 public class BlackjackLogic : NetworkBehaviour
 {
-   private List<CardSO> _orginalDeck = new List<CardSO>();
-   private List<CardSO> _deck = new List<CardSO>();
+   private List<string> _orginalDeck = new List<string>();
+   private List<string> _deck = new List<string>();
 
    private DeckConfig _deckConfig;
    private BlackjackConfig _blackjackConfig;
-
-   private NetworkManager _networkManager;
    
    private HashSet<CardClientData> _clientCardDataFirstPlayer = new HashSet<CardClientData>();
    private HashSet<CardClientData> _clientCardDataSecondPlayer = new HashSet<CardClientData>();
    
-   private BlackjackState _blackjackState;
    private Random _random = new Random();
 
    private IBlackjackService _blackjackService;
@@ -38,12 +35,11 @@ public class BlackjackLogic : NetworkBehaviour
    
    public override void OnStartClient()
    {
-      _networkManager = InstanceFinder.NetworkManager;
-      if (_networkManager.ClientManager.Connection.IsHost)
+      if (NetworkManager.ClientManager.Connection.IsHost)
       {
          _deckConfig = DebugConfigLoader.Instance.GetConfig<DeckConfig>();
          _blackjackConfig = DebugConfigLoader.Instance.GetConfig<BlackjackConfig>();
-         _orginalDeck = _deckConfig.cards;
+         for (int i = 0; i < _deckConfig.cards.Count; i++) _orginalDeck.Add(_deckConfig.cards[i].CardId);
          _deck = _orginalDeck;
       }
       StartGameServerRpc();
@@ -69,22 +65,14 @@ public class BlackjackLogic : NetworkBehaviour
       {
          _blackjackService.FirstPlayerCards = DealCards(_blackjackConfig.cardsToDeal);
          _blackjackService.SecondPlayerCards = DealCards(_blackjackConfig.cardsToDeal);
-         StartGameObserverRpc();
+         StartGameObserverRpc(BlackjackState.Intermission);
          _clientCardDataFirstPlayer = CreateCardData(_blackjackService.FirstPlayerCards);
          _clientCardDataSecondPlayer = CreateCardData(_blackjackService.SecondPlayerCards);
          DealCardsObserverRpc(_clientCardDataFirstPlayer.ToList(), _clientCardDataSecondPlayer.ToList());
-         /*foreach (var cardData in _clientCardDataFirstPlayer)
-         {
-            Debug.Log($"[SERVER] First Player Card: {cardData.CardName}");
-         }
-         foreach (var cardData in _clientCardDataSecondPlayer)
-         {
-            Debug.Log($"[SERVER] Second Player Card: {cardData.CardName}");
-         }*/
       }
    }
 
-   private HashSet<CardClientData> CreateCardData(List<CardSO> cardsList)
+   private HashSet<CardClientData> CreateCardData(List<string> cardsList)
    {
       if (!IsServerInitialized)
       {
@@ -94,8 +82,8 @@ public class BlackjackLogic : NetworkBehaviour
       HashSet<CardClientData> clientCardData = new HashSet<CardClientData>();
       for (int i = 0; i < cardsList.Count; i++)
       {
-         var card = cardsList[i];
-         var cardData = new CardClientData(card.name, card.cardId, card.cardFacePath, card.cardBackPath);
+         var cardSO = _blackjackService.GetCardByID(cardsList[i]);
+         var cardData = new CardClientData(cardSO.name, cardSO.CardId, cardSO.cardFacePath, cardSO.cardBackPath);
          clientCardData.Add(cardData);
       }
       return clientCardData;
@@ -110,15 +98,15 @@ public class BlackjackLogic : NetworkBehaviour
    }
 
    [ObserversRpc]
-   private void StartGameObserverRpc()
+   private void StartGameObserverRpc(BlackjackState state)
    {
-      Debug.Log("Game started success!");
-
+      _blackjackService.OnGameStateSet(state);
+      Debug.Log($"Game state changed to {state}");
    }
 
-   private List<CardSO> DealCards(int cardsCount)
+   private List<string> DealCards(int cardsCount)
    {
-      List<CardSO> drawnCards = new List<CardSO>();
+      List<string> drawnCards = new List<string>();
       ShuffleCards();
       for (int i = 0; i < cardsCount; i++)
       {
@@ -145,21 +133,14 @@ public class BlackjackLogic : NetworkBehaviour
 
    private bool AreBothPlayersConnected()
    {
-      int connectedPlayers = _networkManager.ServerManager.Clients.Count;
+      int connectedPlayers = NetworkManager.ServerManager.Clients.Count;
       return connectedPlayers >= 2;
    }
 
    private void OnDestroy()
    {
-      if(_networkManager != null) _networkManager.ServerManager.OnRemoteConnectionState -= OnPlayerConnectionStateChanged;
+      NetworkManager.ServerManager.OnRemoteConnectionState -= OnPlayerConnectionStateChanged;
    }
-}
-
-public enum BlackjackState
-{
-   Player1Turn,
-   Player2Turn,
-   Intermission
 }
 
 public enum PlayType

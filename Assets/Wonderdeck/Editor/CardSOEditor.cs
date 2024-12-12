@@ -215,14 +215,14 @@ public class CardSOEditor : Editor
         _textField.value = _cardTarget.name;
         _textField.RegisterCallback<FocusOutEvent>(ModifyName);
         _cardIDField = _root.Q<TextField>("CardID");
-        _cardIDField.value = _cardTarget.cardId;
+        _cardIDField.value = _cardTarget.CardId;
         _cardIDField.RegisterCallback<FocusOutEvent>(ModifyID);
     }
 
     private void ModifyID(FocusOutEvent evt)
     {
         Undo.RecordObject(_cardTarget, "Modify Card ID");
-        _cardTarget.cardId = _cardIDField.value;
+        _cardTarget.CardId = _cardIDField.value;
         EditorUtility.SetDirty(_cardTarget);
     }
 
