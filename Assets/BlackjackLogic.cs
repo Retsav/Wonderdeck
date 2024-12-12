@@ -19,8 +19,8 @@ public class BlackjackLogic : NetworkBehaviour
    private DeckConfig _deckConfig;
    private BlackjackConfig _blackjackConfig;
    
-   private HashSet<CardClientData> _clientCardDataFirstPlayer = new HashSet<CardClientData>();
-   private HashSet<CardClientData> _clientCardDataSecondPlayer = new HashSet<CardClientData>();
+   private List<CardClientData> _clientCardDataFirstPlayer = new List<CardClientData>();
+   private List<CardClientData> _clientCardDataSecondPlayer = new List<CardClientData>();
    
    private Random _random = new Random();
 
@@ -61,25 +61,53 @@ public class BlackjackLogic : NetworkBehaviour
    [ServerRpc(RequireOwnership = false)]
    private void StartGameServerRpc()
    {
-      if (AreBothPlayersConnected())
+      if (!AreBothPlayersConnected()) return;
+      _blackjackService.FirstPlayerCards = DealCards(_blackjackConfig.cardsToDeal);
+      _blackjackService.SecondPlayerCards = DealCards(_blackjackConfig.cardsToDeal);
+      StartGameObserverRpc(BlackjackState.Intermission);
+      _clientCardDataFirstPlayer = CreateCardData(_blackjackService.FirstPlayerCards);
+      _clientCardDataSecondPlayer = CreateCardData(_blackjackService.SecondPlayerCards);
+      DealCardsObserverRpc(_clientCardDataFirstPlayer.ToList(), _clientCardDataSecondPlayer.ToList());
+      _blackjackService.CardRequested += OnCardDrawRequested;
+   }
+
+   private void OnCardDrawRequested(object sender, CardRequestedEventArgs e)
+   {
+      var cardID = GetFirstCardFromDeck();
+      var cardSO = CreateCardData(cardID);
+      if (e.PlayerType == PlayerType.Player1 && _blackjackService.BlackjackState == BlackjackState.Player1Turn)
       {
-         _blackjackService.FirstPlayerCards = DealCards(_blackjackConfig.cardsToDeal);
-         _blackjackService.SecondPlayerCards = DealCards(_blackjackConfig.cardsToDeal);
-         StartGameObserverRpc(BlackjackState.Intermission);
-         _clientCardDataFirstPlayer = CreateCardData(_blackjackService.FirstPlayerCards);
-         _clientCardDataSecondPlayer = CreateCardData(_blackjackService.SecondPlayerCards);
-         DealCardsObserverRpc(_clientCardDataFirstPlayer.ToList(), _clientCardDataSecondPlayer.ToList());
+         _blackjackService.FirstPlayerCards.Add(cardID);
+         _clientCardDataFirstPlayer.Add(cardSO);
+         _blackjackService.OnCardsUpdated(new CardsDataUpdatedEventArgs(_clientCardDataFirstPlayer, PlayerType.Player1));
+      } else if (e.PlayerType == PlayerType.Player2 && _blackjackService.BlackjackState == BlackjackState.Player2Turn)
+      {
+         _blackjackService.SecondPlayerCards.Add(cardID);
+         _clientCardDataSecondPlayer.Add(cardSO);
+         _blackjackService.OnCardsUpdated(new CardsDataUpdatedEventArgs(_clientCardDataSecondPlayer, PlayerType.Player2));
       }
    }
 
-   private HashSet<CardClientData> CreateCardData(List<string> cardsList)
+   private CardClientData CreateCardData(string cardId)
    {
       if (!IsServerInitialized)
       {
          Debug.LogError($"Server is not initialized when creating cards data.");
          return null;
       }
-      HashSet<CardClientData> clientCardData = new HashSet<CardClientData>();
+      var cardSO = _blackjackService.GetCardByID(cardId);
+      var cardData = new CardClientData(cardSO.name, cardSO.CardId, cardSO.cardFacePath, cardSO.cardBackPath);
+      return cardData;
+   }
+   
+   private List<CardClientData> CreateCardData(List<string> cardsList)
+   {
+      if (!IsServerInitialized)
+      {
+         Debug.LogError($"Server is not initialized when creating cards data.");
+         return null;
+      }
+      List<CardClientData> clientCardData = new List<CardClientData>();
       for (int i = 0; i < cardsList.Count; i++)
       {
          var cardSO = _blackjackService.GetCardByID(cardsList[i]);
@@ -87,6 +115,18 @@ public class BlackjackLogic : NetworkBehaviour
          clientCardData.Add(cardData);
       }
       return clientCardData;
+   }
+
+   private string GetFirstCardFromDeck()
+   {
+      if (_deck.Count <= 0)
+      {
+         Debug.LogError($"Deck is empty.");
+         return null;
+      } 
+      var card = _deck[0];
+      _deck.RemoveAt(0);
+      return card;
    }
 
 
@@ -120,7 +160,7 @@ public class BlackjackLogic : NetworkBehaviour
       }
       return drawnCards;
    }
-
+   
    private void ShuffleCards()
    {
       for (int i = _deck.Count - 1; i > 0; i--)

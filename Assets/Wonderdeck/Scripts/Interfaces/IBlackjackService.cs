@@ -22,6 +22,8 @@ public interface IBlackjackService
     public CardSO GetCardByID(string id);
     public event EventHandler<GameStateSetEventArgs> GameStateSet;
     public void OnGameStateSet(BlackjackState state);
+    public event EventHandler<CardRequestedEventArgs> CardRequested;
+    public void OnCardDrawRequested(PlayerType playerType);
 }
 
 public class GameStateSetEventArgs : EventArgs
@@ -30,6 +32,16 @@ public class GameStateSetEventArgs : EventArgs
     public GameStateSetEventArgs(BlackjackState state)
     {
         State = state;
+    }
+}
+
+public class CardRequestedEventArgs : EventArgs
+{
+    public PlayerType PlayerType { get; private set; }
+
+    public CardRequestedEventArgs(PlayerType playerType)
+    {
+        PlayerType = playerType;
     }
 }
 

@@ -34,9 +34,12 @@ public class PlayerHand : NetworkBehaviour
         if (!IsOwner) return;
         if (e.PlayerType != _playerType)
             return;
+        for (int i = 0; i < e.Cards.Count; i++)
+        {
+            if (_currentHand.Contains(e.Cards[i])) continue;
+            RequestCardPlay(_playerType, PlayType.Draw, e.Cards[i].CardID);
+        }
         _currentHand = e.Cards;
-        foreach (var cardClientData in _currentHand) RequestCardPlay(_playerType, PlayType.Draw, cardClientData.CardID);
-        
     }
 
     [ServerRpc(RequireOwnership = true)]

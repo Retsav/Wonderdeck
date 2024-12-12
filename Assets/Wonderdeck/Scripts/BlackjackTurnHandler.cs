@@ -4,5 +4,9 @@ using UnityEngine;
 
 public class BlackjackTurnHandler : MonoBehaviour
 {
+
+
+    private IBlackjackService _blackjackService;
+    
     
 }

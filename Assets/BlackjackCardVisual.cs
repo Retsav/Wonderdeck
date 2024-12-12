@@ -16,7 +16,12 @@ public class BlackjackCardVisual : NetworkBehaviour
 
     [SerializeField] private float cardSpacing = .3f;
 
+    List<CardVisual> spawnedCardVisuals = new List<CardVisual>();
     private IBlackjackService _blackjackService;
+
+
+    private int firstPlayerSpawnedCardsCount = 0;
+    private int secondPlayerSpawnedCardsCount = 0;
 
     [Inject]
     private void ResolveSingleDependencies(IBlackjackService blackjackService)
@@ -37,15 +42,19 @@ public class BlackjackCardVisual : NetworkBehaviour
             case PlayerType.Player1:
                 for (int i = 0; i < e.Cards.Count; i++)
                 {
-                    var cardVisual = Instantiate(cardPrefab, firstPlayerCardsSpawnPoint.position, Quaternion.identity);
-                    cardVisual.transform.DOMoveX(-0.4f + i * cardSpacing, 0.3f);
+                    if (i < firstPlayerSpawnedCardsCount) continue;
+                    var cardVisualPrefab = Instantiate(cardPrefab, firstPlayerCardsSpawnPoint.position, Quaternion.identity);
+                    firstPlayerSpawnedCardsCount++;
+                    cardVisualPrefab.transform.DOMoveX(-0.4f + i * cardSpacing, 0.3f);
                 }
                 break;
             case PlayerType.Player2:
                 for (int i = 0; i < e.Cards.Count; i++)
                 {
-                    var cardVisual = Instantiate(cardPrefab, secondPlayerCardsSpawnPoint.position, Quaternion.identity);
-                    cardVisual.transform.DOMoveX(-0.4f + i * cardSpacing, 0.3f);
+                    if (i < secondPlayerSpawnedCardsCount) continue;
+                    var cardVisualPrefab = Instantiate(cardPrefab, secondPlayerCardsSpawnPoint.position, Quaternion.identity);
+                    secondPlayerSpawnedCardsCount++;
+                    cardVisualPrefab.transform.DOMoveX(-0.4f + i * cardSpacing, 0.3f);
                 }
                 break;
         }

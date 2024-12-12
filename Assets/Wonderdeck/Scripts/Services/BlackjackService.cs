@@ -66,5 +66,8 @@ public class BlackjackService : IBlackjackService
         BlackjackState = state;
         GameStateSet?.Invoke(this, new GameStateSetEventArgs(BlackjackState));
     }
+
+    public event EventHandler<CardRequestedEventArgs> CardRequested;
+    public void OnCardDrawRequested(PlayerType playerType) => CardRequested?.Invoke(this, new CardRequestedEventArgs(playerType));
 }
 
