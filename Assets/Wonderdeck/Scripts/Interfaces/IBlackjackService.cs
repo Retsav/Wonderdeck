@@ -24,6 +24,31 @@ public interface IBlackjackService
     public void OnGameStateSet(BlackjackState state);
     public event EventHandler<CardRequestedEventArgs> CardRequested;
     public void OnCardDrawRequested(PlayerType playerType);
+    public event EventHandler<PassTurnRequestedEventArgs> PassTurnRequested;
+    public void RequestPassTurnToOtherPlayer(PlayerType currentPlayer);
+    public event EventHandler<EndTurnRequestedEventArgs> EndTurnRequested; 
+    public void RequestEndTurn(PlayerType currentPlayer);
+}
+
+public class PassTurnRequestedEventArgs : EventArgs
+{
+    public PlayerType CurrentPlayer { get; private set; }
+
+    public PassTurnRequestedEventArgs(PlayerType currentPlayer)
+    {
+        CurrentPlayer = currentPlayer;
+    }
+}
+
+
+public class EndTurnRequestedEventArgs : EventArgs
+{
+    public PlayerType CurrentPlayer { get; private set; }
+
+    public EndTurnRequestedEventArgs(PlayerType currentPlayer)
+    {
+        CurrentPlayer = currentPlayer;
+    }
 }
 
 public class GameStateSetEventArgs : EventArgs

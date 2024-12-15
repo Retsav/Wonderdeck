@@ -34,9 +34,17 @@ public class PlayerHand : NetworkBehaviour
         if (!IsOwner) return;
         if (e.PlayerType != _playerType)
             return;
+        bool hasCard = false;
         for (int i = 0; i < e.Cards.Count; i++)
         {
-            if (_currentHand.Contains(e.Cards[i])) continue;
+            hasCard = false;
+            for (int j = 0; j < _currentHand.Count; j++)
+                if (_currentHand[j].CardID == e.Cards[i].CardID)
+                {
+                    hasCard = true;
+                    break;
+                }
+            if (hasCard) continue;
             RequestCardPlay(_playerType, PlayType.Draw, e.Cards[i].CardID);
         }
         _currentHand = e.Cards;

@@ -5,5 +5,5 @@ using UnityEngine;
 
 public interface INetworkingService
 {
-
+    public PlayerType GetPlayerType(NetworkConnection conn);
 }

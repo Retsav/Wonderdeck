@@ -26,6 +26,9 @@ public class BlackjackLogic : NetworkBehaviour
 
    private IBlackjackService _blackjackService;
 
+   private bool _firstPlayerFinishedTurn;
+   private bool _secondPlayerFinishedTurn;
+   
 
    [Inject]
    private void ResolveDependencies(IBlackjackService blackjackService)
@@ -64,11 +67,93 @@ public class BlackjackLogic : NetworkBehaviour
       if (!AreBothPlayersConnected()) return;
       _blackjackService.FirstPlayerCards = DealCards(_blackjackConfig.cardsToDeal);
       _blackjackService.SecondPlayerCards = DealCards(_blackjackConfig.cardsToDeal);
-      StartGameObserverRpc(BlackjackState.Intermission);
+      StartGameObserverRpc(BlackjackState.Player1Turn);
       _clientCardDataFirstPlayer = CreateCardData(_blackjackService.FirstPlayerCards);
       _clientCardDataSecondPlayer = CreateCardData(_blackjackService.SecondPlayerCards);
       DealCardsObserverRpc(_clientCardDataFirstPlayer.ToList(), _clientCardDataSecondPlayer.ToList());
       _blackjackService.CardRequested += OnCardDrawRequested;
+      _blackjackService.PassTurnRequested += OnPassTurnRequested;
+      _blackjackService.EndTurnRequested += OnEndTurnRequested;
+   }
+
+   private void OnEndTurnRequested(object sender, EndTurnRequestedEventArgs e)
+   {
+      switch (e.CurrentPlayer)
+      {
+         case PlayerType.Player1:
+            if (_blackjackService.BlackjackState != BlackjackState.Player1Turn)
+            {
+               Debug.LogWarning($"Pass turn requested by {e.CurrentPlayer} but it is not his turn.");
+               return;
+            }
+            _firstPlayerFinishedTurn = true;
+            ChangeStateObserversRpc(BlackjackState.Player2Turn);
+            CheckForRoundEnd();
+            break;
+         case PlayerType.Player2:
+            if (_blackjackService.BlackjackState != BlackjackState.Player2Turn)
+            {
+               Debug.LogWarning($"Pass turn requested by {e.CurrentPlayer} but it is not his turn.");
+               return;
+            }
+
+            _secondPlayerFinishedTurn = true;
+            ChangeStateObserversRpc(BlackjackState.Player1Turn);
+            CheckForRoundEnd();
+            break;
+      }
+   }
+
+   [ServerRpc(RequireOwnership = false)]
+   private void CheckForRoundEnd()
+   {
+      if (_firstPlayerFinishedTurn && _secondPlayerFinishedTurn)
+      {
+         EndRoundObserversRpc();
+         
+      }
+   }
+
+   [ObserversRpc]
+   private void EndRoundObserversRpc()
+   {
+      _blackjackService.OnGameStateSet(BlackjackState.Intermission);
+      Debug.Log("Round End");
+   }
+
+   private void OnPassTurnRequested(object sender, PassTurnRequestedEventArgs e)
+   {
+      switch (e.CurrentPlayer)
+      {
+         case PlayerType.Player1:
+            if (_blackjackService.BlackjackState != BlackjackState.Player1Turn)
+            {
+               Debug.LogWarning($"Pass turn requested by {e.CurrentPlayer} but it is not his turn.");
+               return;
+            }
+            if(!_secondPlayerFinishedTurn) ChangeStateObserversRpc(BlackjackState.Player2Turn);
+            break;
+         case PlayerType.Player2:
+            if (_blackjackService.BlackjackState != BlackjackState.Player2Turn)
+            {
+               Debug.LogWarning($"Pass turn requested by {e.CurrentPlayer} but it is not his turn.");
+               return;
+            }
+            if(!_firstPlayerFinishedTurn) ChangeStateObserversRpc(BlackjackState.Player1Turn);
+            break;
+      }
+   }
+
+   [ObserversRpc]
+   private void ChangeStateObserversRpc(BlackjackState state)
+   {
+      _blackjackService.OnGameStateSet(state);
+   }
+
+   [ObserversRpc]
+   private void UpdateCardsObserverRpc(List<CardClientData> cardClientDataList, PlayerType player)
+   {
+      _blackjackService.OnCardsUpdated(new CardsDataUpdatedEventArgs(cardClientDataList, player));
    }
 
    private void OnCardDrawRequested(object sender, CardRequestedEventArgs e)
@@ -79,12 +164,12 @@ public class BlackjackLogic : NetworkBehaviour
       {
          _blackjackService.FirstPlayerCards.Add(cardID);
          _clientCardDataFirstPlayer.Add(cardSO);
-         _blackjackService.OnCardsUpdated(new CardsDataUpdatedEventArgs(_clientCardDataFirstPlayer, PlayerType.Player1));
+         UpdateCardsObserverRpc(_clientCardDataFirstPlayer, PlayerType.Player1);
       } else if (e.PlayerType == PlayerType.Player2 && _blackjackService.BlackjackState == BlackjackState.Player2Turn)
       {
          _blackjackService.SecondPlayerCards.Add(cardID);
          _clientCardDataSecondPlayer.Add(cardSO);
-         _blackjackService.OnCardsUpdated(new CardsDataUpdatedEventArgs(_clientCardDataSecondPlayer, PlayerType.Player2));
+         UpdateCardsObserverRpc(_clientCardDataSecondPlayer, PlayerType.Player2);
       }
    }
 

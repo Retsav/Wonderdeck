@@ -69,5 +69,12 @@ public class BlackjackService : IBlackjackService
 
     public event EventHandler<CardRequestedEventArgs> CardRequested;
     public void OnCardDrawRequested(PlayerType playerType) => CardRequested?.Invoke(this, new CardRequestedEventArgs(playerType));
+    public event EventHandler<PassTurnRequestedEventArgs> PassTurnRequested;
+
+    public void RequestPassTurnToOtherPlayer(PlayerType currentPlayer) => PassTurnRequested?.Invoke(this, new PassTurnRequestedEventArgs(currentPlayer));
+
+    public event EventHandler<EndTurnRequestedEventArgs> EndTurnRequested;
+
+    public void RequestEndTurn(PlayerType currentPlayer) => EndTurnRequested?.Invoke(this, new EndTurnRequestedEventArgs(currentPlayer));
 }
 

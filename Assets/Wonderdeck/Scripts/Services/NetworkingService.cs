@@ -5,5 +5,9 @@ using UnityEngine;
 
 public class NetworkingService : INetworkingService
 {
-
+    public PlayerType GetPlayerType(NetworkConnection conn)
+    {
+        if (conn.IsHost) return PlayerType.Player1;
+        return PlayerType.Player2;
+    }
 }
