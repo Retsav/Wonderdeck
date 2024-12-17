@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4473df207fef80d40abb6400af3ab2fa, type: 3}
+  m_Name: DebugCard2 1
+  m_EditorClassIdentifier: 
+  CardId: 0630eb72-5be7-45a2-a2ed-af5275841c7f
+  CardFace: {fileID: 21300000, guid: 08ed35ab23b09434a8b4ee88e226df59, type: 3}
+  CardBack: {fileID: 21300000, guid: b5c06a18d36928b49b7b1843d2d9750d, type: 3}
+  DrawCardEffects:
+  - {fileID: 11400000, guid: c32c41ca3252a0441be59ad7550ea72f, type: 2}
+  PlayCardEffects: []
+  DiscardCardEffects: []
+  cardFacePath: 2
+  cardBackPath: BackCard

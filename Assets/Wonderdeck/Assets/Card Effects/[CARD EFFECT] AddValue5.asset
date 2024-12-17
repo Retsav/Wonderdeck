@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d515ac5165af6404db4d045097d4255a, type: 3}
-  m_Name: BlackjackConfig
+  m_Script: {fileID: 11500000, guid: 21a294fb8b201d14c9be703cae4c6b69, type: 3}
+  m_Name: '[CARD EFFECT] AddValue5'
   m_EditorClassIdentifier: 
-  cardsToDeal: 2
+  cardValue: 5

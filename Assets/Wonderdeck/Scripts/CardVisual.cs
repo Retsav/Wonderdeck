@@ -5,5 +5,5 @@ using UnityEngine;
 public class CardVisual : MonoBehaviour
 {
     public string cardID;
-    public Sprite cardFaceSprite;
+    public MeshRenderer cardMeshRenderer;
 }

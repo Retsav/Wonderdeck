@@ -46,6 +46,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47dd94b76627f39418f06816f826ff0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cardID: 
+  cardMeshRenderer: {fileID: 8126962799257245189}
 --- !u!1 &3357723103805691511
 GameObject:
   m_ObjectHideFlags: 0

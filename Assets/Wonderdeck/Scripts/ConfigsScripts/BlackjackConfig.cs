@@ -7,4 +7,5 @@ using UnityEngine;
 public class BlackjackConfig : ScriptableObject
 {
     public int cardsToDeal = 2;
+    public int baseScoreThreshold = 21;
 }

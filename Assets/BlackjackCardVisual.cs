@@ -23,6 +23,8 @@ public class BlackjackCardVisual : NetworkBehaviour
     private int firstPlayerSpawnedCardsCount = 0;
     private int secondPlayerSpawnedCardsCount = 0;
 
+    private MaterialPropertyBlock _mpb;
+
     [Inject]
     private void ResolveSingleDependencies(IBlackjackService blackjackService)
     {
@@ -32,6 +34,7 @@ public class BlackjackCardVisual : NetworkBehaviour
     public override void OnStartClient()
     {
         _blackjackService.CardsUpdated += OnCardsUpdated;
+        _mpb = new MaterialPropertyBlock();
     }
 
 
@@ -40,23 +43,33 @@ public class BlackjackCardVisual : NetworkBehaviour
         switch (e.PlayerType)
         {
             case PlayerType.Player1:
-                for (int i = 0; i < e.Cards.Count; i++)
-                {
-                    if (i < firstPlayerSpawnedCardsCount) continue;
-                    var cardVisualPrefab = Instantiate(cardPrefab, firstPlayerCardsSpawnPoint.position, Quaternion.identity);
-                    firstPlayerSpawnedCardsCount++;
-                    cardVisualPrefab.transform.DOMoveX(-0.4f + i * cardSpacing, 0.3f);
-                }
+                SpawnAndPositionCards(e.Cards, ref firstPlayerSpawnedCardsCount, firstPlayerCardsSpawnPoint, -0.4f, PlayerType.Player1);
                 break;
             case PlayerType.Player2:
-                for (int i = 0; i < e.Cards.Count; i++)
-                {
-                    if (i < secondPlayerSpawnedCardsCount) continue;
-                    var cardVisualPrefab = Instantiate(cardPrefab, secondPlayerCardsSpawnPoint.position, Quaternion.identity);
-                    secondPlayerSpawnedCardsCount++;
-                    cardVisualPrefab.transform.DOMoveX(-0.4f + i * cardSpacing, 0.3f);
-                }
+                SpawnAndPositionCards(e.Cards, ref secondPlayerSpawnedCardsCount, secondPlayerCardsSpawnPoint, -0.4f, PlayerType.Player2);
                 break;
+        }
+    }
+    
+    private void SpawnAndPositionCards(List<CardClientData> cards, ref int spawnedCardsCount, Transform spawnPoint, float initialPositionOffset, PlayerType playerType)
+    {
+        for (int i = 0; i < cards.Count; i++)
+        {
+            if (i < spawnedCardsCount) continue;
+
+            var cardVisualPrefab = Instantiate(cardPrefab, spawnPoint.position, NetworkManager.ClientManager.Connection.IsHost ? Quaternion.identity : Quaternion.Euler(new Vector3(0f, 180f, 0f)));
+            if (cardVisualPrefab.TryGetComponent(out CardVisual cardVisual))
+            {
+                var texture = Resources.Load<Texture>($"{cards[i].CardFaceSpritePath}");
+                if (texture != null)
+                {
+                    _mpb.SetTexture("_BaseMap", texture);
+                    cardVisual.cardMeshRenderer.SetPropertyBlock(_mpb);
+                }
+            }
+
+            spawnedCardsCount++;
+            cardVisualPrefab.transform.DOMoveX(initialPositionOffset + i * cardSpacing, 0.3f);
         }
     }
 
