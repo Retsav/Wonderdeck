@@ -1,0 +1,4 @@
+.unity-label {
+    -unity-slice-left: 0;
+    min-width: 10px;
+}

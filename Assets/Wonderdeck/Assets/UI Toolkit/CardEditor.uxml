@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <ui:VisualElement name="MainContainer" style="flex-grow: 1; flex-direction: row;">
+        <ui:VisualElement name="CardListScrollView" style="flex-grow: 1; opacity: 1; width: 0; padding-top: 0; margin-top: 4px; padding-right: 0; padding-bottom: 0; flex-direction: column;">
+            <ui:Button text="Add Card" parse-escape-sequences="true" display-tooltip-when-elided="true" name="AddCardButton" style="height: 38px; margin-top: 3px;" />
+            <ui:Label tabindex="-1" text="Cards:" parse-escape-sequences="true" display-tooltip-when-elided="true" name="CardsTitle" style="-unity-font: url(&quot;project://database/Assets/FishNet/Plugins/Edgegap/Editor/Fonts/Src/Spartan/Spartan-SemiBold.ttf?fileID=12800000&amp;guid=52c456e5bd94b2b4b9045a79143694e9&amp;type=3#Spartan-SemiBold&quot;); -unity-font-definition: url(&quot;project://database/Assets/FishNet/Plugins/Edgegap/Editor/Fonts/Spartan-Regular%20SDF.asset?fileID=11400000&amp;guid=8b0fb2c68be09174f8ea5057b27a545c&amp;type=2#Spartan-Regular SDF&quot;); font-size: 13px; -unity-font-style: bold; -unity-text-align: upper-center; color: rgb(255, 255, 255); margin-top: 11px;" />
+            <ui:ScrollView mode="Vertical" name="CardScrollView" style="height: auto; margin-top: 11px;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="InspectorContent" style="flex-grow: 1; width: 300px;" />
+    </ui:VisualElement>
+</ui:UXML>
