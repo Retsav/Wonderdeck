@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using FishNet.Connection;
@@ -8,16 +9,37 @@ public class InventoryService : IInventoryService
 {
     public List<string> FirstPlayerItems { get; set; }
     public List<string> SecondPlayerItems { get; set; }
+    public event EventHandler<RequestInventoryUsageEventArgs> RequestInventoryUsage;
+    public event EventHandler<InventoryRequestedEventArgs> RequestInventory;
+    public event EventHandler<ItemsDealRequestedEventArgs> ItemsDealRequested;
+    public void OnItemsDealRequested(ItemsDealRequestedEventArgs args) => ItemsDealRequested?.Invoke(this, args);
+
+    public event EventHandler InventoryRefreshed;
 
 
     private IBlackjackService _blackjackService;
     
     [Inject]
     private void ResolveDependencies(IBlackjackService blackjackService) => _blackjackService = blackjackService;
+    public void OnInventoryRefreshed() => InventoryRefreshed?.Invoke(this, EventArgs.Empty);
+
+    public void OnRequestInventoryUsage(RequestInventoryUsageEventArgs args) => RequestInventoryUsage?.Invoke(this, args);
+    public void OnRequestInventory(InventoryRequestedEventArgs args) => RequestInventory?.Invoke(this, args);
+    
+    public CardSO GetItemByID(string id)
+    {
+        var itemConfig = DebugConfigLoader.Instance.GetConfig<ItemConfig>();
+        for (int i = 0; i < itemConfig.itemCards.Count; i++)
+        {
+            if (id == itemConfig.itemCards[i].CardId)
+                return itemConfig.itemCards[i];
+        }
+        return null;
+    }
 
     public void AddItem(string itemID, PlayerType playerType)
     {
-        var item = _blackjackService.GetCardByID(itemID);
+        var item = GetItemByID(itemID);
         if (item == null)
         {
             Debug.LogError($"Card with ID {itemID} is null when trying to add it as an item.");
@@ -61,9 +83,8 @@ public class InventoryService : IInventoryService
         }
     }
 
-    public void UseItem(string itemID, NetworkConnection conn)
+    public void UseItem(string itemID, PlayerType playerType)
     {
-        var playerType = conn.IsHost ? PlayerType.Player1 : PlayerType.Player2;
         switch (playerType)
         {
             case PlayerType.Player1:
@@ -85,5 +106,10 @@ public class InventoryService : IInventoryService
                     Debug.LogWarning($"Second player does not have item: {itemID}");
                 break;
         }
+    }
+
+    public List<string> RequestCurrentlyHadItems(PlayerType playerType, NetworkConnection conn)
+    {
+        throw new NotImplementedException();
     }
 }

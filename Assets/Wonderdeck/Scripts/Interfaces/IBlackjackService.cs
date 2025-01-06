@@ -8,11 +8,15 @@ public interface IBlackjackService
 {
     public List<string> FirstPlayerCards { get; set; }
     public List<string> SecondPlayerCards { get; set; }
+    public List<string> OrginalDeck { get; set; }
+    public List<string> CurrentDeck { get; set; }
     public int FirstPlayerScore { get; set; }
     public int SecondPlayerScore { get; set; }
     public BlackjackState BlackjackState { get; set; }
     
     public event EventHandler<CardsDataUpdatedEventArgs> CardsUpdated;
+    public event EventHandler<GetCardWithSpecificValueEventArgs> CardWithSpecificValueRequested;
+    public void OnGetCardWithSpecificValue(GetCardWithSpecificValueEventArgs args);
     public void OnCardsUpdated(CardsDataUpdatedEventArgs args);
     public event EventHandler<PlayerScoreUpdatedEventArgs> ScoreUpdated;
     public void OnScoreUpdated(PlayerScoreUpdatedEventArgs args);
@@ -23,6 +27,8 @@ public interface IBlackjackService
     public CardSO GetCardByID(string id, NetworkConnection conn, PlayerType playerType);
     public CardSO GetCardByID(string id);
     public Sprite GetCardFaceSprite(string id);
+    public event EventHandler<DealSpecificCardEventArgs> DealSpecificCard; 
+    public void OnDealSpecificCard(string id, PlayerType playerType);
     public event EventHandler<GameStateSetEventArgs> GameStateSet;
     public void OnGameStateSet(BlackjackState state);
     public event EventHandler<CardRequestedEventArgs> CardRequested;
@@ -31,6 +37,30 @@ public interface IBlackjackService
     public void RequestPassTurnToOtherPlayer(PlayerType currentPlayer);
     public event EventHandler<EndTurnRequestedEventArgs> EndTurnRequested; 
     public void RequestEndTurn(PlayerType currentPlayer);
+}
+
+public class GetCardWithSpecificValueEventArgs : EventArgs
+{
+    public float ValueToDraw;
+    public PlayerType Player;
+
+    public GetCardWithSpecificValueEventArgs(float valueToDraw, PlayerType playerType)
+    {
+        ValueToDraw = valueToDraw;
+        Player = playerType;
+    }
+}
+
+public class DealSpecificCardEventArgs : EventArgs
+{
+    public PlayerType Player { get; private set; }
+    public string CardID { get; private set; }
+
+    public DealSpecificCardEventArgs(PlayerType playerType, string cardID)
+    {
+        Player = playerType;
+        CardID = cardID;
+    }
 }
 
 public class PassTurnRequestedEventArgs : EventArgs

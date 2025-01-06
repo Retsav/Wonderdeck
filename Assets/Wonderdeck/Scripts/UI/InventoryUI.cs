@@ -30,6 +30,13 @@ public class InventoryUI : NetworkBehaviour
         HideGroup();
     }
 
+    public override void OnStartClient()
+    {
+        _inventoryService.InventoryRefreshed += OnRefreshInventory;
+    }
+
+
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Tab))
@@ -48,7 +55,7 @@ public class InventoryUI : NetworkBehaviour
 
     private void ClearItemButtons()
     {
-        foreach (Transform child in transform)
+        foreach (Transform child in inventoryButtonsParent.transform)
         {
             if (child.TryGetComponent(out InventoryButtonUI inventoryButton))
                 inventoryButton.Clear();
@@ -62,14 +69,16 @@ public class InventoryUI : NetworkBehaviour
 
     private void PopulateItemButtons()
     {
+        PlayerType playerType = ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2;
+        RequestInventoryServerRpc(playerType);
         List<string> itemsID = ClientManager.Connection.IsHost
             ? _inventoryService.FirstPlayerItems
             : _inventoryService.SecondPlayerItems;
         if (itemsID.Count == 0) return;
         var i = 0;
-        foreach (Transform child in transform)
+        foreach (Transform child in inventoryButtonsParent.transform)
         {
-            if (i > itemsID.Count) break;
+            if (i >= itemsID.Count) break;
             if (child.TryGetComponent(out InventoryButtonUI inventoryButton))
             {
                 if (string.IsNullOrEmpty(inventoryButton.itemID))
@@ -77,6 +86,7 @@ public class InventoryUI : NetworkBehaviour
                     inventoryButton.itemID = itemsID[i];
                     inventoryButton.itemImage.sprite = _blackjackService.GetCardFaceSprite(inventoryButton.itemID);
                     inventoryButton.Init();
+                    i++;
                 }
             }
             else
@@ -85,6 +95,16 @@ public class InventoryUI : NetworkBehaviour
                 continue;
             }
         }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void RequestInventoryServerRpc(PlayerType playerType) => _inventoryService.OnRequestInventory(new InventoryRequestedEventArgs(playerType, ClientManager.Connection));
+
+    private void OnRefreshInventory(object sender, EventArgs e)
+    {
+        if (!_inventoryPopupOpened) return;
+        ClearItemButtons();
+        PopulateItemButtons();
     }
 
     private void HideGroup()
