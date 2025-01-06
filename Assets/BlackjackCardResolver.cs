@@ -8,12 +8,14 @@ using Zenject;
 public class BlackjackCardResolver : NetworkBehaviour
 {
     private IBlackjackService _blackjackService;
+    private IInventoryService _inventoryService;
     
     
     [Inject]
-    private void ResolveDependencies(IBlackjackService blackjackService)
+    private void ResolveDependencies(IBlackjackService blackjackService, IInventoryService inventoryService)
     {
         _blackjackService = blackjackService;
+        _inventoryService = inventoryService;
     }
 
 
@@ -26,11 +28,7 @@ public class BlackjackCardResolver : NetworkBehaviour
     private void OnCardPlayed(object sender, CardPlayedEventArgs e)
     {
         CardSO card = _blackjackService.GetCardByID(e.CardID, NetworkManager.ClientManager.Connection, e.PlayerType);
-        /*if (card == null)
-        {
-            Debug.LogError($"Could not find card with ID {e.CardID}");
-            return;
-        }*/
+        if (card == null) card = _inventoryService.GetItemByID(e.CardID);
 
         switch (e.PlayType)
         {
@@ -68,6 +66,12 @@ public class BlackjackCardResolver : NetworkBehaviour
                         Debug.LogError($"Cast operation invalid. Does card effects is deriving from ICardEffect?");
                         return;
                     }
+
+                    if (effect is DrawValueCardEffect drawValueCardEffect)
+                    {
+                        _blackjackService.OnGetCardWithSpecificValue(
+                            new GetCardWithSpecificValueEventArgs(drawValueCardEffect.valueToDraw, e.PlayerType));
+                    }
                     effect.OnExecute(e.PlayerType);
                 }
                 break;
@@ -79,6 +83,19 @@ public class BlackjackCardResolver : NetworkBehaviour
                     {
                         Debug.LogError($"Cast operation invalid. Does card effects is deriving from ICardEffect?");
                         return;
+                    }
+                    if(effect is RemoveValueEffect removeValueEffect)
+                    {
+                        if (e.PlayerType == PlayerType.Player1)
+                        {
+                            _blackjackService.FirstPlayerScore -= (int)removeValueEffect.valueToRemove;
+                            _blackjackService.OnScoreUpdated(new PlayerScoreUpdatedEventArgs(e.PlayerType, _blackjackService.FirstPlayerScore));
+                        }
+                        else
+                        {
+                            _blackjackService.SecondPlayerScore -= (int)removeValueEffect.valueToRemove;
+                            _blackjackService.OnScoreUpdated(new PlayerScoreUpdatedEventArgs(e.PlayerType, _blackjackService.SecondPlayerScore));
+                        }
                     }
                     effect.OnExecute(e.PlayerType);
                 }

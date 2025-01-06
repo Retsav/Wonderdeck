@@ -8,18 +8,27 @@ public interface IBlackjackService
 {
     public List<string> FirstPlayerCards { get; set; }
     public List<string> SecondPlayerCards { get; set; }
+    public List<string> OrginalDeck { get; set; }
+    public List<string> CurrentDeck { get; set; }
     public int FirstPlayerScore { get; set; }
     public int SecondPlayerScore { get; set; }
     public BlackjackState BlackjackState { get; set; }
     
     public event EventHandler<CardsDataUpdatedEventArgs> CardsUpdated;
+    public event EventHandler<GetCardWithSpecificValueEventArgs> CardWithSpecificValueRequested;
+    public void OnGetCardWithSpecificValue(GetCardWithSpecificValueEventArgs args);
     public void OnCardsUpdated(CardsDataUpdatedEventArgs args);
     public event EventHandler<PlayerScoreUpdatedEventArgs> ScoreUpdated;
     public void OnScoreUpdated(PlayerScoreUpdatedEventArgs args);
     public event EventHandler<CardPlayedEventArgs> CardPlayed;
     public void OnCardPlayed(CardPlayedEventArgs args);
+    public event EventHandler<RoundConsequencesEvaluatedEventArgs> RoundConsequencesEvaluated;
+    public void OnRoundConsequencesEvaluated(RoundConsequencesEvaluatedEventArgs args);
     public CardSO GetCardByID(string id, NetworkConnection conn, PlayerType playerType);
     public CardSO GetCardByID(string id);
+    public Sprite GetCardFaceSprite(string id);
+    public event EventHandler<DealSpecificCardEventArgs> DealSpecificCard; 
+    public void OnDealSpecificCard(string id, PlayerType playerType);
     public event EventHandler<GameStateSetEventArgs> GameStateSet;
     public void OnGameStateSet(BlackjackState state);
     public event EventHandler<CardRequestedEventArgs> CardRequested;
@@ -30,6 +39,30 @@ public interface IBlackjackService
     public void RequestEndTurn(PlayerType currentPlayer);
 }
 
+public class GetCardWithSpecificValueEventArgs : EventArgs
+{
+    public float ValueToDraw;
+    public PlayerType Player;
+
+    public GetCardWithSpecificValueEventArgs(float valueToDraw, PlayerType playerType)
+    {
+        ValueToDraw = valueToDraw;
+        Player = playerType;
+    }
+}
+
+public class DealSpecificCardEventArgs : EventArgs
+{
+    public PlayerType Player { get; private set; }
+    public string CardID { get; private set; }
+
+    public DealSpecificCardEventArgs(PlayerType playerType, string cardID)
+    {
+        Player = playerType;
+        CardID = cardID;
+    }
+}
+
 public class PassTurnRequestedEventArgs : EventArgs
 {
     public PlayerType CurrentPlayer { get; private set; }
@@ -37,6 +70,16 @@ public class PassTurnRequestedEventArgs : EventArgs
     public PassTurnRequestedEventArgs(PlayerType currentPlayer)
     {
         CurrentPlayer = currentPlayer;
+    }
+}
+
+public class RoundConsequencesEvaluatedEventArgs : EventArgs
+{
+    public RoundResult Result { get; private set; }
+
+    public RoundConsequencesEvaluatedEventArgs(RoundResult result)
+    {
+        Result = result;
     }
 }
 
@@ -74,10 +117,12 @@ public class CardsDataUpdatedEventArgs : EventArgs
 {
     public List<CardClientData> Cards { get; private set; }
     public PlayerType PlayerType { get; private set; }
-    public CardsDataUpdatedEventArgs(List<CardClientData> cards, PlayerType playerType)
+    public TransactionType TransactionType { get; private set; }
+    public CardsDataUpdatedEventArgs(List<CardClientData> cards, PlayerType playerType, TransactionType transactionType)
     {
         Cards = cards;
         PlayerType = playerType;
+        TransactionType = transactionType;
     }
 }
 
@@ -112,4 +157,10 @@ public enum BlackjackState
     Player1Turn,
     Player2Turn,
     Intermission
+}
+
+public enum TransactionType
+{
+    ADD,
+    REMOVE
 }

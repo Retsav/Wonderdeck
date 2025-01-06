@@ -5,5 +5,6 @@ using UnityEngine;
 public class CardVisual : MonoBehaviour
 {
     public string cardID;
+    public PlayerType owner;
     public MeshRenderer cardMeshRenderer;
 }

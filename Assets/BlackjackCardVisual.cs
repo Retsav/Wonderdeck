@@ -11,6 +11,8 @@ public class BlackjackCardVisual : NetworkBehaviour
 {
     [SerializeField] private Transform firstPlayerCardsSpawnPoint;
     [SerializeField] private Transform secondPlayerCardsSpawnPoint;
+    [SerializeField] private Transform cardsParent;
+    
     [SerializeField] private GameObject cardPrefab;
     
 
@@ -35,6 +37,7 @@ public class BlackjackCardVisual : NetworkBehaviour
     {
         _blackjackService.CardsUpdated += OnCardsUpdated;
         _mpb = new MaterialPropertyBlock();
+        foreach (Transform child in cardsParent) Destroy(child.gameObject);
     }
 
 
@@ -43,23 +46,53 @@ public class BlackjackCardVisual : NetworkBehaviour
         switch (e.PlayerType)
         {
             case PlayerType.Player1:
-                SpawnAndPositionCards(e.Cards, ref firstPlayerSpawnedCardsCount, firstPlayerCardsSpawnPoint, -0.4f, PlayerType.Player1);
+                if (e.TransactionType == TransactionType.ADD)
+                    SpawnAndPositionCards(e.Cards, ref firstPlayerSpawnedCardsCount, firstPlayerCardsSpawnPoint, -0.4f,
+                        PlayerType.Player1);
+                else
+                    RemoveCards(e.Cards, ref firstPlayerSpawnedCardsCount, PlayerType.Player1);
                 break;
             case PlayerType.Player2:
-                SpawnAndPositionCards(e.Cards, ref secondPlayerSpawnedCardsCount, secondPlayerCardsSpawnPoint, -0.4f, PlayerType.Player2);
+                if (e.TransactionType == TransactionType.ADD)
+                    SpawnAndPositionCards(e.Cards, ref secondPlayerSpawnedCardsCount, secondPlayerCardsSpawnPoint, -0.4f, PlayerType.Player2);
+                else
+                    RemoveCards(e.Cards, ref secondPlayerSpawnedCardsCount, PlayerType.Player2);
                 break;
         }
     }
-    
+
+    private void RemoveCards(List<CardClientData> removedCards, ref int spawnedCardsCount, PlayerType playerType)
+    {
+        foreach (Transform child in cardsParent)
+        {
+            if (child.TryGetComponent(out CardVisual cardVisual))
+            {
+                if (cardVisual.owner != playerType) continue;
+                for (int i = 0; i < removedCards.Count; i++)
+                {
+                    if (removedCards[i].CardID == cardVisual.cardID)
+                    {
+                        Destroy(cardVisual.transform.gameObject);
+                        spawnedCardsCount--;
+                    }
+                }
+            }
+            else
+                Debug.LogWarning("There is a child in CardsParent without CardVisual Component.");
+        }
+    }
+
     private void SpawnAndPositionCards(List<CardClientData> cards, ref int spawnedCardsCount, Transform spawnPoint, float initialPositionOffset, PlayerType playerType)
     {
         for (int i = 0; i < cards.Count; i++)
         {
             if (i < spawnedCardsCount) continue;
 
-            var cardVisualPrefab = Instantiate(cardPrefab, spawnPoint.position, NetworkManager.ClientManager.Connection.IsHost ? Quaternion.identity : Quaternion.Euler(new Vector3(0f, 180f, 0f)));
+            var cardVisualPrefab = Instantiate(cardPrefab, spawnPoint.position, NetworkManager.ClientManager.Connection.IsHost ? Quaternion.identity : Quaternion.Euler(new Vector3(0f, 180f, 0f)), cardsParent);
             if (cardVisualPrefab.TryGetComponent(out CardVisual cardVisual))
             {
+                cardVisual.cardID = cards[i].CardID;
+                cardVisual.owner = playerType;
                 var texture = Resources.Load<Texture>($"{cards[i].CardFaceSpritePath}");
                 if (texture != null)
                 {
@@ -72,6 +105,8 @@ public class BlackjackCardVisual : NetworkBehaviour
             cardVisualPrefab.transform.DOMoveX(initialPositionOffset + i * cardSpacing, 0.3f);
         }
     }
+
+
 
     private void OnDestroy()
     {
