@@ -18,6 +18,7 @@ MonoBehaviour:
   DrawCardEffects:
   - {fileID: 11400000, guid: e8aa8dfe54d6c02488b8648600e74699, type: 2}
   PlayCardEffects: []
-  DiscardCardEffects: []
+  DiscardCardEffects:
+  - {fileID: 11400000, guid: 7265c167a5219fa47aeaf63eb3d6af61, type: 2}
   cardFacePath: 5
   cardBackPath: BackCard

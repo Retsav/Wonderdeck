@@ -80,6 +80,19 @@ public class BlackjackCardResolver : NetworkBehaviour
                         Debug.LogError($"Cast operation invalid. Does card effects is deriving from ICardEffect?");
                         return;
                     }
+                    if(effect is RemoveValueEffect removeValueEffect)
+                    {
+                        if (e.PlayerType == PlayerType.Player1)
+                        {
+                            _blackjackService.FirstPlayerScore -= (int)removeValueEffect.valueToRemove;
+                            _blackjackService.OnScoreUpdated(new PlayerScoreUpdatedEventArgs(e.PlayerType, _blackjackService.FirstPlayerScore));
+                        }
+                        else
+                        {
+                            _blackjackService.SecondPlayerScore -= (int)removeValueEffect.valueToRemove;
+                            _blackjackService.OnScoreUpdated(new PlayerScoreUpdatedEventArgs(e.PlayerType, _blackjackService.SecondPlayerScore));
+                        }
+                    }
                     effect.OnExecute(e.PlayerType);
                 }
                 break;

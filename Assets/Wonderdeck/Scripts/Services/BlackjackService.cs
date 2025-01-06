@@ -20,6 +20,8 @@ public class BlackjackService : IBlackjackService
 
     public event EventHandler<CardPlayedEventArgs> CardPlayed;
     public void OnCardPlayed(CardPlayedEventArgs args) => CardPlayed?.Invoke(this, args);
+    public event EventHandler<RoundConsequencesEvaluatedEventArgs> RoundConsequencesEvaluated;
+    public void OnRoundConsequencesEvaluated(RoundConsequencesEvaluatedEventArgs args) => RoundConsequencesEvaluated?.Invoke(this, args);
 
     public CardSO GetCardByID(string id, NetworkConnection conn, PlayerType playerType)
     {
@@ -58,6 +60,14 @@ public class BlackjackService : IBlackjackService
                 return deckConfig.cards[i];
         }
         return null;
+    }
+
+    
+    public Sprite GetCardFaceSprite(string id)
+    {
+        var card = GetCardByID(id);
+        var cardSprite = Resources.Load<Sprite>(card.cardFacePath);
+        return cardSprite;
     }
 
     public event EventHandler<GameStateSetEventArgs> GameStateSet;

@@ -18,8 +18,11 @@ public interface IBlackjackService
     public void OnScoreUpdated(PlayerScoreUpdatedEventArgs args);
     public event EventHandler<CardPlayedEventArgs> CardPlayed;
     public void OnCardPlayed(CardPlayedEventArgs args);
+    public event EventHandler<RoundConsequencesEvaluatedEventArgs> RoundConsequencesEvaluated;
+    public void OnRoundConsequencesEvaluated(RoundConsequencesEvaluatedEventArgs args);
     public CardSO GetCardByID(string id, NetworkConnection conn, PlayerType playerType);
     public CardSO GetCardByID(string id);
+    public Sprite GetCardFaceSprite(string id);
     public event EventHandler<GameStateSetEventArgs> GameStateSet;
     public void OnGameStateSet(BlackjackState state);
     public event EventHandler<CardRequestedEventArgs> CardRequested;
@@ -37,6 +40,16 @@ public class PassTurnRequestedEventArgs : EventArgs
     public PassTurnRequestedEventArgs(PlayerType currentPlayer)
     {
         CurrentPlayer = currentPlayer;
+    }
+}
+
+public class RoundConsequencesEvaluatedEventArgs : EventArgs
+{
+    public RoundResult Result { get; private set; }
+
+    public RoundConsequencesEvaluatedEventArgs(RoundResult result)
+    {
+        Result = result;
     }
 }
 
@@ -74,10 +87,12 @@ public class CardsDataUpdatedEventArgs : EventArgs
 {
     public List<CardClientData> Cards { get; private set; }
     public PlayerType PlayerType { get; private set; }
-    public CardsDataUpdatedEventArgs(List<CardClientData> cards, PlayerType playerType)
+    public TransactionType TransactionType { get; private set; }
+    public CardsDataUpdatedEventArgs(List<CardClientData> cards, PlayerType playerType, TransactionType transactionType)
     {
         Cards = cards;
         PlayerType = playerType;
+        TransactionType = transactionType;
     }
 }
 
@@ -112,4 +127,10 @@ public enum BlackjackState
     Player1Turn,
     Player2Turn,
     Intermission
+}
+
+public enum TransactionType
+{
+    ADD,
+    REMOVE
 }

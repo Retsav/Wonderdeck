@@ -743,6 +743,37 @@ MonoBehaviour:
   spawnPoints:
   - {fileID: 942179081}
   - {fileID: 1526911938}
+--- !u!1 &756025464
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 756025465}
+  m_Layer: 0
+  m_Name: CardObjectHolder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &756025465
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 756025464}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -1982,6 +2013,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 0}
   firstPlayerCardsSpawnPoint: {fileID: 1843158586}
   secondPlayerCardsSpawnPoint: {fileID: 606443031}
+  cardsParent: {fileID: 756025465}
   cardPrefab: {fileID: 3239276678880340020, guid: 036596ffb6cfe934b943fb51bdf606fc,
     type: 3}
   cardSpacing: 0.2
@@ -2047,3 +2079,4 @@ SceneRoots:
   - {fileID: 1843158586}
   - {fileID: 604051181}
   - {fileID: 1469615548}
+  - {fileID: 756025465}

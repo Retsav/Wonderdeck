@@ -8,5 +8,6 @@ public class ServiceInstaller : Installer<ServiceInstaller>
         Container.Bind<IPlayersService>().To<PlayerService>().AsSingle();
         Container.Bind<IBlackjackService>().To<BlackjackService>().AsSingle();
         Container.Bind<INetworkingService>().To<NetworkingService>().AsSingle();
+        Container.Bind<IInventoryService>().To<InventoryService>().AsSingle();
     }
 }

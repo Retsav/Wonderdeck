@@ -32,6 +32,7 @@ public class PlayerHand : NetworkBehaviour
     private void OnCardsDraw(object sender, CardsDataUpdatedEventArgs e)
     {
         if (!IsOwner) return;
+        if (e.TransactionType != TransactionType.ADD) return;
         if (e.PlayerType != _playerType)
             return;
         bool hasCard = false;

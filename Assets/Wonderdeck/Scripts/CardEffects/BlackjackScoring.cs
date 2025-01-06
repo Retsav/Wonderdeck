@@ -59,6 +59,5 @@ public class BlackjackScoring : NetworkBehaviour
                 playerSecondScoreLabel.text = $"{score}/21";
                 break;
         }
-        Debug.Log($"Player {player} scoring: {score}");
     }
 }
