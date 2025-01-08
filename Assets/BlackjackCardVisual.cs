@@ -11,6 +11,9 @@ public class BlackjackCardVisual : NetworkBehaviour
 {
     [SerializeField] private Transform firstPlayerCardsSpawnPoint;
     [SerializeField] private Transform secondPlayerCardsSpawnPoint;
+    [SerializeField] private Transform firstPlayerFirstCardPosition;
+    [SerializeField] private Transform secondPlayerFirstCardPosition;
+    
     [SerializeField] private Transform cardsParent;
     
     [SerializeField] private GameObject cardPrefab;
@@ -103,6 +106,9 @@ public class BlackjackCardVisual : NetworkBehaviour
 
             spawnedCardsCount++;
             cardVisualPrefab.transform.DOMoveX(initialPositionOffset + i * cardSpacing, 0.3f);
+            cardVisualPrefab.transform.DOMoveZ(playerType == PlayerType.Player1
+                ? firstPlayerFirstCardPosition.position.z
+                : secondPlayerFirstCardPosition.position.z, 0.3f);
         }
     }
 
