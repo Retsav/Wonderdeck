@@ -45,7 +45,7 @@ public class BlackjackLogic : NetworkBehaviour
          _blackjackService.OrginalDeck = new List<string>();
          _blackjackService.CurrentDeck = new List<string>();
          for (int i = 0; i < _deckConfig.cards.Count; i++) _blackjackService.OrginalDeck.Add(_deckConfig.cards[i].CardId);
-         _blackjackService.CurrentDeck = _blackjackService.OrginalDeck;
+         _blackjackService.CurrentDeck = _blackjackService.OrginalDeck.ToList();
       }
       StartGameServerRpc();
    }
@@ -131,6 +131,7 @@ public class BlackjackLogic : NetworkBehaviour
             UpdateCardsObserverRpc(_clientCardDataSecondPlayer, PlayerType.Player2);
             break;
       }
+      _blackjackService.CurrentDeck.Remove(e.CardID);
    }
 
    private void OnEndTurnRequested(object sender, EndTurnRequestedEventArgs e)
@@ -178,7 +179,7 @@ public class BlackjackLogic : NetworkBehaviour
    private IEnumerator StartNextRound()
    {
       yield return new WaitForSeconds(5f);
-      _blackjackService.CurrentDeck = _blackjackService.OrginalDeck;
+      _blackjackService.CurrentDeck = _blackjackService.OrginalDeck.ToList();
       ShuffleCards();
       _firstPlayerFinishedTurn = false;
       _secondPlayerFinishedTurn = false;

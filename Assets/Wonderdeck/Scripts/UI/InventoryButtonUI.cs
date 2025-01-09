@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using FishNet.Object;
@@ -10,6 +11,7 @@ using Zenject;
 
 public class InventoryButtonUI : NetworkBehaviour
 {
+    public InventoryUI inventoryUI;
     public Button itemButton;
     [FormerlySerializedAs("itemSprite")] public Image itemImage;
     public string itemID;
@@ -22,12 +24,16 @@ public class InventoryButtonUI : NetworkBehaviour
         _inventoryService = inventoryService;
     }
 
-    public void Init()
+    public void Init(InventoryUI inventoryUI)
     {
         if (string.IsNullOrEmpty(itemID))
             return;
         itemButton.onClick.RemoveAllListeners();
-        UnityAction action = () => ExecuteItem(itemID, ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2);
+        UnityAction action = () =>
+        {
+            ExecuteItem(itemID, ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2);
+            if(inventoryUI != null) inventoryUI.Close();
+        };
         itemButton.onClick.AddListener(action);
     }
 

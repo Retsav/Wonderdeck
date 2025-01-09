@@ -28,6 +28,7 @@ public class InventoryUI : NetworkBehaviour
     private void Start()
     {
         HideGroup();
+        ClearItemButtons();
     }
 
     public override void OnStartClient()
@@ -40,17 +41,28 @@ public class InventoryUI : NetworkBehaviour
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Tab))
-            if (_inventoryPopupOpened)
+            switch (_inventoryPopupOpened)
             {
-                HideGroup();
-                ClearItemButtons();
-            }
-            else
-            {
-                ShowGroup();
-                PopulateItemButtons();
+                case true:
+                    Close();
+                    break;
+                default:
+                    Open();
+                    break;
             }
 
+    }
+
+    public void Open()
+    {
+        ShowGroup();
+        PopulateItemButtons();
+    }
+
+    public void Close()
+    {
+        HideGroup();
+        ClearItemButtons();
     }
 
     private void ClearItemButtons()
@@ -69,8 +81,6 @@ public class InventoryUI : NetworkBehaviour
 
     private void PopulateItemButtons()
     {
-        PlayerType playerType = ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2;
-        RequestInventoryServerRpc(playerType);
         List<string> itemsID = ClientManager.Connection.IsHost
             ? _inventoryService.FirstPlayerItems
             : _inventoryService.SecondPlayerItems;
@@ -85,7 +95,7 @@ public class InventoryUI : NetworkBehaviour
                 {
                     inventoryButton.itemID = itemsID[i];
                     inventoryButton.itemImage.sprite = _blackjackService.GetCardFaceSprite(inventoryButton.itemID);
-                    inventoryButton.Init();
+                    inventoryButton.Init(this);
                     i++;
                 }
             }
@@ -96,9 +106,7 @@ public class InventoryUI : NetworkBehaviour
             }
         }
     }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void RequestInventoryServerRpc(PlayerType playerType) => _inventoryService.OnRequestInventory(new InventoryRequestedEventArgs(playerType, ClientManager.Connection));
+    
 
     private void OnRefreshInventory(object sender, EventArgs e)
     {

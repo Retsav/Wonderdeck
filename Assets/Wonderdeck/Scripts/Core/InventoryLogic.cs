@@ -56,7 +56,11 @@ public class InventoryLogic : NetworkBehaviour
     }
 
 
-    private void AddItemObserverRpc(string id, PlayerType player) => _inventoryService.AddItem(id, player);
+    [ObserversRpc]
+    private void AddItemObserverRpc(string id, PlayerType player)
+    {
+        _inventoryService.AddItem(id, player);
+    }
 
 
     private void OnInventoryRequested(object sender, InventoryRequestedEventArgs e)
