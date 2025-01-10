@@ -87,6 +87,7 @@ public class NetworkAudioManager : NetworkBehaviour
     
     private void OnDestroy()
     {
+        if (ClientManager == null) return;
         if (!ClientManager.Connection.IsHost) return;
         _audioService.PlaySoundEvent -= OnPlaySound;
         _audioService.PlaySoundAtPositionEvent -= OnPlaySoundAtPosition;
