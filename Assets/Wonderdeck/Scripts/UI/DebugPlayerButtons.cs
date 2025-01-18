@@ -97,7 +97,7 @@ public class DebugPlayerButtons : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void RequestDrawServerRpc(PlayerType player)
     {
-        _blackjackService.OnCardDrawRequested(player);
+        _blackjackService.OnCardDrawRequested(player, false);
         _blackjackService.RequestPassTurnToOtherPlayer(player);
     }
 

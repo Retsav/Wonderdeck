@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using FishNet.Connection;
 using FishNet.Object;
 using TMPro;
 using UnityEngine;
@@ -18,6 +19,9 @@ public class BlackjackScoring : NetworkBehaviour
     private IBlackjackService _blackjackService;
     private INetworkingService _networkingService;
 
+    private PlayerType _playerType;
+    private bool _hasHiddenCard;
+
     [Inject]
     private void ResolveDependencies(IBlackjackService blackjackService, INetworkingService networkingService)
     {
@@ -25,38 +29,73 @@ public class BlackjackScoring : NetworkBehaviour
         _networkingService = networkingService;
     }
     
-    private void OnDestroy()
+    private void OnDestroy() => Unsubscribe();
+    private void OnDisable() => Unsubscribe();
+    public override void OnStopClient() => Unsubscribe();
+
+    private void Unsubscribe()
     {
-        _blackjackService.ScoreUpdated -= OnScoreUpdated;
+        _blackjackService.CardVisualRequested  -= OnVisualRequested;
+        _blackjackService.RoundEnd -= OnRoundEnd;
     }
 
     public override void OnStartClient()
     {
-        _blackjackService.ScoreUpdated += OnScoreUpdated;
-        if (_networkingService.GetPlayerType(NetworkManager.ClientManager.Connection) == PlayerType.Player2)
-        {
-            firstPlayerScoreObject.transform.Rotate(new Vector3(0f, 180f, 0f));
-            secondPlayerScoreObject.transform.Rotate(new Vector3(0f, 180f, 0f));
-        }
+        _playerType = NetworkManager.ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2;
+        _blackjackService.CardVisualRequested += OnVisualRequested;
+        _blackjackService.RoundEnd += OnRoundEnd;
+        if (_networkingService.GetPlayerType(NetworkManager.ClientManager.Connection) != PlayerType.Player2) return;
+        firstPlayerScoreObject.transform.Rotate(new Vector3(0f, 180f, 0f));
+        secondPlayerScoreObject.transform.Rotate(new Vector3(0f, 180f, 0f));
 
     }
 
-    private void OnScoreUpdated(object sender, PlayerScoreUpdatedEventArgs e)
+    
+    private void OnRoundEnd(object sender, EventArgs e)
     {
-        UpdateScoring(e.PlayerType, e.PlayerScore);
-        
+        playerOneScoreLabel.text = $"{0}/21";
+        playerSecondScoreLabel.text = $"{0}/21";
     }
+
+    private void OnVisualRequested(object sender, CardVisualRequestedEventArgs e)
+    {
+        GetScoreServerRpc(_blackjackService.LocalFirstPlayerCards, NetworkManager.ClientManager.Connection, PlayerType.Player1, _playerType);
+        GetScoreServerRpc(_blackjackService.LocalSecondPlayerCards, NetworkManager.ClientManager.Connection, PlayerType.Player2, _playerType);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void GetScoreServerRpc(List<CardClientData> cardClientDataList, NetworkConnection conn, PlayerType playerType, PlayerType currentPlayer)
+    {
+        float score = 0;
+        _hasHiddenCard = false;
+        foreach (var card in cardClientDataList)
+        {
+            if (card.IsHidden && card.Owner != currentPlayer)
+            {
+                _hasHiddenCard = true;
+                continue;
+            }
+            var cardSO = _blackjackService.GetCardByID(card.CardID);
+            if (cardSO == null) continue;
+            foreach (var cardEffect in cardSO.DrawCardEffects)
+                if (cardEffect is AddValueEffect effect) score += effect.cardValue;
+        }
+        UpdateScoringObserverRpc(playerType, conn, score, _hasHiddenCard);
+    }
+    
 
     [ObserversRpc]
-    private void UpdateScoring(PlayerType player, int score)
+    private void UpdateScoringObserverRpc(PlayerType player,  NetworkConnection conn, float score, bool hasHiddenCard)
     {
+        if (conn != NetworkManager.ClientManager.Connection)
+            return;
         switch (player)
         {
             case PlayerType.Player1:
-                playerOneScoreLabel.text = $"{score}/21";
+                playerOneScoreLabel.text = hasHiddenCard ? $"{score}+?/21" : $"{score}/21";
                 break;
             case PlayerType.Player2:
-                playerSecondScoreLabel.text = $"{score}/21";
+                playerSecondScoreLabel.text = hasHiddenCard ? $"{score}+?/21" : $"{score}/21";
                 break;
         }
     }

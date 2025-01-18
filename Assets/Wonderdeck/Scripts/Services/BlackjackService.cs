@@ -10,6 +10,8 @@ public class BlackjackService : IBlackjackService
 {
     public List<string> FirstPlayerCards { get; set; }
     public List<string> SecondPlayerCards { get; set; }
+    public List<CardClientData> LocalFirstPlayerCards { get; set; }
+    public List<CardClientData> LocalSecondPlayerCards { get; set; }
     public List<string> OrginalDeck { get; set; }
     public List<string> CurrentDeck { get; set; }
     public int FirstPlayerScore { get; set; }
@@ -91,15 +93,16 @@ public class BlackjackService : IBlackjackService
 
     public event EventHandler<DealSpecificCardEventArgs> DealSpecificCard;
 
-    public void OnDealSpecificCard(string id, PlayerType playerType)
+    public void OnDealSpecificCard(string id, PlayerType playerType, bool hideCard)
     {
         if (!CurrentDeck.Contains(id))
         {
             Debug.LogError($"Card with {id} not found in Current Deck.");
             return;
         }
-        DealSpecificCard?.Invoke(this, new DealSpecificCardEventArgs(playerType, id));
+        DealSpecificCard?.Invoke(this, new DealSpecificCardEventArgs(playerType, id, hideCard));
     }
+    
 
     public event EventHandler<GameStateSetEventArgs> GameStateSet;
     public void OnGameStateSet(BlackjackState state)
@@ -109,13 +112,19 @@ public class BlackjackService : IBlackjackService
     }
 
     public event EventHandler<CardRequestedEventArgs> CardRequested;
-    public void OnCardDrawRequested(PlayerType playerType) => CardRequested?.Invoke(this, new CardRequestedEventArgs(playerType));
+    public void OnCardDrawRequested(PlayerType playerType, bool hideCard) => CardRequested?.Invoke(this, new CardRequestedEventArgs(playerType, hideCard));
+    
     public event EventHandler<PassTurnRequestedEventArgs> PassTurnRequested;
+    public event EventHandler RoundEnd;
+
+    public void OnRoundEnd() => RoundEnd?.Invoke(this, EventArgs.Empty);
 
     public void RequestPassTurnToOtherPlayer(PlayerType currentPlayer) => PassTurnRequested?.Invoke(this, new PassTurnRequestedEventArgs(currentPlayer));
 
     public event EventHandler<EndTurnRequestedEventArgs> EndTurnRequested;
 
     public void RequestEndTurn(PlayerType currentPlayer) => EndTurnRequested?.Invoke(this, new EndTurnRequestedEventArgs(currentPlayer));
+    public event EventHandler<CardVisualRequestedEventArgs> CardVisualRequested;
+    public void OnCardVisualRequested(CardClientData card, PlayerType owner, TransactionType transactionType) => CardVisualRequested?.Invoke(this, new CardVisualRequestedEventArgs(card, owner, transactionType));
 }
 

@@ -8,5 +8,5 @@ public class DebugSceneLoader : MonoBehaviour
 {
     [SerializeField] private string sceneToLoad;
     
-    private void Awake() => SceneManager.LoadScene(sceneToLoad, LoadSceneMode.Additive);
+    private void Start() => SceneManager.LoadScene(sceneToLoad);
 }

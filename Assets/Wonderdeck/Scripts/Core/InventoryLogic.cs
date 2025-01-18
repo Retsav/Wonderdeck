@@ -99,9 +99,15 @@ public class InventoryLogic : NetworkBehaviour
         }
     }
 
-    private void OnDestroy()
+    private void OnDestroy() => Unsubscribe();
+    public override void OnStopClient() => Unsubscribe();
+
+    private void Unsubscribe()
     {
         _inventoryService.RequestInventoryUsage -= OnInventoryUsageRequested;
         _inventoryService.RequestInventory -= OnInventoryRequested;
+        _inventoryService.ItemsDealRequested -= DealInventoryItems;
+        _inventoryService.FirstPlayerItems = null;
+        _inventoryService.SecondPlayerItems = null;
     }
 }

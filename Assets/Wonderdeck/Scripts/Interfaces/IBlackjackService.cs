@@ -8,6 +8,8 @@ public interface IBlackjackService
 {
     public List<string> FirstPlayerCards { get; set; }
     public List<string> SecondPlayerCards { get; set; }
+    public List<CardClientData> LocalFirstPlayerCards { get; set; }
+    public List<CardClientData> LocalSecondPlayerCards { get; set; }
     public List<string> OrginalDeck { get; set; }
     public List<string> CurrentDeck { get; set; }
     public int FirstPlayerScore { get; set; }
@@ -28,15 +30,34 @@ public interface IBlackjackService
     public CardSO GetCardByID(string id);
     public Sprite GetCardFaceSprite(string id);
     public event EventHandler<DealSpecificCardEventArgs> DealSpecificCard; 
-    public void OnDealSpecificCard(string id, PlayerType playerType);
+    public void OnDealSpecificCard(string id, PlayerType playerType, bool hideCard);
     public event EventHandler<GameStateSetEventArgs> GameStateSet;
     public void OnGameStateSet(BlackjackState state);
     public event EventHandler<CardRequestedEventArgs> CardRequested;
-    public void OnCardDrawRequested(PlayerType playerType);
+    public void OnCardDrawRequested(PlayerType playerType, bool hideCard);
     public event EventHandler<PassTurnRequestedEventArgs> PassTurnRequested;
+    public event EventHandler RoundEnd;
+    public void OnRoundEnd();
     public void RequestPassTurnToOtherPlayer(PlayerType currentPlayer);
     public event EventHandler<EndTurnRequestedEventArgs> EndTurnRequested; 
     public void RequestEndTurn(PlayerType currentPlayer);
+
+    public event EventHandler<CardVisualRequestedEventArgs> CardVisualRequested;
+    public void OnCardVisualRequested(CardClientData card, PlayerType owner, TransactionType transactionType);
+}
+
+public class CardVisualRequestedEventArgs : EventArgs
+{
+    public CardClientData Card;
+    public PlayerType Owner;
+    public TransactionType Transaction;
+
+    public CardVisualRequestedEventArgs(CardClientData card, PlayerType owner, TransactionType transactionType)
+    {
+        Card = card;
+        Owner = owner;
+        Transaction = transactionType;
+    } 
 }
 
 public class GetCardWithSpecificValueEventArgs : EventArgs
@@ -55,11 +76,13 @@ public class DealSpecificCardEventArgs : EventArgs
 {
     public PlayerType Player { get; private set; }
     public string CardID { get; private set; }
+    public bool HideCard;
 
-    public DealSpecificCardEventArgs(PlayerType playerType, string cardID)
+    public DealSpecificCardEventArgs(PlayerType playerType, string cardID, bool hideCard)
     {
         Player = playerType;
         CardID = cardID;
+        HideCard = hideCard;
     }
 }
 
@@ -106,21 +129,23 @@ public class GameStateSetEventArgs : EventArgs
 public class CardRequestedEventArgs : EventArgs
 {
     public PlayerType PlayerType { get; private set; }
+    public bool HideCard { get; private set; }
 
-    public CardRequestedEventArgs(PlayerType playerType)
+    public CardRequestedEventArgs(PlayerType playerType, bool hideCard)
     {
         PlayerType = playerType;
+        HideCard = hideCard;
     }
 }
 
 public class CardsDataUpdatedEventArgs : EventArgs
 {
-    public List<CardClientData> Cards { get; private set; }
+    public CardClientData Card { get; private set; }
     public PlayerType PlayerType { get; private set; }
     public TransactionType TransactionType { get; private set; }
-    public CardsDataUpdatedEventArgs(List<CardClientData> cards, PlayerType playerType, TransactionType transactionType)
+    public CardsDataUpdatedEventArgs(CardClientData card, PlayerType playerType, TransactionType transactionType)
     {
-        Cards = cards;
+        Card = card;
         PlayerType = playerType;
         TransactionType = transactionType;
     }

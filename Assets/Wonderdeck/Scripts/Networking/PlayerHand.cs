@@ -31,7 +31,7 @@ public class PlayerHand : NetworkBehaviour
 
     private void OnCardsDraw(object sender, CardsDataUpdatedEventArgs e)
     {
-        if (!IsOwner) return;
+        /*if (!IsOwner) return;
         if (e.TransactionType != TransactionType.ADD) return;
         if (e.PlayerType != _playerType)
             return;
@@ -48,7 +48,7 @@ public class PlayerHand : NetworkBehaviour
             if (hasCard) continue;
             RequestCardPlay(_playerType, PlayType.Draw, e.Cards[i].CardID);
         }
-        _currentHand = e.Cards;
+        _currentHand = e.Cards;*/
     }
 
     [ServerRpc(RequireOwnership = true)]
