@@ -15,6 +15,7 @@ public class BlackjackCardVisual : NetworkBehaviour
     [SerializeField] private Transform secondPlayerFirstCardPosition;
     
     [SerializeField] private Transform cardsParent;
+    [SerializeField] private Texture unknownCardTexture;
     
     [SerializeField] private GameObject cardPrefab;
     
@@ -38,46 +39,42 @@ public class BlackjackCardVisual : NetworkBehaviour
 
     public override void OnStartClient()
     {
-        _blackjackService.CardsUpdated += OnCardsUpdated;
+        _blackjackService.CardVisualRequested += OnCardVisualRequested;
         _mpb = new MaterialPropertyBlock();
         foreach (Transform child in cardsParent) Destroy(child.gameObject);
     }
 
-
-    private void OnCardsUpdated(object sender, CardsDataUpdatedEventArgs e)
+    private void OnCardVisualRequested(object sender, CardVisualRequestedEventArgs e)
     {
-        switch (e.PlayerType)
+        switch (e.Owner)
         {
             case PlayerType.Player1:
-                if (e.TransactionType == TransactionType.ADD)
-                    SpawnAndPositionCards(e.Cards, ref firstPlayerSpawnedCardsCount, firstPlayerCardsSpawnPoint, -0.4f,
-                        PlayerType.Player1);
+                if (e.Transaction == TransactionType.ADD)
+                    SpawnAndPositionCards(e.Card, ref firstPlayerSpawnedCardsCount, firstPlayerCardsSpawnPoint, -0.4f, PlayerType.Player1);
                 else
-                    RemoveCards(e.Cards, ref firstPlayerSpawnedCardsCount, PlayerType.Player1);
+                    RemoveCards(e.Card, ref firstPlayerSpawnedCardsCount, PlayerType.Player1);
                 break;
             case PlayerType.Player2:
-                if (e.TransactionType == TransactionType.ADD)
-                    SpawnAndPositionCards(e.Cards, ref secondPlayerSpawnedCardsCount, secondPlayerCardsSpawnPoint, -0.4f, PlayerType.Player2);
+                if (e.Transaction == TransactionType.ADD)
+                    SpawnAndPositionCards(e.Card, ref secondPlayerSpawnedCardsCount, secondPlayerCardsSpawnPoint, -0.4f, PlayerType.Player2);
                 else
-                    RemoveCards(e.Cards, ref secondPlayerSpawnedCardsCount, PlayerType.Player2);
+                    RemoveCards(e.Card, ref secondPlayerSpawnedCardsCount, PlayerType.Player2);
                 break;
         }
     }
+    
 
-    private void RemoveCards(List<CardClientData> removedCards, ref int spawnedCardsCount, PlayerType playerType)
+    private void RemoveCards(CardClientData removedCard, ref int spawnedCardsCount, PlayerType playerType)
     {
         foreach (Transform child in cardsParent)
         {
             if (child.TryGetComponent(out CardVisual cardVisual))
             {
                 if (cardVisual.owner != playerType) continue;
-                for (int i = 0; i < removedCards.Count; i++)
+                if (removedCard.CardID == cardVisual.cardID)
                 {
-                    if (removedCards[i].CardID == cardVisual.cardID)
-                    {
-                        Destroy(cardVisual.transform.gameObject);
-                        spawnedCardsCount--;
-                    }
+                    Destroy(cardVisual.transform.gameObject);
+                    spawnedCardsCount--;
                 }
             }
             else
@@ -85,37 +82,29 @@ public class BlackjackCardVisual : NetworkBehaviour
         }
     }
 
-    private void SpawnAndPositionCards(List<CardClientData> cards, ref int spawnedCardsCount, Transform spawnPoint, float initialPositionOffset, PlayerType playerType)
+    private void SpawnAndPositionCards(CardClientData card, ref int spawnedCardsCount, Transform spawnPoint, float initialPositionOffset, PlayerType playerType)
     {
-        for (int i = 0; i < cards.Count; i++)
+        var cardVisualPrefab = Instantiate(cardPrefab, spawnPoint.position, NetworkManager.ClientManager.Connection.IsHost ? Quaternion.identity : Quaternion.Euler(new Vector3(0f, 180f, 0f)), cardsParent);
+        if (cardVisualPrefab.TryGetComponent(out CardVisual cardVisual))
         {
-            if (i < spawnedCardsCount) continue;
-
-            var cardVisualPrefab = Instantiate(cardPrefab, spawnPoint.position, NetworkManager.ClientManager.Connection.IsHost ? Quaternion.identity : Quaternion.Euler(new Vector3(0f, 180f, 0f)), cardsParent);
-            if (cardVisualPrefab.TryGetComponent(out CardVisual cardVisual))
-            {
-                cardVisual.cardID = cards[i].CardID;
-                cardVisual.owner = playerType;
-                var texture = Resources.Load<Texture>($"{cards[i].CardFaceSpritePath}");
-                if (texture != null)
-                {
-                    _mpb.SetTexture("_BaseMap", texture);
-                    cardVisual.cardMeshRenderer.SetPropertyBlock(_mpb);
-                }
-            }
-
-            spawnedCardsCount++;
-            cardVisualPrefab.transform.DOMoveX(initialPositionOffset + i * cardSpacing, 0.3f);
-            cardVisualPrefab.transform.DOMoveZ(playerType == PlayerType.Player1
-                ? firstPlayerFirstCardPosition.position.z
-                : secondPlayerFirstCardPosition.position.z, 0.3f);
+            cardVisual.cardID = card.CardID;
+            cardVisual.owner = playerType;
+            var texture = Resources.Load<Texture>($"{card.CardFaceSpritePath}");
+            _mpb.SetTexture("_BaseMap", texture != null ? texture : unknownCardTexture);
+            cardVisual.cardMeshRenderer.SetPropertyBlock(_mpb);
         }
+
+        spawnedCardsCount++;
+        cardVisualPrefab.transform.DOMoveX(initialPositionOffset + spawnedCardsCount * cardSpacing, 0.3f);
+        cardVisualPrefab.transform.DOMoveZ(playerType == PlayerType.Player1
+            ? firstPlayerFirstCardPosition.position.z
+            : secondPlayerFirstCardPosition.position.z, 0.3f);
     }
 
 
 
     private void OnDestroy()
     {
-        _blackjackService.CardsUpdated -= OnCardsUpdated;
+        _blackjackService.CardVisualRequested -= OnCardVisualRequested;
     }
 }

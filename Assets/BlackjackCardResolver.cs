@@ -29,6 +29,7 @@ public class BlackjackCardResolver : NetworkBehaviour
     {
         CardSO card = _blackjackService.GetCardByID(e.CardID, NetworkManager.ClientManager.Connection, e.PlayerType);
         if (card == null) card = _inventoryService.GetItemByID(e.CardID);
+        
 
         switch (e.PlayType)
         {
@@ -46,12 +47,12 @@ public class BlackjackCardResolver : NetworkBehaviour
                         if (e.PlayerType == PlayerType.Player1)
                         {
                             _blackjackService.FirstPlayerScore += (int)addValueEffect.cardValue;
-                            _blackjackService.OnScoreUpdated(new PlayerScoreUpdatedEventArgs(e.PlayerType, _blackjackService.FirstPlayerScore));
+                            //_blackjackService.OnScoreUpdated(new PlayerScoreUpdatedEventArgs(e.PlayerType, _blackjackService.FirstPlayerScore));
                         }
                         else
                         {
                             _blackjackService.SecondPlayerScore += (int)addValueEffect.cardValue;
-                            _blackjackService.OnScoreUpdated(new PlayerScoreUpdatedEventArgs(e.PlayerType, _blackjackService.SecondPlayerScore));
+                            //_blackjackService.OnScoreUpdated(new PlayerScoreUpdatedEventArgs(e.PlayerType, _blackjackService.SecondPlayerScore));
                         }
                     }
                     effect.OnExecute(e.PlayerType);
@@ -89,12 +90,12 @@ public class BlackjackCardResolver : NetworkBehaviour
                         if (e.PlayerType == PlayerType.Player1)
                         {
                             _blackjackService.FirstPlayerScore -= (int)removeValueEffect.valueToRemove;
-                            _blackjackService.OnScoreUpdated(new PlayerScoreUpdatedEventArgs(e.PlayerType, _blackjackService.FirstPlayerScore));
+                            //_blackjackService.OnScoreUpdated(new PlayerScoreUpdatedEventArgs(e.PlayerType, _blackjackService.FirstPlayerScore));
                         }
                         else
                         {
                             _blackjackService.SecondPlayerScore -= (int)removeValueEffect.valueToRemove;
-                            _blackjackService.OnScoreUpdated(new PlayerScoreUpdatedEventArgs(e.PlayerType, _blackjackService.SecondPlayerScore));
+                            //_blackjackService.OnScoreUpdated(new PlayerScoreUpdatedEventArgs(e.PlayerType, _blackjackService.SecondPlayerScore));
                         }
                     }
                     effect.OnExecute(e.PlayerType);
@@ -105,8 +106,9 @@ public class BlackjackCardResolver : NetworkBehaviour
         }
     }
 
-    private void OnDestroy()
-    {
-        _blackjackService.CardPlayed -= OnCardPlayed;
-    }
+    public override void OnStopClient() => _blackjackService.CardPlayed -= OnCardPlayed;
+
+    private void OnDisable() => _blackjackService.CardPlayed -= OnCardPlayed;
+
+    private void OnDestroy() => _blackjackService.CardPlayed -= OnCardPlayed;
 }
