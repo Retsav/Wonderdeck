@@ -33,15 +33,19 @@ public interface IBlackjackService
     public void OnDealSpecificCard(string id, PlayerType playerType, bool hideCard);
     public event EventHandler<GameStateSetEventArgs> GameStateSet;
     public void OnGameStateSet(BlackjackState state);
-    public event EventHandler<CardRequestedEventArgs> CardRequested;
-    public void OnCardDrawRequested(PlayerType playerType, bool hideCard);
-    public event EventHandler<PassTurnRequestedEventArgs> PassTurnRequested;
+    public event EventHandler<CardRequestedEventArgs> CardRequestedServer;
+    public void OnCardDrawRequestedServerEvent(PlayerType playerType, bool hideCard);
+    public event EventHandler<CardRequestedEventArgs> CardRequestedClient;
+    public void OnCardDrawRequestedClientEvent(PlayerType playerType, bool hideCard);
+    public event EventHandler<PassTurnRequestedEventArgs> PassTurnRequestedServer;
     public event EventHandler RoundEnd;
     public void OnRoundEnd();
     public void RequestPassTurnToOtherPlayer(PlayerType currentPlayer);
-    public event EventHandler<EndTurnRequestedEventArgs> EndTurnRequested; 
-    public void RequestEndTurn(PlayerType currentPlayer);
-
+    public event EventHandler<EndTurnRequestedEventArgs> EndTurnRequestedServer; 
+    public void RequestEndTurnServer(PlayerType currentPlayer);
+    public event EventHandler<EndTurnRequestedEventArgs> EndTurnRequestedClient; 
+    public void RequestEndTurnClient(PlayerType currentPlayer);
+    
     public event EventHandler<CardVisualRequestedEventArgs> CardVisualRequested;
     public void OnCardVisualRequested(CardClientData card, PlayerType owner, TransactionType transactionType);
 }

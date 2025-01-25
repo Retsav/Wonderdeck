@@ -102,9 +102,9 @@ public class BlackjackLogic : NetworkBehaviour
       _inventoryService.OnItemsDealRequested(new ItemsDealRequestedEventArgs(PlayerType.Player1, 1));
       _inventoryService.OnItemsDealRequested(new ItemsDealRequestedEventArgs(PlayerType.Player2, 1));
       if (_eventsInitialized) return;
-      _blackjackService.CardRequested += OnCardDrawRequested;
-      _blackjackService.PassTurnRequested += OnPassTurnRequested;
-      _blackjackService.EndTurnRequested += OnEndTurnRequested;
+      _blackjackService.CardRequestedServer += CardDrawRequestedServer;
+      _blackjackService.PassTurnRequestedServer += PassTurnRequestedServer;
+      _blackjackService.EndTurnRequestedServer += OnEndTurnRequested;
       _blackjackService.DealSpecificCard += OnDealSpecificCard;
       _blackjackService.CardWithSpecificValueRequested += OnCardWithSpecificValueRequested;
       _eventsInitialized = true;
@@ -370,7 +370,7 @@ public class BlackjackLogic : NetworkBehaviour
       _blackjackService.OnRoundEnd();
    }
 
-   private void OnPassTurnRequested(object sender, PassTurnRequestedEventArgs e)
+   private void PassTurnRequestedServer(object sender, PassTurnRequestedEventArgs e)
    {
       switch (e.CurrentPlayer)
       {
@@ -419,7 +419,7 @@ public class BlackjackLogic : NetworkBehaviour
    
    
 
-   private void OnCardDrawRequested(object sender, CardRequestedEventArgs e)
+   private void CardDrawRequestedServer(object sender, CardRequestedEventArgs e)
    {
       var cardID = GetFirstCardFromDeck();
       var cardClientData = CreateCardData(cardID, e.PlayerType);
@@ -557,9 +557,9 @@ public class BlackjackLogic : NetworkBehaviour
 
    private void Unsubscribe()
    {
-      _blackjackService.CardRequested -= OnCardDrawRequested;
-      _blackjackService.PassTurnRequested -= OnPassTurnRequested;
-      _blackjackService.EndTurnRequested -= OnEndTurnRequested;
+      _blackjackService.CardRequestedServer -= CardDrawRequestedServer;
+      _blackjackService.PassTurnRequestedServer -= PassTurnRequestedServer;
+      _blackjackService.EndTurnRequestedServer -= OnEndTurnRequested;
       _blackjackService.DealSpecificCard -= OnDealSpecificCard;
       _blackjackService.CardWithSpecificValueRequested -= OnCardWithSpecificValueRequested;
       NetworkManager.SceneManager.OnClientPresenceChangeEnd -= OnClientLoadedScenes;
