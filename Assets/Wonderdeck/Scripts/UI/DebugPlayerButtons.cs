@@ -42,6 +42,15 @@ public class DebugPlayerButtons : NetworkBehaviour
         _blackjackService.GameStateSet += OnBlackjackStateSet;
     }
 
+
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Q))
+            RequestDrawClicked();
+        if(Input.GetKeyDown(KeyCode.E))
+            RequestStandClicked();
+    }
+
     private void OnBlackjackStateSet(object sender, GameStateSetEventArgs e)
     {
         switch (e.State)
@@ -81,23 +90,25 @@ public class DebugPlayerButtons : NetworkBehaviour
     private void RequestStandClicked()
     {
         RequestStandServerRpc(_playerType);
+        _blackjackService.RequestEndTurnClient(_playerType);
     }
 
     [ServerRpc(RequireOwnership = false)]
     private void RequestStandServerRpc(PlayerType player)
     {
-        _blackjackService.RequestEndTurn(player);
+        _blackjackService.RequestEndTurnServer(player);
     }
 
     private void RequestDrawClicked()
     {
         RequestDrawServerRpc(_playerType);
+        _blackjackService.OnCardDrawRequestedClientEvent(_playerType, false);
     }
 
     [ServerRpc(RequireOwnership = false)]
     private void RequestDrawServerRpc(PlayerType player)
     {
-        _blackjackService.OnCardDrawRequested(player, false);
+        _blackjackService.OnCardDrawRequestedServerEvent(player, false);
         _blackjackService.RequestPassTurnToOtherPlayer(player);
     }
 
