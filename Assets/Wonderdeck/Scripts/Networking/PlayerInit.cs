@@ -11,14 +11,78 @@ public class PlayerInit : NetworkBehaviour
     [SerializeField] private Material secondPlayerMaterial;
     [SerializeField] private GameObject cameraObject;
 
+
+    [SerializeField] private Animator animator;
+    private Transform _headBone;
     
+    [SerializeField] private float minPitch = -60f;
+    [SerializeField] private float maxPitch = 60f;
+
+    private float pitch = 0f;
+    private float yaw = 0f;    
+    
+    Vector2 rotation = Vector2.zero;
+    const string xAxis = "Mouse X"; 
+    const string yAxis = "Mouse Y";
+    
+    
+    [SerializeField] private float mouseSensitivity = 100f;
+    [SerializeField] private Transform lookAtTransform;
+    [Range(0f, 90f)][SerializeField] float yRotationLimit = 88f;
+    
+    public float Sensitivity {
+        get { return sensitivity; }
+        set { sensitivity = value; }
+    }
+    [SerializeField] float sensitivity = 2f;
+
+
     public override void OnStartClient()
     {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        _headBone = animator.GetBoneTransform(HumanBodyBones.Head);
         if (IsOwner)
-            return;
-        cameraObject.SetActive(false);
-
+        {
+            pitch = 0f;
+            yaw = 0f;
+        }
+        else
+            cameraObject.GetComponent<Camera>().enabled = false;
+            
     }
 
-    public override void OnOwnershipClient(NetworkConnection prevOwner) => cameraObject.SetActive(IsOwner);
+    private void Update()
+    {
+        if (!IsOwner)
+            return;
+        rotation.x += Input.GetAxis(xAxis) * sensitivity;
+        rotation.y += Input.GetAxis(yAxis) * sensitivity;
+        rotation.y = Mathf.Clamp(rotation.y, -yRotationLimit, yRotationLimit);
+        xQuat = Quaternion.AngleAxis(rotation.x, Vector3.up);
+        yQuat = Quaternion.AngleAxis(rotation.y, Vector3.left);
+    }
+
+    private Quaternion xQuat;
+    private Quaternion yQuat;
+    private void LateUpdate()
+    {
+        if (!IsOwner)
+            return;
+        cameraObject.transform.localRotation = xQuat * yQuat;
+        //_headBone.localEulerAngles = rotation;
+        //HeadBoneChangeServerRpc(rotation);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void HeadBoneChangeServerRpc(Vector3 rotation) => HeadBoneChangeObserverRpc(rotation);
+
+    [ObserversRpc]
+    private void HeadBoneChangeObserverRpc(Vector3 rotation)
+    {
+        if(IsOwner) return;
+        _headBone.localEulerAngles = rotation;
+    }
+
+    public override void OnOwnershipClient(NetworkConnection prevOwner) => cameraObject.GetComponent<Camera>().enabled = IsOwner;
 }

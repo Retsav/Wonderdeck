@@ -111,19 +111,25 @@ public class BlackjackService : IBlackjackService
         GameStateSet?.Invoke(this, new GameStateSetEventArgs(BlackjackState));
     }
 
-    public event EventHandler<CardRequestedEventArgs> CardRequested;
-    public void OnCardDrawRequested(PlayerType playerType, bool hideCard) => CardRequested?.Invoke(this, new CardRequestedEventArgs(playerType, hideCard));
-    
-    public event EventHandler<PassTurnRequestedEventArgs> PassTurnRequested;
+    public event EventHandler<CardRequestedEventArgs> CardRequestedServer;
+    public void OnCardDrawRequestedServerEvent(PlayerType playerType, bool hideCard) => CardRequestedServer?.Invoke(this, new CardRequestedEventArgs(playerType, hideCard));
+    public event EventHandler<CardRequestedEventArgs> CardRequestedClient;
+
+    public void OnCardDrawRequestedClientEvent(PlayerType playerType, bool hideCard) => CardRequestedClient?.Invoke(this, new CardRequestedEventArgs(playerType, hideCard));
+
+    public event EventHandler<PassTurnRequestedEventArgs> PassTurnRequestedServer;
     public event EventHandler RoundEnd;
 
     public void OnRoundEnd() => RoundEnd?.Invoke(this, EventArgs.Empty);
 
-    public void RequestPassTurnToOtherPlayer(PlayerType currentPlayer) => PassTurnRequested?.Invoke(this, new PassTurnRequestedEventArgs(currentPlayer));
+    public void RequestPassTurnToOtherPlayer(PlayerType currentPlayer) => PassTurnRequestedServer?.Invoke(this, new PassTurnRequestedEventArgs(currentPlayer));
 
-    public event EventHandler<EndTurnRequestedEventArgs> EndTurnRequested;
+    public event EventHandler<EndTurnRequestedEventArgs> EndTurnRequestedServer;
 
-    public void RequestEndTurn(PlayerType currentPlayer) => EndTurnRequested?.Invoke(this, new EndTurnRequestedEventArgs(currentPlayer));
+    public void RequestEndTurnServer(PlayerType currentPlayer) => EndTurnRequestedServer?.Invoke(this, new EndTurnRequestedEventArgs(currentPlayer));
+    public event EventHandler<EndTurnRequestedEventArgs> EndTurnRequestedClient;
+    public void RequestEndTurnClient(PlayerType currentPlayer) => EndTurnRequestedClient?.Invoke(this, new EndTurnRequestedEventArgs(currentPlayer));
+
     public event EventHandler<CardVisualRequestedEventArgs> CardVisualRequested;
     public void OnCardVisualRequested(CardClientData card, PlayerType owner, TransactionType transactionType) => CardVisualRequested?.Invoke(this, new CardVisualRequestedEventArgs(card, owner, transactionType));
 }
