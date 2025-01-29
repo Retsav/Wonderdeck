@@ -20,9 +20,26 @@ public class NetworkAudioManager : NetworkBehaviour
     public override void OnStartClient()
     {
         InitAudioSources();
+        _audioService.PlaySoundAtPositionEvent += OnPlaySoundAtPositionLocal;
         if (!ClientManager.Connection.IsHost) return;
+        _audioService.PlaySoundAtPositionEvent += OnPlaySoundAtPositionGlobal;
         _audioService.PlaySoundEvent += OnPlaySound;
-        _audioService.PlaySoundAtPositionEvent += OnPlaySoundAtPosition;
+    }
+
+    private void OnPlaySoundAtPositionLocal(object sender, PlaySoundAtPositionEventArgs e)
+    {
+        if (e.IsGlobal) return;
+        AudioSource source = GetFreeAudioSource();
+        if (source == null)
+        {
+            Debug.LogWarning("Audio Pool Exhausted!");
+            return;
+        }
+        source.gameObject.SetActive(true);
+        source.transform.position = e.Position;
+        source.clip = Resources.Load<AudioClip>(e.AudioPath);
+        source.Play();
+        StartCoroutine(ReleaseAudioSourceCoroutine(source));
     }
 
     private void InitAudioSources()
@@ -37,7 +54,11 @@ public class NetworkAudioManager : NetworkBehaviour
         }
     }
 
-    private void OnPlaySoundAtPosition(object sender, PlaySoundAtPositionEventArgs e) => PlaySoundAtPositionObserverRpc(e.Position, e.AudioPath);
+    private void OnPlaySoundAtPositionGlobal(object sender, PlaySoundAtPositionEventArgs e)
+    {
+        if (!ClientManager.Connection.IsHost || !e.IsGlobal) return;
+        PlaySoundAtPositionObserverRpc(e.Position, e.AudioPath);
+    }
 
     [ObserversRpc]
     private void PlaySoundAtPositionObserverRpc(Vector3 position, string audioPath)
@@ -88,8 +109,9 @@ public class NetworkAudioManager : NetworkBehaviour
     private void OnDestroy()
     {
         if (ClientManager == null) return;
+        _audioService.PlaySoundAtPositionEvent -= OnPlaySoundAtPositionLocal;
         if (!ClientManager.Connection.IsHost) return;
         _audioService.PlaySoundEvent -= OnPlaySound;
-        _audioService.PlaySoundAtPositionEvent -= OnPlaySoundAtPosition;
+        _audioService.PlaySoundAtPositionEvent -= OnPlaySoundAtPositionGlobal;
     }
 }

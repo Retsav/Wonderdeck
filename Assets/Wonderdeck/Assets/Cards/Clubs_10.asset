@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Clubs_10
   m_EditorClassIdentifier: 
   CardId: b2a9588e-ae89-4ce5-b8d3-901f763fcf2f
-  CardFace: {fileID: 21300000, guid: 2ed2159052462874ca279ec8322b8576, type: 3}
+  CardFace: {fileID: 881579358, guid: ffc29d20e2d951f438322e7afd913fc9, type: 3}
   CardBack: {fileID: 21300000, guid: b5c06a18d36928b49b7b1843d2d9750d, type: 3}
   DrawCardEffects:
   - {fileID: 11400000, guid: 72c384d84eaceec439fbca04bc7a21c2, type: 2}
   PlayCardEffects: []
   DiscardCardEffects:
   - {fileID: 11400000, guid: f40755431f7b19e4a8461cd21fe4d11a, type: 2}
-  cardFacePath: 10|10
+  cardFacePath: Cards|Cards_35
   cardBackPath: BackCard|BackCard

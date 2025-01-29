@@ -13,7 +13,6 @@ public class PlayerInit : NetworkBehaviour
 
 
     [SerializeField] private Animator animator;
-    private Transform _headBone;
     
     [SerializeField] private float minPitch = -60f;
     [SerializeField] private float maxPitch = 60f;
@@ -30,10 +29,7 @@ public class PlayerInit : NetworkBehaviour
     [SerializeField] private Transform lookAtTransform;
     [Range(0f, 90f)][SerializeField] float yRotationLimit = 88f;
     
-    public float Sensitivity {
-        get { return sensitivity; }
-        set { sensitivity = value; }
-    }
+
     [SerializeField] float sensitivity = 2f;
 
 
@@ -41,7 +37,6 @@ public class PlayerInit : NetworkBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        _headBone = animator.GetBoneTransform(HumanBodyBones.Head);
         if (IsOwner)
         {
             pitch = 0f;
@@ -72,20 +67,8 @@ public class PlayerInit : NetworkBehaviour
         if (!IsOwner)
             return;
         cameraObject.transform.localRotation = xQuat * yQuat;
-        //_headBone.localEulerAngles = rotation;
-        //HeadBoneChangeServerRpc(rotation);
     }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void HeadBoneChangeServerRpc(Vector3 rotation) => HeadBoneChangeObserverRpc(rotation);
-
-    [ObserversRpc]
-    private void HeadBoneChangeObserverRpc(Vector3 rotation)
-    {
-        if(IsOwner) return;
-        _headBone.localEulerAngles = rotation;
-    }
-
+    
     public override void OnOwnershipClient(NetworkConnection prevOwner)
     {
         cameraObject.GetComponent<Camera>().enabled = IsOwner;

@@ -330,6 +330,7 @@ GameObject:
   - component: {fileID: 1928280724076295274}
   - component: {fileID: -3554448990228767561}
   - component: {fileID: 9079283013470076311}
+  - component: {fileID: 850880984648902794}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -568,6 +569,21 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 0}
   animator: {fileID: 1249673158880209589}
   networkAnimator: {fileID: 8903785144574082910}
+--- !u!114 &850880984648902794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7086471327826470220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb3129adc1b8c7b4a8ee1ea14aae1dfd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 5410538446561687590}
+  _networkObjectCache: {fileID: 0}
 --- !u!1 &8431408575900822784
 GameObject:
   m_ObjectHideFlags: 0
@@ -677,6 +693,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: MaleCharacterPlaceholder
+      objectReference: {fileID: 0}
+    - target: {fileID: 3360060819225601105, guid: d223a80e7a5dd77489bd2be000e0d82c,
+        type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4639853989421420988, guid: d223a80e7a5dd77489bd2be000e0d82c,
         type: 3}
