@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using FishNet;
 using FishNet.Connection;
 using FishNet.Managing;
@@ -19,17 +20,68 @@ public class MenuNetworking : MonoBehaviour
 
     private int _connectedPlayers;
     
+    
+    [Header("Side Popup Content")] 
+    [SerializeField] private CanvasGroup sideBarCanvasGroup;
+    [SerializeField] private TextMeshProUGUI sidebarTitleLabel;
+    [SerializeField] private TMP_InputField addressInputField;
+    [SerializeField] private Button confirmButton;
+
+    private Tugboat _tb;
+    private const string DEBUG_DEFAULT_ADDRESS = "26.39.26.158";
+
     private LocalConnectionState _clientState = LocalConnectionState.Stopped;
     private LocalConnectionState _serverState = LocalConnectionState.Stopped;
     
     private void Start()
     {
+        _tb = InstanceFinder.TransportManager.GetTransport<Tugboat>();
+        addressInputField.text = DEBUG_DEFAULT_ADDRESS;
         startHostButton.onClick.RemoveAllListeners();
         startClientButton.onClick.RemoveAllListeners();
-        startClientButton.onClick.AddListener(OnStartClient);
-        startHostButton.onClick.AddListener(OnStartHost);
+        startClientButton.onClick.AddListener(InitClientSideBar);
+        startHostButton.onClick.AddListener(InitHostSideBar);
+        HideSideBar();
         InstanceFinder.NetworkManager.ServerManager.OnServerConnectionState += ServerManager_OnServerConnectionState;
         InstanceFinder.NetworkManager.ClientManager.OnClientConnectionState += ClientManager_OnClientConnectionState;
+    }
+
+    private void HideSideBar(bool animated = false)
+    {
+        sideBarCanvasGroup.interactable = false;
+        sideBarCanvasGroup.blocksRaycasts = false;
+        if (animated)
+            sideBarCanvasGroup.DOFade(0f, 0.3f);
+        else
+            sideBarCanvasGroup.alpha = 0f;
+    }
+
+    private void ShowSideBar(bool animated = false)
+    {
+        sideBarCanvasGroup.interactable = true;
+        sideBarCanvasGroup.blocksRaycasts = true;
+        if (animated)
+            sideBarCanvasGroup.DOFade(1f, 0.3f);
+        else
+            sideBarCanvasGroup.alpha = 1f;
+    }
+
+    private void InitClientSideBar()
+    {
+        sidebarTitleLabel.text = "JOIN";
+        confirmButton.onClick.RemoveAllListeners();
+        confirmButton.onClick.AddListener(OnStartClient);
+        if(sideBarCanvasGroup.alpha < .9f)
+            ShowSideBar(true);
+    }
+    
+    private void InitHostSideBar()
+    {
+        sidebarTitleLabel.text = "HOST";
+        confirmButton.onClick.RemoveAllListeners();
+        confirmButton.onClick.AddListener(OnStartHost);
+        if(sideBarCanvasGroup.alpha < .9f)
+            ShowSideBar(true);
     }
 
     private void OnDestroy()
@@ -44,6 +96,7 @@ public class MenuNetworking : MonoBehaviour
 
     private void OnStartHost()
     {
+        _tb.SetClientAddress(addressInputField.text);
         if (_serverState == LocalConnectionState.Stopped)
         {
             InstanceFinder.NetworkManager.ServerManager.StartConnection();
@@ -94,6 +147,7 @@ public class MenuNetworking : MonoBehaviour
 
     private void OnStartClient()
     {
+        _tb.SetClientAddress(addressInputField.text);
         if (_clientState != LocalConnectionState.Stopped)
             InstanceFinder.NetworkManager.ClientManager.StopConnection();
         else

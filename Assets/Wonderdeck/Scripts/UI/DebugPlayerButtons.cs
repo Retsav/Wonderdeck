@@ -101,8 +101,16 @@ public class DebugPlayerButtons : NetworkBehaviour
 
     private void RequestDrawClicked()
     {
-        RequestDrawServerRpc(_playerType);
-        _blackjackService.OnCardDrawRequestedClientEvent(_playerType, false);
+        switch (_playerType)
+        {
+            case PlayerType.Player1 when _blackjackService.BlackjackState != BlackjackState.Player1Turn:
+            case PlayerType.Player2 when _blackjackService.BlackjackState != BlackjackState.Player2Turn:
+                return;
+            default:
+                RequestDrawServerRpc(_playerType);
+                _blackjackService.OnCardDrawRequestedClientEvent(_playerType, false);
+                break;
+        }
     }
 
     [ServerRpc(RequireOwnership = false)]

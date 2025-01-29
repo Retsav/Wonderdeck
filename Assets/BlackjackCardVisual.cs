@@ -16,6 +16,8 @@ public class BlackjackCardVisual : NetworkBehaviour
     
     [SerializeField] private Transform cardsParent;
     [SerializeField] private Texture unknownCardTexture;
+    [SerializeField] private Texture cardsSpriteAtlas;
+    
     
     [SerializeField] private GameObject cardPrefab;
     
@@ -89,8 +91,19 @@ public class BlackjackCardVisual : NetworkBehaviour
         {
             cardVisual.cardID = card.CardID;
             cardVisual.owner = playerType;
-            var texture = Resources.Load<Texture>($"{card.CardFaceSpritePath}");
-            _mpb.SetTexture("_BaseMap", texture != null ? texture : unknownCardTexture);
+
+            var uvCoordinates = GetUVCoordinatesForSprite(card.CardFaceSpritePath);
+            if (uvCoordinates != Vector4.zero)
+            {
+                _mpb.SetVector("_BaseMap_ST", new Vector4(uvCoordinates.z, uvCoordinates.w, uvCoordinates.x, uvCoordinates.y));
+                _mpb.SetTexture("_BaseMap", cardsSpriteAtlas);
+            }
+            else
+            {
+                _mpb.SetVector("_BaseMap_ST", new Vector4(1, 1, 0, 0));
+                _mpb.SetTexture("_BaseMap", unknownCardTexture);
+            }
+                
             cardVisual.cardMeshRenderer.SetPropertyBlock(_mpb);
         }
 
@@ -99,6 +112,58 @@ public class BlackjackCardVisual : NetworkBehaviour
         cardVisualPrefab.transform.DOMoveZ(playerType == PlayerType.Player1
             ? firstPlayerFirstCardPosition.position.z
             : secondPlayerFirstCardPosition.position.z, 0.3f);
+    }
+
+    private Vector4 GetUVCoordinatesForSprite(string spritePath)
+    {
+        if (string.IsNullOrEmpty(spritePath))
+            return Vector4.zero;
+
+
+        string[] parts = spritePath.Split('|');
+        if (parts.Length != 2)
+        {
+            Debug.LogWarning($"Invalid sprite path format: {spritePath}. Expected format: 'AtlasPath|SpriteName'.");
+            return Vector4.zero;
+        }
+
+        string atlasPath = parts[0];
+        string spriteName = parts[1];
+
+
+        Sprite[] sprites = Resources.LoadAll<Sprite>(atlasPath);
+        if (sprites == null || sprites.Length == 0)
+        {
+            Debug.LogWarning($"No sprites found in atlas at path: {atlasPath}");
+            return Vector4.zero;
+        }
+
+
+        Sprite sprite = Array.Find(sprites, s => s.name == spriteName);
+        if (sprite == null)
+        {
+            Debug.LogWarning($"Sprite '{spriteName}' not found in atlas '{atlasPath}'");
+            return Vector4.zero;
+        }
+
+
+        Rect textureRect = sprite.textureRect;
+        Texture texture = sprite.texture;
+        if (texture == null)
+        {
+            Debug.LogWarning($"Texture for sprite '{spriteName}' in atlas '{atlasPath}' is null.");
+            return Vector4.zero;
+        }
+
+        float atlasWidth = texture.width;
+        float atlasHeight = texture.height;
+
+        return new Vector4(
+            textureRect.x / atlasWidth,        
+            textureRect.y / atlasHeight,       
+            textureRect.width / atlasWidth,    
+            textureRect.height / atlasHeight   
+        );
     }
 
 
