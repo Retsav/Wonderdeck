@@ -15,18 +15,23 @@ public class InventoryUI : NetworkBehaviour
     
     private IInventoryService _inventoryService;
     private IBlackjackService _blackjackService;
+    private IAudioService _audioService;
+
+    private AudioConfig _audioConfig;
 
 
     
     [Inject]
-    private void ResolveDependencies(IInventoryService inventoryService, IBlackjackService blackjackService)
+    private void ResolveDependencies(IInventoryService inventoryService, IBlackjackService blackjackService, IAudioService audioService)
     {
         _inventoryService = inventoryService;
         _blackjackService = blackjackService;
+        _audioService = audioService;
     }
 
     private void Start()
     {
+        _audioConfig = DebugConfigLoader.Instance.GetConfig<AudioConfig>();
         HideGroup();
         ClearItemButtons();
     }
@@ -37,6 +42,10 @@ public class InventoryUI : NetworkBehaviour
     }
 
 
+    private void OnDestroy()
+    {
+        if(_inventoryService != null) _inventoryService.InventoryRefreshed -= OnRefreshInventory;
+    }
 
     private void Update()
     {
@@ -55,6 +64,7 @@ public class InventoryUI : NetworkBehaviour
 
     public void Open()
     {
+        _audioService.OnPlaySoundLocal(Vector3.zero, _audioConfig.openInventoryPath);
         ShowGroup();
         PopulateItemButtons();
     }

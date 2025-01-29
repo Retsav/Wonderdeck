@@ -89,8 +89,16 @@ public class DebugPlayerButtons : NetworkBehaviour
 
     private void RequestStandClicked()
     {
-        RequestStandServerRpc(_playerType);
-        _blackjackService.RequestEndTurnClient(_playerType);
+        switch (_playerType)
+        {
+            case PlayerType.Player1 when _blackjackService.BlackjackState != BlackjackState.Player1Turn:
+            case PlayerType.Player2 when _blackjackService.BlackjackState != BlackjackState.Player2Turn:
+                return;
+            default:
+                RequestStandServerRpc(_playerType);
+                _blackjackService.RequestEndTurnClient(_playerType);
+                break;
+        }
     }
 
     [ServerRpc(RequireOwnership = false)]

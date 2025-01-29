@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using DG.Tweening;
 using FishNet.Object;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Zenject;
+using Random = UnityEngine.Random;
 
 public class BlackjackCardVisual : NetworkBehaviour
 {
@@ -24,25 +24,34 @@ public class BlackjackCardVisual : NetworkBehaviour
 
     [SerializeField] private float cardSpacing = .3f;
 
-    List<CardVisual> spawnedCardVisuals = new List<CardVisual>();
+
+    
     private IBlackjackService _blackjackService;
+    private IAudioService _audioService;
 
 
     private int firstPlayerSpawnedCardsCount = 0;
     private int secondPlayerSpawnedCardsCount = 0;
 
     private MaterialPropertyBlock _mpb;
+    private Queue<IEnumerator> _cardSpawnQueue = new Queue<IEnumerator>();
+    private bool _isProcessingQueue = false;
+
+    private AudioConfig _audioConfig;
+
 
     [Inject]
-    private void ResolveSingleDependencies(IBlackjackService blackjackService)
+    private void ResolveSingleDependencies(IBlackjackService blackjackService, IAudioService audioService)
     {
         _blackjackService = blackjackService;
+        _audioService = audioService;
     }
 
     public override void OnStartClient()
     {
         _blackjackService.CardVisualRequested += OnCardVisualRequested;
         _mpb = new MaterialPropertyBlock();
+        _audioConfig = DebugConfigLoader.Instance.GetConfig<AudioConfig>();
         foreach (Transform child in cardsParent) Destroy(child.gameObject);
     }
 
@@ -52,18 +61,20 @@ public class BlackjackCardVisual : NetworkBehaviour
         {
             case PlayerType.Player1:
                 if (e.Transaction == TransactionType.ADD)
-                    SpawnAndPositionCards(e.Card, ref firstPlayerSpawnedCardsCount, firstPlayerCardsSpawnPoint, -0.4f, PlayerType.Player1);
+                    EnqueueCardSpawn(e.Card, firstPlayerCardsSpawnPoint, -0.4f, PlayerType.Player1);
                 else
                     RemoveCards(e.Card, ref firstPlayerSpawnedCardsCount, PlayerType.Player1);
                 break;
             case PlayerType.Player2:
                 if (e.Transaction == TransactionType.ADD)
-                    SpawnAndPositionCards(e.Card, ref secondPlayerSpawnedCardsCount, secondPlayerCardsSpawnPoint, -0.4f, PlayerType.Player2);
+                    EnqueueCardSpawn(e.Card, secondPlayerCardsSpawnPoint, -0.4f, PlayerType.Player2);
                 else
                     RemoveCards(e.Card, ref secondPlayerSpawnedCardsCount, PlayerType.Player2);
                 break;
         }
     }
+    
+    
     
 
     private void RemoveCards(CardClientData removedCard, ref int spawnedCardsCount, PlayerType playerType)
@@ -84,8 +95,9 @@ public class BlackjackCardVisual : NetworkBehaviour
         }
     }
 
-    private void SpawnAndPositionCards(CardClientData card, ref int spawnedCardsCount, Transform spawnPoint, float initialPositionOffset, PlayerType playerType)
+    private IEnumerator SpawnAndPositionCards(CardClientData card, Transform spawnPoint, float initialPositionOffset, PlayerType playerType)
     {
+        yield return new WaitForSeconds(0.15f);
         var cardVisualPrefab = Instantiate(cardPrefab, spawnPoint.position, NetworkManager.ClientManager.Connection.IsHost ? Quaternion.identity : Quaternion.Euler(new Vector3(0f, 180f, 0f)), cardsParent);
         if (cardVisualPrefab.TryGetComponent(out CardVisual cardVisual))
         {
@@ -107,11 +119,37 @@ public class BlackjackCardVisual : NetworkBehaviour
             cardVisual.cardMeshRenderer.SetPropertyBlock(_mpb);
         }
 
-        spawnedCardsCount++;
-        cardVisualPrefab.transform.DOMoveX(initialPositionOffset + spawnedCardsCount * cardSpacing, 0.3f);
+        if (playerType == PlayerType.Player1)
+            firstPlayerSpawnedCardsCount++;
+        else
+            secondPlayerSpawnedCardsCount++;
+        
+        cardVisualPrefab.transform.DOMoveX(initialPositionOffset + 
+                                           (playerType == PlayerType.Player1 
+                                               ? firstPlayerSpawnedCardsCount
+                                               : secondPlayerSpawnedCardsCount) * cardSpacing, 0.3f);
         cardVisualPrefab.transform.DOMoveZ(playerType == PlayerType.Player1
             ? firstPlayerFirstCardPosition.position.z
             : secondPlayerFirstCardPosition.position.z, 0.3f);
+        
+        _audioService.OnPlaySoundAtPosition(cardVisualPrefab.transform.position, _audioConfig.cardSwooshPaths[Random.Range(0, _audioConfig.cardSwooshPaths.Count)]);
+    }
+    
+    private void EnqueueCardSpawn(CardClientData card, Transform spawnPoint, float initialPositionOffset, PlayerType playerType)
+    {
+        _cardSpawnQueue.Enqueue(SpawnAndPositionCards(card, spawnPoint, initialPositionOffset, playerType));
+        if (!_isProcessingQueue) StartCoroutine(ProcessCardSpawnQueue());
+    }
+
+    private IEnumerator ProcessCardSpawnQueue()
+    {
+        _isProcessingQueue = true;
+        while (_cardSpawnQueue.Count > 0)
+        {
+            yield return StartCoroutine(_cardSpawnQueue.Dequeue());
+            yield return new WaitForSeconds(0.15f); 
+        }
+        _isProcessingQueue = false;
     }
 
     private Vector4 GetUVCoordinatesForSprite(string spritePath)

@@ -9,19 +9,22 @@ public interface IAudioService
     public void OnPlaySoundAtPosition(Vector3 position, string audioPath);
     public event EventHandler<PlaySoundEventArgs> PlaySoundEvent;
     public void OnPlaySound(string audioPath);
+    public void OnPlaySoundLocal(Vector3 position, string audioPath);
 }
 
 
 
 public class PlaySoundAtPositionEventArgs : EventArgs
 {
+    public bool IsGlobal;
     public Vector3 Position;
     public string AudioPath;
 
-    public PlaySoundAtPositionEventArgs(Vector3 position, string audioPath)
+    public PlaySoundAtPositionEventArgs(Vector3 position, string audioPath, bool isGlobal)
     {
         Position = position;
         AudioPath = audioPath;
+        IsGlobal = isGlobal;
     }
 }
 
