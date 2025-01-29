@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: DebugCard11 2
   m_EditorClassIdentifier: 
   CardId: 856f308f-6576-4ddb-9f47-81f330ef201b
-  CardFace: {fileID: 21300000, guid: d9e28d749d05d6a409a76844f38c119c, type: 3}
+  CardFace: {fileID: 874449749, guid: ffc29d20e2d951f438322e7afd913fc9, type: 3}
   CardBack: {fileID: 21300000, guid: b5c06a18d36928b49b7b1843d2d9750d, type: 3}
   DrawCardEffects:
   - {fileID: 11400000, guid: 72c384d84eaceec439fbca04bc7a21c2, type: 2}
@@ -22,5 +22,5 @@ MonoBehaviour:
   DiscardCardEffects:
   - {fileID: 11400000, guid: f40755431f7b19e4a8461cd21fe4d11a, type: 2}
   - {fileID: 11400000, guid: 929aae6d68839334fb9798b533b0570e, type: 2}
-  cardFacePath: 11
-  cardBackPath: BackCard
+  cardFacePath: Cards|Cards_26
+  cardBackPath: BackCard|BackCard

@@ -48,8 +48,10 @@ public class PlayerInit : NetworkBehaviour
             yaw = 0f;
         }
         else
+        {
             cameraObject.GetComponent<Camera>().enabled = false;
-            
+            cameraObject.GetComponent<AudioListener>().enabled = false;
+        }
     }
 
     private void Update()
@@ -84,5 +86,9 @@ public class PlayerInit : NetworkBehaviour
         _headBone.localEulerAngles = rotation;
     }
 
-    public override void OnOwnershipClient(NetworkConnection prevOwner) => cameraObject.GetComponent<Camera>().enabled = IsOwner;
+    public override void OnOwnershipClient(NetworkConnection prevOwner)
+    {
+        cameraObject.GetComponent<Camera>().enabled = IsOwner;
+        cameraObject.GetComponent<AudioListener>().enabled = IsOwner;
+    }
 }

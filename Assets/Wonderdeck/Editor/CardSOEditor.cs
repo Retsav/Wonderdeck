@@ -168,14 +168,14 @@ public class CardSOEditor : Editor
         _cardFaceObjectField.RegisterValueChangedCallback(UpdateCardSprites);
         _cardFaceObjectField.bindingPath = "CardFace";
         _cardBackObjectField.bindingPath = "CardBack";
-        _cardBackSprite.style.backgroundImage = new StyleBackground(_cardTarget.CardBack.texture);
-        _cardFaceSprite.style.backgroundImage = new StyleBackground(_cardTarget.CardFace.texture);
+        _cardBackSprite.style.backgroundImage = new StyleBackground(_cardTarget.CardBack);
+        _cardFaceSprite.style.backgroundImage = new StyleBackground(_cardTarget.CardFace);
     }
 
     private void UpdateCardSprites(ChangeEvent<Object> evt)
     {
-        _cardBackSprite.style.backgroundImage = _cardTarget.CardBack != null ? new StyleBackground(_cardTarget.CardBack.texture) : null;
-        _cardFaceSprite.style.backgroundImage = _cardTarget.CardFace != null ? new StyleBackground(_cardTarget.CardFace.texture) : null;
+        _cardBackSprite.style.backgroundImage = _cardTarget.CardBack != null ? new StyleBackground(_cardTarget.CardBack) : null;
+        _cardFaceSprite.style.backgroundImage = _cardTarget.CardFace != null ? new StyleBackground(_cardTarget.CardFace) : null;
         UpdateCardPaths();
     }
     
@@ -191,11 +191,12 @@ public class CardSOEditor : Editor
     {
         if (sprite != null)
         {
-            string fullPath = AssetDatabase.GetAssetPath(sprite);
+            string fullPath = AssetDatabase.GetAssetPath(sprite.texture); // Get the atlas path
             if (fullPath.StartsWith(resourcesFolderPath))
             {
-                string relativePath = fullPath.Replace(resourcesFolderPath, "");
-                pathField = Path.ChangeExtension(relativePath, null); 
+                string relativePath = fullPath.Replace(resourcesFolderPath, "").Replace(".png", ""); 
+                string spriteName = sprite.name; 
+                pathField = $"{relativePath}|{spriteName}"; 
             }
             else
             {
