@@ -103,8 +103,8 @@ public class BlackjackLogic : NetworkBehaviour
       foreach (var card in _clientCardDataFirstPlayer) TransactionCardObserverRpc(card, PlayerType.Player1);
       foreach (var card in _clientCardDataSecondPlayer) TransactionCardObserverRpc(card, PlayerType.Player2);
       
-      _inventoryService.OnItemsDealRequested(new ItemsDealRequestedEventArgs(PlayerType.Player1, 1));
-      _inventoryService.OnItemsDealRequested(new ItemsDealRequestedEventArgs(PlayerType.Player2, 1));
+      _inventoryService.OnItemsDealRequested(new ItemsDealRequestedEventArgs(PlayerType.Player1, 10));
+      _inventoryService.OnItemsDealRequested(new ItemsDealRequestedEventArgs(PlayerType.Player2, 10));
       if (_eventsInitialized) return;
       _blackjackService.CardRequestedServer += CardDrawRequestedServer;
       _blackjackService.PassTurnRequestedServer += PassTurnRequestedServer;
@@ -118,8 +118,11 @@ public class BlackjackLogic : NetworkBehaviour
    private void OnGameScoreUpdated(object sender, int e)
    {
       _blackjackService.CurrentScoreThreshold = e;
-      _blackjackService.OnScoreThresholdChanged();
+      OnGameScoreUpdatedObserverRpc();
    }
+
+   [ObserversRpc]
+   private void OnGameScoreUpdatedObserverRpc() => _blackjackService.OnScoreThresholdChanged();
 
 
    private void OnCardWithSpecificValueRequested(object sender, GetCardWithSpecificValueEventArgs e)
