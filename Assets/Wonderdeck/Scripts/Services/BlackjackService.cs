@@ -16,6 +16,7 @@ public class BlackjackService : IBlackjackService
     public List<string> CurrentDeck { get; set; }
     public int FirstPlayerScore { get; set; }
     public int SecondPlayerScore { get; set; }
+    public int CurrentScoreThreshold { get; set; }
     public BlackjackState BlackjackState { get; set; }
     
     public event EventHandler<CardsDataUpdatedEventArgs> CardsUpdated;
@@ -131,6 +132,11 @@ public class BlackjackService : IBlackjackService
     public void RequestEndTurnClient(PlayerType currentPlayer) => EndTurnRequestedClient?.Invoke(this, new EndTurnRequestedEventArgs(currentPlayer));
 
     public event EventHandler<CardVisualRequestedEventArgs> CardVisualRequested;
+    public event EventHandler<int> GameScoreUpdated;
+    public void OnGameScoreUpdated(int newScore) => GameScoreUpdated?.Invoke(this, newScore);
+    public event Action ScoreThresholdChanged;
+    public void OnScoreThresholdChanged() => ScoreThresholdChanged?.Invoke();
+
     public void OnCardVisualRequested(CardClientData card, PlayerType owner, TransactionType transactionType) => CardVisualRequested?.Invoke(this, new CardVisualRequestedEventArgs(card, owner, transactionType));
 }
 

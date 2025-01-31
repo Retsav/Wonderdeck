@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0ca862d8f388e3e4a8880ea9b0e5f4b2, type: 3}
-  m_Name: '[CARD EFFECT] DrawValueCard5'
+  m_Script: {fileID: 11500000, guid: e18d04a3eba348a4dbe60fd2fd72037e, type: 3}
+  m_Name: '[CARD EFFECT] DrawCardWithValue7'
   m_EditorClassIdentifier: 
-  valueToDraw: 5
+  valueToDraw: 7

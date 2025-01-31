@@ -20,7 +20,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 92c5318ba0fd90c439df1f5a2ecedd68, type: 2}
   PlayCardEffects: []
   DiscardCardEffects:
-  - {fileID: 11400000, guid: 2df8d1c2bab416d49b85ec75cc4592c9, type: 2}
+  - {fileID: 11400000, guid: 1a27e5bc47539f1428924e4acc88cb0c, type: 2}
   - {fileID: 11400000, guid: 929aae6d68839334fb9798b533b0570e, type: 2}
   cardFacePath: Cards|Cards_41
-  cardBackPath: BackCard|BackCard
+  cardBackPath: BackCard

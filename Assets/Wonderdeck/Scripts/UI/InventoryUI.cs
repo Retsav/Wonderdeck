@@ -2,16 +2,25 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using FishNet.Object;
+using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using Zenject;
 
 public class InventoryUI : NetworkBehaviour
 {
     [SerializeField] private CanvasGroup inventoryCanvasGroup;
     [SerializeField] private GameObject inventoryButtonsParent;
+    [SerializeField] private TextMeshProUGUI itemDescriptionLabel;
+    [SerializeField] private TextMeshProUGUI itemNameLabel;
+    [SerializeField] private Button confirmButton;
+    
 
 
     private bool _inventoryPopupOpened;
+    
+    private InventoryButtonUI _currentlySelectedInventoryButton;
     
     private IInventoryService _inventoryService;
     private IBlackjackService _blackjackService;
@@ -34,6 +43,22 @@ public class InventoryUI : NetworkBehaviour
         _audioConfig = DebugConfigLoader.Instance.GetConfig<AudioConfig>();
         HideGroup();
         ClearItemButtons();
+        itemDescriptionLabel.text = "";
+        itemNameLabel.text = "";
+        confirmButton.onClick.RemoveAllListeners();
+        confirmButton.onClick.AddListener(OnConfirmClicked);
+    }
+
+    private void OnConfirmClicked()
+    {
+        if (_currentlySelectedInventoryButton == null)
+            return;
+        _currentlySelectedInventoryButton.ConfirmClicked();
+        _currentlySelectedInventoryButton.shadow.enabled = false;
+        _currentlySelectedInventoryButton = null;
+        itemDescriptionLabel.text = "";
+        itemNameLabel.text = "";
+        Close();
     }
 
     public override void OnStartClient()
@@ -65,14 +90,36 @@ public class InventoryUI : NetworkBehaviour
     public void Open()
     {
         _audioService.OnPlaySoundLocal(Vector3.zero, _audioConfig.openInventoryPath);
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         ShowGroup();
         PopulateItemButtons();
     }
 
     public void Close()
     {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         HideGroup();
         ClearItemButtons();
+    }
+
+    public void SelectItem(InventoryButtonUI button)
+    {
+        if (_currentlySelectedInventoryButton != null) _currentlySelectedInventoryButton.shadow.enabled = false;
+        _currentlySelectedInventoryButton = button;
+        _currentlySelectedInventoryButton.shadow.enabled = true;
+        if (!string.IsNullOrEmpty(_currentlySelectedInventoryButton.itemID))
+        {
+            var item = _inventoryService.GetItemByID(_currentlySelectedInventoryButton.itemID);
+            if (item == null)
+            {
+                Debug.LogError($"Item with ID {_currentlySelectedInventoryButton.itemID} not found");
+                return;
+            }
+            itemNameLabel.text = item.name;
+            itemDescriptionLabel.text = item.description;
+        } 
     }
 
     private void ClearItemButtons()

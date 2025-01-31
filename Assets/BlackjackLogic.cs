@@ -32,6 +32,8 @@ public class BlackjackLogic : NetworkBehaviour
    private int firstPlayerLoses = 0;
    private int secondPlayerLoses = 0;
 
+   
+
    private bool _firstPlayerFinishedTurn;
    private bool _secondPlayerFinishedTurn;
    private bool _eventsInitialized;
@@ -80,9 +82,11 @@ public class BlackjackLogic : NetworkBehaviour
    private void StartGameServerRpc()
    {
       if (!AreBothPlayersConnected()) return;
+      _blackjackService.CurrentScoreThreshold = _blackjackConfig.baseScoreThreshold;
       _blackjackService.FirstPlayerCards = DealCards(_blackjackConfig.cardsToDeal);
       _blackjackService.SecondPlayerCards = DealCards(_blackjackConfig.cardsToDeal);
       StartGameObserverRpc(BlackjackState.Player1Turn);
+      
 
       //_clientCardDataFirstPlayer = CreateCardData(_blackjackService.FirstPlayerCards, PlayerType.Player1);
       //_clientCardDataSecondPlayer = CreateCardData(_blackjackService.SecondPlayerCards, PlayerType.Player2);
@@ -99,17 +103,26 @@ public class BlackjackLogic : NetworkBehaviour
       foreach (var card in _clientCardDataFirstPlayer) TransactionCardObserverRpc(card, PlayerType.Player1);
       foreach (var card in _clientCardDataSecondPlayer) TransactionCardObserverRpc(card, PlayerType.Player2);
       
-      _inventoryService.OnItemsDealRequested(new ItemsDealRequestedEventArgs(PlayerType.Player1, 1));
-      _inventoryService.OnItemsDealRequested(new ItemsDealRequestedEventArgs(PlayerType.Player2, 1));
+      _inventoryService.OnItemsDealRequested(new ItemsDealRequestedEventArgs(PlayerType.Player1, 10));
+      _inventoryService.OnItemsDealRequested(new ItemsDealRequestedEventArgs(PlayerType.Player2, 10));
       if (_eventsInitialized) return;
       _blackjackService.CardRequestedServer += CardDrawRequestedServer;
       _blackjackService.PassTurnRequestedServer += PassTurnRequestedServer;
       _blackjackService.EndTurnRequestedServer += OnEndTurnRequested;
       _blackjackService.DealSpecificCard += OnDealSpecificCard;
       _blackjackService.CardWithSpecificValueRequested += OnCardWithSpecificValueRequested;
+      _blackjackService.GameScoreUpdated += OnGameScoreUpdated;
       _eventsInitialized = true;
    }
 
+   private void OnGameScoreUpdated(object sender, int e)
+   {
+      _blackjackService.CurrentScoreThreshold = e;
+      OnGameScoreUpdatedObserverRpc();
+   }
+
+   [ObserversRpc]
+   private void OnGameScoreUpdatedObserverRpc() => _blackjackService.OnScoreThresholdChanged();
 
 
    private void OnCardWithSpecificValueRequested(object sender, GetCardWithSpecificValueEventArgs e)
@@ -126,9 +139,7 @@ public class BlackjackLogic : NetworkBehaviour
          }
          var totalScoreAmount = 0f;
          for (int j = 0; j < card.DrawCardEffects.Count; j++)
-         {
-            if (card.DrawCardEffects[j] is AddValueEffect valueEffect) totalScoreAmount += valueEffect.cardValue;  
-         }
+            if (card.DrawCardEffects[j] is AddValueEffectSO valueEffect) totalScoreAmount += valueEffect.cardValue;
          if (totalScoreAmount == e.ValueToDraw) foundCardID = card.CardId;
       }
 
@@ -260,6 +271,7 @@ public class BlackjackLogic : NetworkBehaviour
       OrginalCardToDummy.Clear();
       if (!NetworkManager.ClientManager.Connection.IsHost) return;
       ShuffleCards();
+      _blackjackService.CurrentScoreThreshold = _blackjackConfig.baseScoreThreshold;
       _blackjackService.CurrentDeck = _blackjackService.OrginalDeck.ToList();
       _blackjackService.FirstPlayerCards.Clear();
       _blackjackService.FirstPlayerScore = 0;
@@ -509,7 +521,7 @@ public class BlackjackLogic : NetworkBehaviour
    
    private RoundResult EvaluateRoundResult()
    {
-      var baseThreshold = _blackjackConfig.baseScoreThreshold;
+      var baseThreshold = _blackjackService.CurrentScoreThreshold;
       var firstPlayerScore = _blackjackService.FirstPlayerScore;
       var secondPlayerScore = _blackjackService.SecondPlayerScore;
 

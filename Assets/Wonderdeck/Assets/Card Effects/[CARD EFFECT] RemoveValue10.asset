@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0378c7ff1021a13448c24cbfeb62f670, type: 3}
+  m_Script: {fileID: 11500000, guid: 7f4c8a64e7b46a6409849e62b2653ef4, type: 3}
   m_Name: '[CARD EFFECT] RemoveValue10'
   m_EditorClassIdentifier: 
   valueToRemove: 10

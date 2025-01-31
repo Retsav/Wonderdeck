@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 1100154114499308009}
   - component: {fileID: 7653390791362645799}
   - component: {fileID: 29098810428728592}
+  - component: {fileID: 6045986406990757609}
   m_Layer: 5
   m_Name: ButtonItem
   m_TagString: Untagged
@@ -141,6 +142,7 @@ MonoBehaviour:
   itemButton: {fileID: 1100154114499308009}
   itemImage: {fileID: 6576552638241132374}
   itemID: 
+  shadow: {fileID: 6045986406990757609}
 --- !u!114 &29098810428728592
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -191,6 +193,21 @@ MonoBehaviour:
     Position: {x: 0, y: 0, z: 0}
     Rotation: {x: 0, y: 0, z: 0, w: 0}
     LocalScale: {x: 0, y: 0, z: 0}
+--- !u!114 &6045986406990757609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 720393599180944455}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 1, g: 0, b: 0, a: 1}
+  m_EffectDistance: {x: -0.16, y: -6.62}
+  m_UseGraphicAlpha: 1
 --- !u!1 &1276748832007719718
 GameObject:
   m_ObjectHideFlags: 0

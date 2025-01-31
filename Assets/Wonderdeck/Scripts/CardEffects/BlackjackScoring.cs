@@ -37,6 +37,7 @@ public class BlackjackScoring : NetworkBehaviour
     {
         _blackjackService.CardVisualRequested  -= OnVisualRequested;
         _blackjackService.RoundEnd -= OnRoundEnd;
+        _blackjackService.ScoreThresholdChanged -= ScoreThresholdChanged;
     }
 
     public override void OnStartClient()
@@ -44,13 +45,16 @@ public class BlackjackScoring : NetworkBehaviour
         _playerType = NetworkManager.ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2;
         _blackjackService.CardVisualRequested += OnVisualRequested;
         _blackjackService.RoundEnd += OnRoundEnd;
+        _blackjackService.ScoreThresholdChanged += ScoreThresholdChanged;
         if (_networkingService.GetPlayerType(NetworkManager.ClientManager.Connection) != PlayerType.Player2) return;
         firstPlayerScoreObject.transform.Rotate(new Vector3(0f, 180f, 0f));
         secondPlayerScoreObject.transform.Rotate(new Vector3(0f, 180f, 0f));
 
     }
 
-    
+    private void ScoreThresholdChanged() => OnVisualRequested(null, null);
+
+
     private void OnRoundEnd(object sender, EventArgs e)
     {
         playerOneScoreLabel.text = $"{0}/21";
@@ -78,24 +82,24 @@ public class BlackjackScoring : NetworkBehaviour
             var cardSO = _blackjackService.GetCardByID(card.CardID);
             if (cardSO == null) continue;
             foreach (var cardEffect in cardSO.DrawCardEffects)
-                if (cardEffect is AddValueEffect effect) score += effect.cardValue;
+                if (cardEffect is AddValueEffectSO effect) score += effect.cardValue;
         }
-        UpdateScoringObserverRpc(playerType, conn, score, _hasHiddenCard);
+        UpdateScoringObserverRpc(playerType, conn, score, _blackjackService.CurrentScoreThreshold, _hasHiddenCard);
     }
     
 
     [ObserversRpc]
-    private void UpdateScoringObserverRpc(PlayerType player,  NetworkConnection conn, float score, bool hasHiddenCard)
+    private void UpdateScoringObserverRpc(PlayerType player,  NetworkConnection conn, float score, int threshold, bool hasHiddenCard)
     {
         if (conn != NetworkManager.ClientManager.Connection)
             return;
         switch (player)
         {
             case PlayerType.Player1:
-                playerOneScoreLabel.text = hasHiddenCard ? $"{score}+?/21" : $"{score}/21";
+                playerOneScoreLabel.text = hasHiddenCard ? $"{score}+?/{threshold}" : $"{score}/{threshold}";
                 break;
             case PlayerType.Player2:
-                playerSecondScoreLabel.text = hasHiddenCard ? $"{score}+?/21" : $"{score}/21";
+                playerSecondScoreLabel.text = hasHiddenCard ? $"{score}+?/{threshold}" : $"{score}/{threshold}";
                 break;
         }
     }

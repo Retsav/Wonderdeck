@@ -13,4 +13,12 @@ MonoBehaviour:
   m_Name: ItemConfig
   m_EditorClassIdentifier: 
   itemCards:
+  - {fileID: 11400000, guid: 36916ad48a4e7d04e9785952371beb09, type: 2}
+  - {fileID: 11400000, guid: 9432d1a890f1d154b91aceddb8766ec5, type: 2}
+  - {fileID: 11400000, guid: 446e0a64b6ff21d45b01008386e1cccc, type: 2}
   - {fileID: 11400000, guid: f7592ee5032fc8741a4f81fc6e486e94, type: 2}
+  - {fileID: 11400000, guid: caa8877195ebd0a4795dcf8d075906d9, type: 2}
+  - {fileID: 11400000, guid: d114a6da387ba304eb0251316eee87af, type: 2}
+  - {fileID: 11400000, guid: b233bcebcb597a14a9909dc0c31de244, type: 2}
+  - {fileID: 11400000, guid: d58d1a33f2eb3c443aa648c6498a5734, type: 2}
+  - {fileID: 11400000, guid: d66bcf6854daeb842b97ad697b951b61, type: 2}

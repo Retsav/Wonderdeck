@@ -11,10 +11,10 @@ using Zenject;
 
 public class InventoryButtonUI : NetworkBehaviour
 {
-    public InventoryUI inventoryUI;
     public Button itemButton;
     [FormerlySerializedAs("itemSprite")] public Image itemImage;
     public string itemID;
+    public Shadow shadow;
 
     private IInventoryService _inventoryService;
     
@@ -31,13 +31,13 @@ public class InventoryButtonUI : NetworkBehaviour
         itemButton.onClick.RemoveAllListeners();
         UnityAction action = () =>
         {
-            ExecuteItem(itemID, ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2);
-            if(inventoryUI != null) inventoryUI.Close();
+            if(inventoryUI != null) inventoryUI.SelectItem(this);
         };
         itemButton.onClick.AddListener(action);
     }
 
-    
+    public void ConfirmClicked() => ExecuteItem(itemID, ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2);
+
     [ServerRpc(RequireOwnership = false)]
     private void ExecuteItem(string itemId, PlayerType playerType)
     {

@@ -75,7 +75,7 @@ public class CardSOEditor : Editor
         CreateListSection(_cardDiscardListEffectsContainer, _cardTarget.DiscardCardEffects, "DiscardCardEffects");
     }
 
-    private void CreateListSection(VisualElement parent, List<ScriptableObject> effects, string propertyName)
+    private void CreateListSection(VisualElement parent, List<CardEffectSO> effects, string propertyName)
     {
         RefreshList(parent, propertyName);
         parent.Q<Button>("AddButton").clicked += () =>
@@ -191,22 +191,28 @@ public class CardSOEditor : Editor
     {
         if (sprite != null)
         {
-            string fullPath = AssetDatabase.GetAssetPath(sprite.texture); // Get the atlas path
-            if (fullPath.StartsWith(resourcesFolderPath))
+            string texturePath = AssetDatabase.GetAssetPath(sprite.texture);
+            if (texturePath.StartsWith(resourcesFolderPath))
             {
-                string relativePath = fullPath.Replace(resourcesFolderPath, "").Replace(".png", ""); 
-                string spriteName = sprite.name; 
-                pathField = $"{relativePath}|{spriteName}"; 
+                TextureImporter ti = AssetImporter.GetAtPath(texturePath) as TextureImporter;
+                bool isAtlas = ti && ti.spriteImportMode == SpriteImportMode.Multiple;
+
+                string relativePath = texturePath
+                    .Replace(resourcesFolderPath, "")
+                    .Replace(".png", "")
+                    .Replace(".jpg", "");
+
+                pathField = isAtlas ? $"{relativePath}|{sprite.name}" : relativePath;
             }
             else
             {
-                Debug.LogError($"Sprite is not located in the Resources folder. Path {fullPath} cannot be saved.");
+                Debug.LogError($"Sprite must be in Resources folder! Current path: {texturePath}");
                 pathField = string.Empty;
             }
         }
         else
         {
-            Debug.LogError($"Sprite is null");
+            Debug.LogError("Sprite reference is missing!");
             pathField = string.Empty;
         }
     }
