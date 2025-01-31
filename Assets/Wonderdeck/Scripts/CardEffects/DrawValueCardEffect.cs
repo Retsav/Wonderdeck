@@ -1,29 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
-using FishNet.Object;
-using UnityEngine;
-using Zenject;
 
-
-[CreateAssetMenu(fileName = "New DrawValueCardEffect", menuName = "Wonderdeck/Card Effects/[CARD EFFECT] Draw Value Card Effect")]
-public class DrawValueCardEffect : ScriptableObject, ICardEffect
+public class DrawValueCardEffect : ICardEffect
 {
-    public float valueToDraw;
-    private IBlackjackService _blackjackService;
-    private PlayerType _playerType;
-
-
-    [Inject]
-    private void ResolveDependencies(IBlackjackService blackjackService)
+    private readonly DrawValueCardEffectSO _data;
+    private readonly IBlackjackService _blackjackService;
+    
+    public DrawValueCardEffect(DrawValueCardEffectSO data, IBlackjackService blackjackService)
     {
+        _data = data;
         _blackjackService = blackjackService;
     }
     
-    public void OnExecute(PlayerType playerType)
-    {
-        /*_playerType = playerType;
-        GetCardWithValueServerRpc(); */
-    }
-    
-    private void GetCardWithValueServerRpc() => _blackjackService.OnGetCardWithSpecificValue(new GetCardWithSpecificValueEventArgs(valueToDraw, _playerType));
+    public void OnExecute(PlayerType playerType) => _blackjackService.OnGetCardWithSpecificValue(new GetCardWithSpecificValueEventArgs(_data.valueToDraw, playerType));
 }

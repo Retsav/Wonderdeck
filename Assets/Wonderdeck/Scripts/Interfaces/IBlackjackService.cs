@@ -14,6 +14,7 @@ public interface IBlackjackService
     public List<string> CurrentDeck { get; set; }
     public int FirstPlayerScore { get; set; }
     public int SecondPlayerScore { get; set; }
+    public int CurrentScoreThreshold { get; set; }
     public BlackjackState BlackjackState { get; set; }
     
     public event EventHandler<CardsDataUpdatedEventArgs> CardsUpdated;
@@ -47,6 +48,10 @@ public interface IBlackjackService
     public void RequestEndTurnClient(PlayerType currentPlayer);
     
     public event EventHandler<CardVisualRequestedEventArgs> CardVisualRequested;
+    public event EventHandler<int> GameScoreUpdated;
+    public void OnGameScoreUpdated(int newScore);
+    public event Action ScoreThresholdChanged;
+    public void OnScoreThresholdChanged();
     public void OnCardVisualRequested(CardClientData card, PlayerType owner, TransactionType transactionType);
 }
 

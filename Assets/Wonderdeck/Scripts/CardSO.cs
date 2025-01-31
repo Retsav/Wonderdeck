@@ -15,9 +15,9 @@ public class CardSO : ScriptableObject
     public Sprite CardBack;
     
 
-    public List<ScriptableObject> DrawCardEffects = new List<ScriptableObject>();
-    public List<ScriptableObject> PlayCardEffects = new List<ScriptableObject>();
-    public List<ScriptableObject> DiscardCardEffects = new List<ScriptableObject>();
+    public List<CardEffectSO> DrawCardEffects = new List<CardEffectSO>();
+    public List<CardEffectSO> PlayCardEffects = new List<CardEffectSO>();
+    public List<CardEffectSO> DiscardCardEffects = new List<CardEffectSO>();
 
     public string cardFacePath;
     public string cardBackPath;

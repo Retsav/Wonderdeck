@@ -1,18 +1,23 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using Zenject;
 
-
-[CreateAssetMenu(fileName = "New AddValueEffect", menuName = "Wonderdeck/Card Effects/[CARD EFFECT] Add Value")]
-public class AddValueEffect : ScriptableObject, ICardEffect
+public class AddValueEffect : ICardEffect
 {
-    public float cardValue = 1;
+    private readonly AddValueEffectSO _data;
+    private readonly IBlackjackService _blackjackService;
 
+    public AddValueEffect(AddValueEffectSO data, IBlackjackService blackjackService)
+    {
+        _data = data;
+        _blackjackService = blackjackService;
+    }
     
     public void OnExecute(PlayerType playerType)
     {
-
-            
-        
+        if (playerType == PlayerType.Player1)
+            _blackjackService.FirstPlayerScore += (int)_data.cardValue;
+        else
+            _blackjackService.SecondPlayerScore += (int)_data.cardValue;
     }
-    
 }

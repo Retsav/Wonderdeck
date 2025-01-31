@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4473df207fef80d40abb6400af3ab2fa, type: 3}
+  m_Name: SetScore27Card
+  m_EditorClassIdentifier: 
+  CardId: 26d15b28-71d4-4c11-ae17-48f5294995df
+  CardFace: {fileID: 21300000, guid: fc0708ea9b1ad6248bcb8942b3ebdcd9, type: 3}
+  CardBack: {fileID: 21300000, guid: b5c06a18d36928b49b7b1843d2d9750d, type: 3}
+  DrawCardEffects: []
+  PlayCardEffects:
+  - {fileID: 11400000, guid: a4769a664c62aa34a9207fdff41f85e4, type: 2}
+  DiscardCardEffects: []
+  cardFacePath: placeholder
+  cardBackPath: BackCard

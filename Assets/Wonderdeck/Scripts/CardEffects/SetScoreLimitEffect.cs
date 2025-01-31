@@ -1,0 +1,21 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class SetScoreLimitEffect : ICardEffect
+{
+    private readonly SetScoreLimitEffectSO _data;
+    private readonly IBlackjackService _blackjackService;
+
+
+    public SetScoreLimitEffect(SetScoreLimitEffectSO data, IBlackjackService blackjackService)
+    {
+        _data = data;
+        _blackjackService = blackjackService;
+    }
+    
+    public void OnExecute(PlayerType playerType)
+    {
+        _blackjackService.OnGameScoreUpdated(_data.newScore);
+    }
+}

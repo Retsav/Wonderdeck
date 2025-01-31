@@ -7,13 +7,15 @@ using Zenject;
 
 public class BlackjackCardResolver : NetworkBehaviour
 {
+    private DiContainer _container;
     private IBlackjackService _blackjackService;
     private IInventoryService _inventoryService;
     
     
     [Inject]
-    private void ResolveDependencies(IBlackjackService blackjackService, IInventoryService inventoryService)
+    private void ResolveDependencies(DiContainer container, IBlackjackService blackjackService, IInventoryService inventoryService)
     {
+        _container = container;
         _blackjackService = blackjackService;
         _inventoryService = inventoryService;
     }
@@ -34,75 +36,25 @@ public class BlackjackCardResolver : NetworkBehaviour
         switch (e.PlayType)
         {
             case PlayType.Draw:
-                for (int i = 0; i < card.DrawCardEffects.Count; i++)
-                {
-                    ICardEffect effect = (ICardEffect)card.DrawCardEffects[i];
-                    if (effect == null)
-                    {
-                        Debug.LogError($"Cast operation invalid. Does card effects is deriving from ICardEffect?");
-                        return;
-                    }
-                    if(effect is AddValueEffect addValueEffect)
-                    {
-                        if (e.PlayerType == PlayerType.Player1)
-                        {
-                            _blackjackService.FirstPlayerScore += (int)addValueEffect.cardValue;
-                            //_blackjackService.OnScoreUpdated(new PlayerScoreUpdatedEventArgs(e.PlayerType, _blackjackService.FirstPlayerScore));
-                        }
-                        else
-                        {
-                            _blackjackService.SecondPlayerScore += (int)addValueEffect.cardValue;
-                            //_blackjackService.OnScoreUpdated(new PlayerScoreUpdatedEventArgs(e.PlayerType, _blackjackService.SecondPlayerScore));
-                        }
-                    }
-                    effect.OnExecute(e.PlayerType);
-                }
+                ResolveEffects(card.DrawCardEffects, e.PlayerType);
                 break;
             case PlayType.Play:
-                for (int i = 0; i < card.PlayCardEffects.Count; i++)
-                {
-                    ICardEffect effect = (ICardEffect)card.PlayCardEffects[i];
-                    if (effect == null)
-                    {
-                        Debug.LogError($"Cast operation invalid. Does card effects is deriving from ICardEffect?");
-                        return;
-                    }
-
-                    if (effect is DrawValueCardEffect drawValueCardEffect)
-                    {
-                        _blackjackService.OnGetCardWithSpecificValue(
-                            new GetCardWithSpecificValueEventArgs(drawValueCardEffect.valueToDraw, e.PlayerType));
-                    }
-                    effect.OnExecute(e.PlayerType);
-                }
+                ResolveEffects(card.PlayCardEffects, e.PlayerType);
                 break;
             case PlayType.Discard:
-                for (int i = 0; i < card.DiscardCardEffects.Count; i++)
-                {
-                    ICardEffect effect = (ICardEffect)card.DiscardCardEffects[i];
-                    if (effect == null)
-                    {
-                        Debug.LogError($"Cast operation invalid. Does card effects is deriving from ICardEffect?");
-                        return;
-                    }
-                    if(effect is RemoveValueEffect removeValueEffect)
-                    {
-                        if (e.PlayerType == PlayerType.Player1)
-                        {
-                            _blackjackService.FirstPlayerScore -= (int)removeValueEffect.valueToRemove;
-                            //_blackjackService.OnScoreUpdated(new PlayerScoreUpdatedEventArgs(e.PlayerType, _blackjackService.FirstPlayerScore));
-                        }
-                        else
-                        {
-                            _blackjackService.SecondPlayerScore -= (int)removeValueEffect.valueToRemove;
-                            //_blackjackService.OnScoreUpdated(new PlayerScoreUpdatedEventArgs(e.PlayerType, _blackjackService.SecondPlayerScore));
-                        }
-                    }
-                    effect.OnExecute(e.PlayerType);
-                }
+                ResolveEffects(card.DiscardCardEffects, e.PlayerType);
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    private void ResolveEffects(List<CardEffectSO> effects, PlayerType playerType)
+    {
+        for (int i = 0; i < effects.Count; i++)
+        {
+            var effect = effects[i].CreateEffect(_container);
+            effect.OnExecute(playerType);
         }
     }
 

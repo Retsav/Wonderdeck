@@ -11,7 +11,6 @@ using Zenject;
 
 public class InventoryButtonUI : NetworkBehaviour
 {
-    public InventoryUI inventoryUI;
     public Button itemButton;
     [FormerlySerializedAs("itemSprite")] public Image itemImage;
     public string itemID;

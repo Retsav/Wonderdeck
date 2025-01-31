@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using FishNet.Object;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using Zenject;
 
 public class InventoryUI : NetworkBehaviour
@@ -65,12 +66,16 @@ public class InventoryUI : NetworkBehaviour
     public void Open()
     {
         _audioService.OnPlaySoundLocal(Vector3.zero, _audioConfig.openInventoryPath);
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         ShowGroup();
         PopulateItemButtons();
     }
 
     public void Close()
     {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         HideGroup();
         ClearItemButtons();
     }

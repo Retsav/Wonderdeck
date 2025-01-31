@@ -21,8 +21,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e8aa8dfe54d6c02488b8648600e74699, type: 2}
   PlayCardEffects: []
   DiscardCardEffects:
-  - {fileID: 11400000, guid: 2df8d1c2bab416d49b85ec75cc4592c9, type: 2}
-  - {fileID: 11400000, guid: 2df8d1c2bab416d49b85ec75cc4592c9, type: 2}
-  - {fileID: 11400000, guid: 7265c167a5219fa47aeaf63eb3d6af61, type: 2}
+  - {fileID: 11400000, guid: 1a27e5bc47539f1428924e4acc88cb0c, type: 2}
+  - {fileID: 11400000, guid: 1a27e5bc47539f1428924e4acc88cb0c, type: 2}
+  - {fileID: 11400000, guid: 14c4532395e03d147b1b0497c39bc381, type: 2}
   cardFacePath: Cards|Cards_8
-  cardBackPath: BackCard|BackCard
+  cardBackPath: BackCard
