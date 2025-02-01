@@ -39,6 +39,8 @@ public class MenuNetworking : MonoBehaviour
         addressInputField.text = DEBUG_DEFAULT_ADDRESS;
         startHostButton.onClick.RemoveAllListeners();
         startClientButton.onClick.RemoveAllListeners();
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         startClientButton.onClick.AddListener(InitClientSideBar);
         startHostButton.onClick.AddListener(InitHostSideBar);
         HideSideBar();
