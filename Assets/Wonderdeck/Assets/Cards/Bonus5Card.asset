@@ -19,5 +19,6 @@ MonoBehaviour:
   PlayCardEffects:
   - {fileID: 11400000, guid: 1775aa4807a058541a4b374161424b4c, type: 2}
   DiscardCardEffects: []
+  description: 
   cardFacePath: placeholder
   cardBackPath: BackCard
