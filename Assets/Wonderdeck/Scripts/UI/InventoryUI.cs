@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using FishNet.Object;
 using TMPro;
 using UnityEngine;
@@ -10,6 +11,7 @@ using Zenject;
 
 public class InventoryUI : NetworkBehaviour
 {
+    [SerializeField] private RectTransform rectTransform;
     [SerializeField] private CanvasGroup inventoryCanvasGroup;
     [SerializeField] private GameObject inventoryButtonsParent;
     [SerializeField] private TextMeshProUGUI itemDescriptionLabel;
@@ -28,6 +30,7 @@ public class InventoryUI : NetworkBehaviour
 
     private AudioConfig _audioConfig;
 
+    private Sequence _popupSequence;
 
     
     [Inject]
@@ -90,6 +93,13 @@ public class InventoryUI : NetworkBehaviour
     public void Open()
     {
         _audioService.OnPlaySoundLocal(Vector3.zero, _audioConfig.openInventoryPath);
+        if (_popupSequence != null)
+        {
+            if (_popupSequence.IsActive()) _popupSequence.Kill();
+            _popupSequence = null;
+        }
+        _popupSequence = DOTween.Sequence();    
+        _popupSequence.Join(rectTransform.DOAnchorPosX(0f, 0.3f));
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         ShowGroup();
@@ -98,6 +108,13 @@ public class InventoryUI : NetworkBehaviour
 
     public void Close()
     {
+        if (_popupSequence != null)
+        {
+            if (_popupSequence.IsActive()) _popupSequence.Kill();
+            _popupSequence = null;
+        }
+        _popupSequence = DOTween.Sequence();    
+        _popupSequence.Join(rectTransform.DOAnchorPosX(600f, 0.3f));
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         HideGroup();
@@ -176,7 +193,6 @@ public class InventoryUI : NetworkBehaviour
     {
         inventoryCanvasGroup.blocksRaycasts = false;
         inventoryCanvasGroup.interactable = false;
-        inventoryCanvasGroup.alpha = 0f;
         _inventoryPopupOpened = false;
     }
     

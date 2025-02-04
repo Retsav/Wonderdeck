@@ -13,11 +13,15 @@ MonoBehaviour:
   m_Name: Bonus2Card
   m_EditorClassIdentifier: 
   CardId: 1f547504-1fb0-4fda-8ce5-ac720b66c509
-  CardFace: {fileID: 21300000, guid: fc0708ea9b1ad6248bcb8942b3ebdcd9, type: 3}
+  CardFace: {fileID: 1176559701, guid: 06bcf0c0dc7c59a44862791b61876c85, type: 3}
   CardBack: {fileID: 21300000, guid: b5c06a18d36928b49b7b1843d2d9750d, type: 3}
   DrawCardEffects: []
   PlayCardEffects:
   - {fileID: 11400000, guid: 2add60a6e1ae7e444867a61741bf7940, type: 2}
   DiscardCardEffects: []
-  cardFacePath: placeholder
+  description: 'You will draw a card with value 2 without passing your turn to other
+    player.
+
+    If there is no card in deck with this value - item will be lost.'
+  cardFacePath: ITEM_Potion|ITEM_Potion_0
   cardBackPath: BackCard

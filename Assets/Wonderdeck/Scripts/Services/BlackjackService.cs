@@ -88,8 +88,32 @@ public class BlackjackService : IBlackjackService
         var card = GetCardByID(id);
         if (card == null)
             card = _inventoryService.GetItemByID(id);
-        var cardSprite = Resources.Load<Sprite>(card.cardFacePath);
-        return cardSprite;
+        
+        
+        if (string.IsNullOrEmpty(card.cardFacePath))
+            return null;
+
+
+        string[] parts = card.cardFacePath.Split('|');
+        if (parts.Length != 2)
+        {
+            Debug.LogWarning($"Invalid sprite path format: {card.cardFacePath}. Expected format: 'AtlasPath|SpriteName'.");
+            return null;
+        }
+
+        string atlasPath = parts[0];
+        string spriteName = parts[1];
+
+
+        Sprite[] sprites = Resources.LoadAll<Sprite>(atlasPath);
+        if (sprites == null || sprites.Length == 0)
+        {
+            Debug.LogWarning($"No sprites found in atlas at path: {atlasPath}");
+            return null;
+        }
+        
+        Sprite sprite = Array.Find(sprites, s => s.name == spriteName);
+        return sprite;
     }
 
     public event EventHandler<DealSpecificCardEventArgs> DealSpecificCard;

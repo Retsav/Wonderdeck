@@ -24,5 +24,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1a27e5bc47539f1428924e4acc88cb0c, type: 2}
   - {fileID: 11400000, guid: 929aae6d68839334fb9798b533b0570e, type: 2}
   - {fileID: 11400000, guid: 14c4532395e03d147b1b0497c39bc381, type: 2}
+  description: 
   cardFacePath: Cards|Cards_46
   cardBackPath: BackCard
