@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Bonus3Card
   m_EditorClassIdentifier: 
   CardId: 5c25dfe7-7f53-476f-938e-08d2255a0939
-  CardFace: {fileID: 21300000, guid: fc0708ea9b1ad6248bcb8942b3ebdcd9, type: 3}
+  CardFace: {fileID: -783362828, guid: 06bcf0c0dc7c59a44862791b61876c85, type: 3}
   CardBack: {fileID: 21300000, guid: b5c06a18d36928b49b7b1843d2d9750d, type: 3}
   DrawCardEffects: []
   PlayCardEffects:
