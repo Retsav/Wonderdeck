@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: SetScore27Card
   m_EditorClassIdentifier: 
   CardId: 26d15b28-71d4-4c11-ae17-48f5294995df
-  CardFace: {fileID: 21300000, guid: fc0708ea9b1ad6248bcb8942b3ebdcd9, type: 3}
+  CardFace: {fileID: 2064171716, guid: 6c528e5119e56a243a2ea9f977a99999, type: 3}
   CardBack: {fileID: 21300000, guid: b5c06a18d36928b49b7b1843d2d9750d, type: 3}
   DrawCardEffects: []
   PlayCardEffects:
   - {fileID: 11400000, guid: a4769a664c62aa34a9207fdff41f85e4, type: 2}
   DiscardCardEffects: []
   description: 
-  cardFacePath: placeholder
+  cardFacePath: ITEM_Clock|ITEM_Clock_2
   cardBackPath: BackCard

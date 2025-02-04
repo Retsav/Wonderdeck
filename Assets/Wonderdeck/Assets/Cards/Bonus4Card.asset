@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Bonus4Card
   m_EditorClassIdentifier: 
   CardId: d554ea5a-9cd8-4ca9-9c46-5dcdc6540526
-  CardFace: {fileID: 21300000, guid: fc0708ea9b1ad6248bcb8942b3ebdcd9, type: 3}
+  CardFace: {fileID: 1818058814, guid: 06bcf0c0dc7c59a44862791b61876c85, type: 3}
   CardBack: {fileID: 21300000, guid: b5c06a18d36928b49b7b1843d2d9750d, type: 3}
   DrawCardEffects: []
   PlayCardEffects:
   - {fileID: 11400000, guid: bd199ef4f1307794ea5238fc987950b7, type: 2}
   DiscardCardEffects: []
   description: 
-  cardFacePath: placeholder
+  cardFacePath: ITEM_Potion|ITEM_Potion_2
   cardBackPath: BackCard
