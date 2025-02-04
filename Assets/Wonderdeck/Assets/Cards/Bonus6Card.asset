@@ -23,5 +23,5 @@ MonoBehaviour:
     player.
 
     If there is no card in deck with this value - item will be lost.'
-  cardFacePath: placeholder
+  cardFacePath: ITEM_Potion|ITEM_Potion_4
   cardBackPath: BackCard

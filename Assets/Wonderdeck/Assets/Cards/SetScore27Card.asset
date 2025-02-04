@@ -23,5 +23,5 @@ MonoBehaviour:
     other "Set Score" items
 
     that are already on the table.'
-  cardFacePath: placeholder
+  cardFacePath: ITEM_Clock|ITEM_Clock_2
   cardBackPath: BackCard
