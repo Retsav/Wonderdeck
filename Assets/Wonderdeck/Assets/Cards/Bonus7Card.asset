@@ -19,5 +19,9 @@ MonoBehaviour:
   PlayCardEffects:
   - {fileID: 11400000, guid: 281293715c68ac84b88fb19ef73bd7ef, type: 2}
   DiscardCardEffects: []
+  description: 'You will draw a card with value 7 without passing your turn to other
+    player.
+
+    If there is no card in deck with this value - item will be lost.'
   cardFacePath: placeholder
   cardBackPath: BackCard

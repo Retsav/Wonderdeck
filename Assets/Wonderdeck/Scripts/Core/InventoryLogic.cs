@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using FishNet.Object;
 using UnityEngine;
 using Zenject;
@@ -8,6 +9,14 @@ using Random = System.Random;
 
 public class InventoryLogic : NetworkBehaviour
 {
+    [SerializeField] private GameObject dummyTokenPrefab;
+    [SerializeField] private Transform player1DummyTokenSpawnPoint;
+    [SerializeField] private Transform player1DummyTokenTargetPoint;
+    [SerializeField] private Transform player2DummyTokenSpawnPoint;
+    [SerializeField] private Transform player2DummyTokenTargetPoint;
+    
+    private Queue<SpawnRequest> spawnQueue = new Queue<SpawnRequest>();
+    private bool isProcessingQueue = false;
 
     private IInventoryService _inventoryService;
     private static Random _random = new Random();
@@ -50,9 +59,55 @@ public class InventoryLogic : NetworkBehaviour
         {
             if(e.Player == PlayerType.Player1)
                 _inventoryService.AddItem(inventoryItems[i], PlayerType.Player1);
-            if (e.Player == PlayerType.Player2) AddItemObserverRpc(inventoryItems[i], PlayerType.Player2);
+            if (e.Player == PlayerType.Player2) 
+                AddItemObserverRpc(inventoryItems[i], PlayerType.Player2);
         }
+
+        SpawnItemsVisualObserverRpc(e.Player, e.Amount);
+    }
+    
+    
+    [ObserversRpc]
+    private void SpawnItemsVisualObserverRpc(PlayerType player, int amount)
+    {
+        spawnQueue.Enqueue(new SpawnRequest(player, amount));
         
+        if (!isProcessingQueue)
+        {
+            StartCoroutine(ProcessSpawnQueue());
+        }
+    }
+    
+    private IEnumerator ProcessSpawnQueue()
+    {
+        isProcessingQueue = true;
+        
+        while (spawnQueue.Count > 0)
+        {
+            SpawnRequest request = spawnQueue.Dequeue();
+            for (int i = 0; i < request.amount; i++)
+            {
+                GameObject tokenGO;
+                Tween tween;
+                
+                if (request.player == PlayerType.Player1)
+                {
+                    tokenGO = Instantiate(dummyTokenPrefab, player1DummyTokenSpawnPoint.position, Quaternion.identity);
+                    tween = tokenGO.transform.DOMoveX(player1DummyTokenTargetPoint.position.x, 0.6f);
+                }
+                else 
+                {
+                    tokenGO = Instantiate(dummyTokenPrefab, player2DummyTokenSpawnPoint.position, Quaternion.identity);
+                    tween = tokenGO.transform.DOMoveX(player2DummyTokenTargetPoint.position.x, 0.6f);
+                }
+                
+                yield return tween.WaitForCompletion();
+                Destroy(tokenGO);
+                yield return new WaitForSeconds(0.2f);
+            }
+        }
+
+        isProcessingQueue = false;
     }
 
 
@@ -110,4 +165,17 @@ public class InventoryLogic : NetworkBehaviour
         _inventoryService.FirstPlayerItems = null;
         _inventoryService.SecondPlayerItems = null;
     }
+    
+    private struct SpawnRequest
+    {
+        public PlayerType player;
+        public int amount;
+
+        public SpawnRequest(PlayerType player, int amount)
+        {
+            this.player = player;
+            this.amount = amount;
+        }
+    }
 }
+

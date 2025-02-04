@@ -19,5 +19,9 @@ MonoBehaviour:
   PlayCardEffects:
   - {fileID: 11400000, guid: bd199ef4f1307794ea5238fc987950b7, type: 2}
   DiscardCardEffects: []
+  description: 'You will draw a card with value 4 without passing your turn to other
+    player.
+
+    If there is no card in deck with this value - item will be lost.'
   cardFacePath: placeholder
   cardBackPath: BackCard

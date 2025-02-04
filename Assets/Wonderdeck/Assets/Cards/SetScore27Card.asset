@@ -19,5 +19,9 @@ MonoBehaviour:
   PlayCardEffects:
   - {fileID: 11400000, guid: a4769a664c62aa34a9207fdff41f85e4, type: 2}
   DiscardCardEffects: []
+  description: 'The closest to 27 wins while this item is on the table. Overrides
+    other "Set Score" items
+
+    that are already on the table.'
   cardFacePath: placeholder
   cardBackPath: BackCard

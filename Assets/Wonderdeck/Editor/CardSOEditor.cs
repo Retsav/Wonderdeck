@@ -12,8 +12,10 @@ using Object = UnityEngine.Object;
 public class CardSOEditor : Editor
 {
     private TemplateContainer _root;
+    
     private TextField _textField;
     private TextField _cardIDField;
+    private TextField _cardDescriptionField;
     
     private VisualElement _cardFaceSprite;
     private VisualElement _cardBackSprite;
@@ -225,6 +227,25 @@ public class CardSOEditor : Editor
         _cardIDField = _root.Q<TextField>("CardID");
         _cardIDField.value = _cardTarget.CardId;
         _cardIDField.RegisterCallback<FocusOutEvent>(ModifyID);
+        
+        _cardDescriptionField = _root.Q<TextField>("CardDescription");
+        if (_cardDescriptionField != null)
+        {
+            _cardDescriptionField.multiline = true;
+            _cardDescriptionField.value = _cardTarget.description; 
+            _cardDescriptionField.RegisterCallback<FocusOutEvent>(ModifyDescription);
+        }
+        else
+        {
+            Debug.LogWarning("Nie znaleziono pola CardDescription. Upewnij się, że nazwa elementu w UXML to 'CardDescription'.");
+        }
+    }
+
+    private void ModifyDescription(FocusOutEvent evt)
+    {
+        Undo.RecordObject(_cardTarget, "Modify Card Description");
+        _cardTarget.description = _cardDescriptionField.value;
+        EditorUtility.SetDirty(_cardTarget);
     }
 
     private void ModifyID(FocusOutEvent evt)

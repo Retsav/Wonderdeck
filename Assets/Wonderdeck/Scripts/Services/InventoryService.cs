@@ -12,6 +12,9 @@ public class InventoryService : IInventoryService
     public event EventHandler<RequestInventoryUsageEventArgs> RequestInventoryUsage;
     public event EventHandler<InventoryRequestedEventArgs> RequestInventory;
     public event EventHandler<ItemsDealRequestedEventArgs> ItemsDealRequested;
+    public event EventHandler<ItemsDealRequestedEventArgs> ItemsVisualRequested;
+    public void OnItemsVisualRequested(ItemsDealRequestedEventArgs args) => ItemsVisualRequested?.Invoke(this, args);
+
     public void OnItemsDealRequested(ItemsDealRequestedEventArgs args) => ItemsDealRequested?.Invoke(this, args);
 
     public event EventHandler InventoryRefreshed;

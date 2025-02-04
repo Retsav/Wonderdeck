@@ -13,6 +13,8 @@ public interface IInventoryService
     public event EventHandler<RequestInventoryUsageEventArgs> RequestInventoryUsage;
     public event EventHandler<InventoryRequestedEventArgs> RequestInventory;
     public event EventHandler<ItemsDealRequestedEventArgs> ItemsDealRequested;
+    public event EventHandler<ItemsDealRequestedEventArgs> ItemsVisualRequested;
+    public void OnItemsVisualRequested(ItemsDealRequestedEventArgs args);
     public void OnItemsDealRequested(ItemsDealRequestedEventArgs args);
     public event EventHandler InventoryRefreshed;
     public void OnInventoryRefreshed();
