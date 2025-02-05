@@ -44,9 +44,25 @@ public class BlackjackPlayerClientData : NetworkBehaviour
         }
         else
         {
-            targetPlayerCards.Remove(e.Card);
-            //if(_playerType == e.PlayerType)
-                //RequestCardPlay(_playerType, PlayType.Discard, e.Card.CardID);
+            if (targetPlayerCards.Count > 0)
+            {
+                var index = -1;
+                for (int i = 0; i < targetPlayerCards.Count; i++)
+                {
+                    var card = targetPlayerCards[i];
+                    if (card.CardID == e.Card.CardID)
+                    {
+                        index = targetPlayerCards.IndexOf(card);
+                        break;
+                    }
+                }
+
+                if (index == -1)
+                {
+                    Debug.LogError($"Cant find card {e.Card}");
+                }
+                targetPlayerCards.RemoveAt(index);
+            }
         }
         _blackjackService.OnCardVisualRequested(e.Card, e.PlayerType, e.TransactionType);
     }

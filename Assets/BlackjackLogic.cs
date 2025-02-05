@@ -88,20 +88,15 @@ public class BlackjackLogic : NetworkBehaviour
       StartGameObserverRpc(BlackjackState.Player1Turn);
       
 
-      //_clientCardDataFirstPlayer = CreateCardData(_blackjackService.FirstPlayerCards, PlayerType.Player1);
-      //_clientCardDataSecondPlayer = CreateCardData(_blackjackService.SecondPlayerCards, PlayerType.Player2);
-      
       
       _clientCardDataFirstPlayer.Add(CreateCardData(_blackjackService.FirstPlayerCards[0], PlayerType.Player1, true));
       _clientCardDataFirstPlayer.Add(CreateCardData(_blackjackService.FirstPlayerCards[1], PlayerType.Player1));
       _clientCardDataSecondPlayer.Add(CreateCardData(_blackjackService.SecondPlayerCards[0], PlayerType.Player2, true));
       _clientCardDataSecondPlayer.Add(CreateCardData(_blackjackService.SecondPlayerCards[1], PlayerType.Player2));
-      //var secondPlayerHiddenCard = CreateCardData(_blackjackService.SecondPlayerCards[0], PlayerType.Player2, true);
       
       
-      
-      foreach (var card in _clientCardDataFirstPlayer) TransactionCardObserverRpc(card, PlayerType.Player1);
-      foreach (var card in _clientCardDataSecondPlayer) TransactionCardObserverRpc(card, PlayerType.Player2);
+      foreach (var card in _clientCardDataFirstPlayer) AddCardObserverRpc(card, PlayerType.Player1);
+      foreach (var card in _clientCardDataSecondPlayer) AddCardObserverRpc(card, PlayerType.Player2);
       
       _inventoryService.OnItemsDealRequested(new ItemsDealRequestedEventArgs(PlayerType.Player1, 2));
       _inventoryService.OnItemsDealRequested(new ItemsDealRequestedEventArgs(PlayerType.Player2, 2));
@@ -112,7 +107,49 @@ public class BlackjackLogic : NetworkBehaviour
       _blackjackService.DealSpecificCard += OnDealSpecificCard;
       _blackjackService.CardWithSpecificValueRequested += OnCardWithSpecificValueRequested;
       _blackjackService.GameScoreUpdated += OnGameScoreUpdated;
+      _blackjackService.RequestCardDeletion += OnRequestCardDeletion;
+      _blackjackService.RequestCardSwap += OnRequestCardSwap;
       _eventsInitialized = true;
+   }
+
+   private void OnRequestCardSwap(object sender, EventArgs e)
+   {
+      if (_clientCardDataFirstPlayer.Count <= 0 || _clientCardDataSecondPlayer.Count <= 0)
+         return;
+      var firstPlayerCard = _clientCardDataFirstPlayer[^1];
+      var secondPlayerCard = _clientCardDataSecondPlayer[^1];
+      
+      RemoveCard(firstPlayerCard, PlayerType.Player1, true);
+      RemoveCard(secondPlayerCard, PlayerType.Player2, true);
+
+      var newCardForFirstPlayer = CreateCardData(secondPlayerCard.CardID, PlayerType.Player1);
+      _blackjackService.FirstPlayerCards.Add(secondPlayerCard.CardID);
+      var newCardForSecondPlayer = CreateCardData(firstPlayerCard.CardID, PlayerType.Player2);
+      _blackjackService.SecondPlayerCards.Add(firstPlayerCard.CardID);
+      
+      _clientCardDataFirstPlayer.Add(newCardForFirstPlayer);
+      _clientCardDataSecondPlayer.Add(newCardForSecondPlayer);
+      
+      AddCardObserverRpc(newCardForFirstPlayer, PlayerType.Player1);
+      AddCardObserverRpc(newCardForSecondPlayer, PlayerType.Player2);
+   }
+
+   private void OnRequestCardDeletion(object sender, PlayerType e)
+   {
+      if (e == PlayerType.Player1)
+      {
+         if (_clientCardDataFirstPlayer.Count <= 0)
+            return;
+         var lastCard = _clientCardDataFirstPlayer[^1];
+         RemoveCardServerRpc(lastCard, e);
+      }
+      else
+      {
+         if (_clientCardDataSecondPlayer.Count <= 0)
+            return;
+         var lastCard = _clientCardDataSecondPlayer[^1];
+         RemoveCardServerRpc(lastCard, e);
+      }
    }
 
    private void OnGameScoreUpdated(object sender, int e)
@@ -162,17 +199,17 @@ public class BlackjackLogic : NetworkBehaviour
             _blackjackService.FirstPlayerCards.Add(e.CardID);
             _clientCardDataFirstPlayer.Add(cardData);
             if(!e.HideCard)
-               TransactionCardObserverRpc(cardData, PlayerType.Player1);
+               AddCardObserverRpc(cardData, PlayerType.Player1);
             else
-               TransactionCardObserverRpc(dummyCard, PlayerType.Player1);
+               AddCardObserverRpc(dummyCard, PlayerType.Player1);
             break;
          case PlayerType.Player2:
             _blackjackService.SecondPlayerCards.Add(e.CardID);
             _clientCardDataSecondPlayer.Add(cardData);
             if(!e.HideCard)
-               TransactionCardObserverRpc(cardData, PlayerType.Player2);
+               AddCardObserverRpc(cardData, PlayerType.Player2);
             else
-               TransactionCardObserverRpc(dummyCard, PlayerType.Player2);
+               AddCardObserverRpc(dummyCard, PlayerType.Player2);
             break;
       }
       _blackjackService.CurrentDeck.Remove(e.CardID);
@@ -226,17 +263,13 @@ public class BlackjackLogic : NetworkBehaviour
                secondPlayerLoses++;
                break;
          }
-         SendConsequencesObserversRpc(result);
-         foreach (var card in _clientCardDataFirstPlayer) RemoveCard(card, PlayerType.Player1);
-         foreach (var card in _clientCardDataSecondPlayer) RemoveCard(card, PlayerType.Player2);
+         SendConsequencesObserversRpc(result, _blackjackService.FirstPlayerScore, _blackjackService.SecondPlayerScore);
+         foreach (var card in _clientCardDataFirstPlayer) RemoveCardServerRpc(card, PlayerType.Player1);
+         foreach (var card in _clientCardDataSecondPlayer) RemoveCardServerRpc(card, PlayerType.Player2);
          if (secondPlayerLoses >= 3 || firstPlayerLoses >= 3)
-         {
             StartCoroutine(FinishGame());
-         }
          else
-         {
-            StartCoroutine(StartNextRound());  
-         }
+            StartCoroutine(StartNextRound());
       }
    }
 
@@ -292,9 +325,14 @@ public class BlackjackLogic : NetworkBehaviour
    }
 
    [ServerRpc(RequireOwnership = false)]
-   private void RemoveCard(CardClientData clientCardData, PlayerType playerType, bool useDiscardEffect = true)
+   private void RemoveCardServerRpc(CardClientData clientCardData, PlayerType playerType, bool useDiscardEffect = true)
    {
-      bool isCardFound = false;
+      RemoveCard(clientCardData, playerType, useDiscardEffect);
+   }
+
+   private void RemoveCard(CardClientData clientCardData, PlayerType playerType, bool useDiscardEffect)
+   {
+      CardClientData cardClientData = null;
       switch (playerType)
       {
          case PlayerType.Player1:
@@ -303,14 +341,14 @@ public class BlackjackLogic : NetworkBehaviour
             {
                if(clientCardData.CardID != t.CardID) continue;
                if (useDiscardEffect) _blackjackService.OnCardPlayed(new CardPlayedEventArgs(clientCardData.CardID, playerType, PlayType.Discard));
-               isCardFound = true;
+               cardClientData = t;
                break;
             }
 
-            if (isCardFound)
+            if (cardClientData != null)
             {
-               _clientCardDataFirstPlayer.Remove(clientCardData);
-               _blackjackService.FirstPlayerCards.Remove(clientCardData.CardID);
+               _clientCardDataFirstPlayer.Remove(cardClientData);
+               _blackjackService.FirstPlayerCards.Remove(cardClientData.CardID);
             } 
             else
                Debug.LogWarning($"Could not find card: {clientCardData.CardName} for Player1");
@@ -326,14 +364,14 @@ public class BlackjackLogic : NetworkBehaviour
                if (useDiscardEffect)
                   _blackjackService.OnCardPlayed(new CardPlayedEventArgs(clientCardData.CardID, playerType,
                      PlayType.Discard));
-               isCardFound = true;
+               cardClientData = _clientCardDataSecondPlayer[j];
                break;
             }
 
-            if (isCardFound)
+            if (cardClientData != null)
             {
-               _clientCardDataSecondPlayer.Remove(clientCardData);
-               _blackjackService.SecondPlayerCards.Remove(clientCardData.CardID);
+               _clientCardDataSecondPlayer.Remove(cardClientData);
+               _blackjackService.SecondPlayerCards.Remove(cardClientData.CardID);
             } 
             else
                Debug.LogWarning($"Could not find card: {clientCardData.CardName} for Player2");
@@ -349,6 +387,7 @@ public class BlackjackLogic : NetworkBehaviour
       if (clientCardData.IsHidden && player != _playerType)
       {
          GetDummyCardToRemoveServerRpc(clientCardData, player);
+         return;
       }
       _blackjackService.OnCardsUpdated(new CardsDataUpdatedEventArgs(clientCardData, player, TransactionType.REMOVE));
    }
@@ -372,7 +411,10 @@ public class BlackjackLogic : NetworkBehaviour
    }
 
    [ObserversRpc]
-   private void SendConsequencesObserversRpc(RoundResult result) => _blackjackService.OnRoundConsequencesEvaluated(new RoundConsequencesEvaluatedEventArgs(result));
+   private void SendConsequencesObserversRpc(RoundResult result, int firstPlayerScore, int secondPlayerScore)
+   {
+      _blackjackService.OnRoundConsequencesEvaluated(new RoundConsequencesEvaluatedEventArgs(result, firstPlayerScore, secondPlayerScore));
+   }
 
    [ObserversRpc]
    private void EndRoundObserversRpc()
@@ -412,7 +454,7 @@ public class BlackjackLogic : NetworkBehaviour
    }
 
    [ObserversRpc]
-   private void TransactionCardObserverRpc(CardClientData cardClientData, PlayerType player)
+   private void AddCardObserverRpc(CardClientData cardClientData, PlayerType player)
    {
       if (player != _playerType && cardClientData.IsHidden)
       {
@@ -439,12 +481,12 @@ public class BlackjackLogic : NetworkBehaviour
       {
          _blackjackService.FirstPlayerCards.Add(cardID);
          _clientCardDataFirstPlayer.Add(cardClientData);
-         TransactionCardObserverRpc(cardClientData, PlayerType.Player1);
+         AddCardObserverRpc(cardClientData, PlayerType.Player1);
       } else if (e.PlayerType == PlayerType.Player2 && _blackjackService.BlackjackState == BlackjackState.Player2Turn)
       {
          _blackjackService.SecondPlayerCards.Add(cardID);
          _clientCardDataSecondPlayer.Add(cardClientData);
-         TransactionCardObserverRpc(cardClientData, PlayerType.Player2);
+         AddCardObserverRpc(cardClientData, PlayerType.Player2);
       }
    }
 
@@ -575,6 +617,8 @@ public class BlackjackLogic : NetworkBehaviour
       _blackjackService.DealSpecificCard -= OnDealSpecificCard;
       _blackjackService.CardWithSpecificValueRequested -= OnCardWithSpecificValueRequested;
       NetworkManager.SceneManager.OnClientPresenceChangeEnd -= OnClientLoadedScenes;
+      _blackjackService.RequestCardDeletion -= OnRequestCardDeletion;
+      _blackjackService.RequestCardSwap -= OnRequestCardSwap;
    }
 }
 

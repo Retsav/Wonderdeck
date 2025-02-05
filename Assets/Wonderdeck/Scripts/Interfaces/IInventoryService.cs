@@ -31,11 +31,13 @@ public class ItemsDealRequestedEventArgs : EventArgs
 {
     public PlayerType Player;
     public int Amount;
+    public string ItemName = "";
 
-    public ItemsDealRequestedEventArgs(PlayerType player, int amount)
+    public ItemsDealRequestedEventArgs(PlayerType player, int amount, string itemName = "")
     {
         Player = player;
         Amount = amount;
+        ItemName = itemName;
     }
 }
 

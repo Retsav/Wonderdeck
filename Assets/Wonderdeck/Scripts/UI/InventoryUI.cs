@@ -46,11 +46,25 @@ public class InventoryUI : NetworkBehaviour
         _audioConfig = DebugConfigLoader.Instance.GetConfig<AudioConfig>();
         HideGroup();
         ClearItemButtons();
+        _blackjackService.GameStateSet += OnGameStateSet;
         itemDescriptionLabel.text = "";
         itemNameLabel.text = "";
         confirmButton.onClick.RemoveAllListeners();
         confirmButton.onClick.AddListener(OnConfirmClicked);
+        
     }
+
+    private bool CanUseItems(BlackjackState state)
+    {
+        return state switch
+        {
+            BlackjackState.Intermission => false,
+            BlackjackState.Player1Turn => NetworkManager.ClientManager.Connection.IsHost,
+            BlackjackState.Player2Turn => !NetworkManager.ClientManager.Connection.IsHost,
+            _ => throw new ArgumentOutOfRangeException(nameof(state), state, null)
+        };
+    }
+    private void OnGameStateSet(object sender, GameStateSetEventArgs e) => confirmButton.interactable = CanUseItems(e.State);
 
     private void OnConfirmClicked()
     {
@@ -102,6 +116,11 @@ public class InventoryUI : NetworkBehaviour
         _popupSequence.Join(rectTransform.DOAnchorPosX(0f, 0.3f));
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+        confirmButton.interactable = CanUseItems(_blackjackService.BlackjackState);
+        if (!confirmButton.interactable)
+        {
+            
+        }
         ShowGroup();
         PopulateItemButtons();
     }
