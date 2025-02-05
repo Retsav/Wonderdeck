@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SwapCards
   m_EditorClassIdentifier: 
   CardId: 0baf8ff8-247b-4fea-a73a-32244749757c
-  CardFace: {fileID: 78955507, guid: 6c528e5119e56a243a2ea9f977a99999, type: 3}
+  CardFace: {fileID: 1001797783, guid: 06afb8ee849337d4bbea9f3d1902af20, type: 3}
   CardBack: {fileID: 21300000, guid: b5c06a18d36928b49b7b1843d2d9750d, type: 3}
   DrawCardEffects: []
   PlayCardEffects:
@@ -23,5 +23,5 @@ MonoBehaviour:
     will become visible.
 
 '
-  cardFacePath: ITEM_Clock|ITEM_Clock_0
+  cardFacePath: ITEM_Delete_Swap|ITEM_Delete_Swap_2
   cardBackPath: BackCard
