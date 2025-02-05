@@ -46,6 +46,10 @@ public interface IBlackjackService
     public void RequestEndTurnServer(PlayerType currentPlayer);
     public event EventHandler<EndTurnRequestedEventArgs> EndTurnRequestedClient; 
     public void RequestEndTurnClient(PlayerType currentPlayer);
+    public void OnRequestCardDeletion(PlayerType playerType);
+    public event EventHandler<PlayerType> RequestCardDeletion;
+    public event EventHandler RequestCardSwap;
+    public void OnRequestCardSwap();
     
     public event EventHandler<CardVisualRequestedEventArgs> CardVisualRequested;
     public event EventHandler<int> GameScoreUpdated;
@@ -108,10 +112,14 @@ public class PassTurnRequestedEventArgs : EventArgs
 public class RoundConsequencesEvaluatedEventArgs : EventArgs
 {
     public RoundResult Result { get; private set; }
+    public int FinalFirstPlayerScore { get; private set; }
+    public int FinalSecondPlayerScore { get; private set; }
 
-    public RoundConsequencesEvaluatedEventArgs(RoundResult result)
+    public RoundConsequencesEvaluatedEventArgs(RoundResult result, int finalFirstPlayerScore, int finalSecondPlayerScore)
     {
         Result = result;
+        FinalFirstPlayerScore = finalFirstPlayerScore;
+        FinalSecondPlayerScore = finalSecondPlayerScore;
     }
 }
 

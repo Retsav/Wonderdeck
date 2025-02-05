@@ -38,6 +38,8 @@ public class BlackjackScoring : NetworkBehaviour
         _blackjackService.CardVisualRequested  -= OnVisualRequested;
         _blackjackService.RoundEnd -= OnRoundEnd;
         _blackjackService.ScoreThresholdChanged -= ScoreThresholdChanged;
+        _blackjackService.CardPlayed -= OnCardPlayed;
+        _blackjackService.CardsUpdated -= OnCardsUpdated;
     }
 
     public override void OnStartClient()
@@ -46,11 +48,17 @@ public class BlackjackScoring : NetworkBehaviour
         _blackjackService.CardVisualRequested += OnVisualRequested;
         _blackjackService.RoundEnd += OnRoundEnd;
         _blackjackService.ScoreThresholdChanged += ScoreThresholdChanged;
+        _blackjackService.CardsUpdated += OnCardsUpdated;
+        _blackjackService.CardPlayed += OnCardPlayed;
         if (_networkingService.GetPlayerType(NetworkManager.ClientManager.Connection) != PlayerType.Player2) return;
         firstPlayerScoreObject.transform.Rotate(new Vector3(0f, 180f, 0f));
         secondPlayerScoreObject.transform.Rotate(new Vector3(0f, 180f, 0f));
 
     }
+
+    private void OnCardsUpdated(object sender, CardsDataUpdatedEventArgs e) => RefreshScoresFromServer();
+
+    private void OnCardPlayed(object sender, CardPlayedEventArgs e) => RefreshScoresFromServer();
 
     private void ScoreThresholdChanged() => OnVisualRequested(null, null);
 
@@ -62,6 +70,11 @@ public class BlackjackScoring : NetworkBehaviour
     }
 
     private void OnVisualRequested(object sender, CardVisualRequestedEventArgs e)
+    {
+        RefreshScoresFromServer();
+    }
+
+    private void RefreshScoresFromServer()
     {
         GetScoreServerRpc(_blackjackService.LocalFirstPlayerCards, NetworkManager.ClientManager.Connection, PlayerType.Player1, _playerType);
         GetScoreServerRpc(_blackjackService.LocalSecondPlayerCards, NetworkManager.ClientManager.Connection, PlayerType.Player2, _playerType);
@@ -93,13 +106,22 @@ public class BlackjackScoring : NetworkBehaviour
     {
         if (conn != NetworkManager.ClientManager.Connection)
             return;
+        string result = "";
         switch (player)
         {
             case PlayerType.Player1:
-                playerOneScoreLabel.text = hasHiddenCard ? $"{score}+?/{threshold}" : $"{score}/{threshold}";
+                if (hasHiddenCard)
+                    result = score <= 0 ? $"?/{threshold}" : $"{score}+?/{threshold}";
+                else
+                    result = $"{score}/{threshold}";
+                playerOneScoreLabel.text = result;
                 break;
             case PlayerType.Player2:
-                playerSecondScoreLabel.text = hasHiddenCard ? $"{score}+?/{threshold}" : $"{score}/{threshold}";
+                if (hasHiddenCard)
+                    result = score <= 0 ? $"?/{threshold}" : $"{score}+?/{threshold}";
+                else
+                    result = $"{score}/{threshold}";
+                playerSecondScoreLabel.text = result;
                 break;
         }
     }

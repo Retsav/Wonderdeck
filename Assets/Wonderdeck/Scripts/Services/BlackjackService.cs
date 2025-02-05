@@ -154,6 +154,12 @@ public class BlackjackService : IBlackjackService
     public void RequestEndTurnServer(PlayerType currentPlayer) => EndTurnRequestedServer?.Invoke(this, new EndTurnRequestedEventArgs(currentPlayer));
     public event EventHandler<EndTurnRequestedEventArgs> EndTurnRequestedClient;
     public void RequestEndTurnClient(PlayerType currentPlayer) => EndTurnRequestedClient?.Invoke(this, new EndTurnRequestedEventArgs(currentPlayer));
+    public void OnRequestCardDeletion(PlayerType playerType) => RequestCardDeletion?.Invoke(this, playerType);
+
+    public event EventHandler<PlayerType> RequestCardDeletion;
+    public event EventHandler RequestCardSwap;
+
+    public void OnRequestCardSwap() => RequestCardSwap?.Invoke(this, EventArgs.Empty);
 
     public event EventHandler<CardVisualRequestedEventArgs> CardVisualRequested;
     public event EventHandler<int> GameScoreUpdated;

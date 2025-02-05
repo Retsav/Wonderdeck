@@ -49,12 +49,26 @@ public class InventoryLogic : NetworkBehaviour
             return;
         }
         List<string> inventoryItems = new List<string>();
-        for (int i = 0; i < e.Amount; i++)
+
+        if (string.IsNullOrEmpty(e.ItemName))
         {
-            int index = _random.Next(_itemConfig.itemCards.Count);
-            inventoryItems.Add(_itemConfig.itemCards[index].CardId);
+            for (int i = 0; i < e.Amount; i++)
+            {
+                int index = _random.Next(_itemConfig.itemCards.Count);
+                inventoryItems.Add(_itemConfig.itemCards[index].CardId);
+            }
+        }
+        else
+        {
+            string itemId = "";
+            for (int i = 0; i < _itemConfig.itemCards.Count; i++)
+            {
+                if (e.ItemName != _itemConfig.itemCards[i].name) continue;
+                for (int j = 0; j < e.Amount; j++) inventoryItems.Add(_itemConfig.itemCards[i].CardId);
+            }
         }
 
+    
         for (int i = 0; i < inventoryItems.Count; i++)
         {
             if(e.Player == PlayerType.Player1)
