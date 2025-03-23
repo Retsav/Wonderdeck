@@ -28,7 +28,7 @@ public class MenuNetworking : MonoBehaviour
     [SerializeField] private Button confirmButton;
 
     private Tugboat _tb;
-    private const string DEBUG_DEFAULT_ADDRESS = "26.39.26.158";
+    private const string DEBUG_DEFAULT_ADDRESS = "127.0.0.1";
 
     private LocalConnectionState _clientState = LocalConnectionState.Stopped;
     private LocalConnectionState _serverState = LocalConnectionState.Stopped;

@@ -24,6 +24,7 @@ public class BlackjackLogic : NetworkBehaviour
 
    private IBlackjackService _blackjackService;
    private IInventoryService _inventoryService;
+   private IHealthService _healthService;
 
    private Dictionary<string, CardClientData> OrginalCardToDummy = new Dictionary<string, CardClientData>();
 
@@ -41,10 +42,11 @@ public class BlackjackLogic : NetworkBehaviour
    
 
    [Inject]
-   private void ResolveDependencies(IBlackjackService blackjackService, IInventoryService inventoryService)
+   private void ResolveDependencies(IBlackjackService blackjackService, IInventoryService inventoryService, IHealthService healthService)
    {
       _blackjackService = blackjackService;
       _inventoryService = inventoryService;
+      _healthService = healthService;
    }
 
 
@@ -246,33 +248,33 @@ public class BlackjackLogic : NetworkBehaviour
    [ServerRpc(RequireOwnership = false)]
    private void CheckForRoundEnd()
    {
-      if (_firstPlayerFinishedTurn && _secondPlayerFinishedTurn)
+      if (!_firstPlayerFinishedTurn || !_secondPlayerFinishedTurn) return;
+      EndRoundObserversRpc();
+      var result = EvaluateRoundResult();
+      switch (result)
       {
-         EndRoundObserversRpc();
-         var result = EvaluateRoundResult();
-         switch (result)
-         {
-            case RoundResult.BothPlayersLost:
-               firstPlayerLoses++;
-               secondPlayerLoses++;
-               break;
-            case RoundResult.FirstPlayerLost:
-               firstPlayerLoses++;
-               break;
-            case RoundResult.SecondPlayerLost:
-               secondPlayerLoses++;
-               break;
-         }
-         SendConsequencesObserversRpc(result, _blackjackService.FirstPlayerScore, _blackjackService.SecondPlayerScore);
-         foreach (var card in _clientCardDataFirstPlayer) RemoveCardServerRpc(card, PlayerType.Player1);
-         foreach (var card in _clientCardDataSecondPlayer) RemoveCardServerRpc(card, PlayerType.Player2);
-         if (secondPlayerLoses >= 3 || firstPlayerLoses >= 3)
-            StartCoroutine(FinishGame());
-         else
-            StartCoroutine(StartNextRound());
+         case RoundResult.BothPlayersLost:
+            firstPlayerLoses++;
+            secondPlayerLoses++;
+            break;
+         case RoundResult.FirstPlayerLost:
+            firstPlayerLoses++;
+            break;
+         case RoundResult.SecondPlayerLost:
+            secondPlayerLoses++;
+            break;
       }
+      _healthService.ApplyDamage(result);
+      SendConsequencesObserversRpc(result, _blackjackService.FirstPlayerScore, _blackjackService.SecondPlayerScore);
+      foreach (var card in _clientCardDataFirstPlayer) RemoveCardServerRpc(card, PlayerType.Player1);
+      foreach (var card in _clientCardDataSecondPlayer) RemoveCardServerRpc(card, PlayerType.Player2);
+      if (secondPlayerLoses >= 3 || firstPlayerLoses >= 3)
+         StartCoroutine(FinishGame());
+      else
+         StartCoroutine(StartNextRound());
    }
-
+   
+   
    private IEnumerator FinishGame()
    {
       if (secondPlayerLoses >= 3 && firstPlayerLoses < 3) FirstPlayerWonObserverRpc();
@@ -357,10 +359,7 @@ public class BlackjackLogic : NetworkBehaviour
             for (int j = 0; j < _clientCardDataSecondPlayer.Count; j++)
             {
                if (clientCardData.CardID != _clientCardDataSecondPlayer[j].CardID)
-               {
                   continue;
-               }
-
                if (useDiscardEffect)
                   _blackjackService.OnCardPlayed(new CardPlayedEventArgs(clientCardData.CardID, playerType,
                      PlayType.Discard));

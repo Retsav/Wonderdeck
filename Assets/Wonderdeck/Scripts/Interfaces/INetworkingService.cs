@@ -6,4 +6,6 @@ using UnityEngine;
 public interface INetworkingService
 {
     public PlayerType GetPlayerType(NetworkConnection conn);
+    public GameObject GetMyPlayer();
+    public void SetMyPlayer(GameObject playerObject);
 }

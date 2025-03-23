@@ -10,5 +10,8 @@ public class ServiceInstaller : Installer<ServiceInstaller>
         Container.Bind<INetworkingService>().To<NetworkingService>().AsSingle();
         Container.Bind<IInventoryService>().To<InventoryService>().AsSingle();
         Container.Bind<IAudioService>().To<AudioService>().AsSingle();
+        Container.Bind<IConsequencesService>().To<ConsequencesService>().AsSingle();
+        Container.Bind<IHealthService>().To<HealthService>().AsSingle();
+        Container.Bind<IPostProcessingService>().To<PostProcessingService>().AsSingle();
     }
 }

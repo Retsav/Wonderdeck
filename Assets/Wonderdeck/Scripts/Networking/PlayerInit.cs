@@ -1,15 +1,21 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cinemachine;
 using FishNet.Connection;
 using FishNet.Object;
 using UnityEngine;
+using UnityEngine.Serialization;
+using Zenject;
 
 public class PlayerInit : NetworkBehaviour
 {
     [SerializeField] private Material firstPlayerMaterial;
     [SerializeField] private Material secondPlayerMaterial;
-    [SerializeField] private GameObject cameraObject;
+    
+    [FormerlySerializedAs("cameraObject")] [SerializeField] private GameObject cinemachineVirtualCameraObject;
+    [SerializeField] private GameObject cameraGameObject;
+    [SerializeField] private CinemachineBrain _cinemachineBrain;
 
 
     [SerializeField] private Animator animator;
@@ -32,6 +38,14 @@ public class PlayerInit : NetworkBehaviour
 
     [SerializeField] float sensitivity = 2f;
 
+    private INetworkingService _networkingService;
+
+    [Inject]
+    private void ResolveDependencies(INetworkingService networkingService)
+    {
+        _networkingService = networkingService;
+    }
+
 
     public override void OnStartClient()
     {
@@ -41,11 +55,14 @@ public class PlayerInit : NetworkBehaviour
         {
             pitch = 0f;
             yaw = 0f;
+            _networkingService.SetMyPlayer(gameObject);
         }
         else
         {
-            cameraObject.GetComponent<Camera>().enabled = false;
-            cameraObject.GetComponent<AudioListener>().enabled = false;
+            cinemachineVirtualCameraObject.GetComponent<CinemachineVirtualCamera>().enabled = false;
+            _cinemachineBrain.enabled = false;
+            cameraGameObject.GetComponent<AudioListener>().enabled = false;
+            cameraGameObject.GetComponent<Camera>().enabled = false;
         }
     }
 
@@ -66,12 +83,20 @@ public class PlayerInit : NetworkBehaviour
     {
         if (!IsOwner)
             return;
-        cameraObject.transform.localRotation = xQuat * yQuat;
+        cinemachineVirtualCameraObject.transform.localRotation = xQuat * yQuat;
     }
-    
+
+    private void OnDestroy()
+    {
+        _networkingService.SetMyPlayer(null);
+    }
+
     public override void OnOwnershipClient(NetworkConnection prevOwner)
     {
-        cameraObject.GetComponent<Camera>().enabled = IsOwner;
-        cameraObject.GetComponent<AudioListener>().enabled = IsOwner;
+        cinemachineVirtualCameraObject.GetComponent<CinemachineVirtualCamera>().enabled = IsOwner;
+        _cinemachineBrain.enabled = IsOwner;
+        cameraGameObject.GetComponent<AudioListener>().enabled = IsOwner;
+        cameraGameObject.GetComponent<Camera>().enabled = IsOwner;
+        _networkingService.SetMyPlayer(gameObject);
     }
 }
