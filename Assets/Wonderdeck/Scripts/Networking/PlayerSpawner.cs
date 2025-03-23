@@ -40,11 +40,7 @@ public class PlayerSpawner : NetworkBehaviour
         _handledConnections.Add(obj.Connection);
         _spawnIndex++;
     }
-
-    private void OnClientLoaded(NetworkConnection conn, bool asServer)
-    {
-
-    }
+    
     
     private void SpawnPlayer(NetworkConnection conn, Transform objectTransform)
     {

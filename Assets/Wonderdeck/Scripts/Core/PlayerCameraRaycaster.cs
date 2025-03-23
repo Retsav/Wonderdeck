@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using Cinemachine;
 using FishNet.Object;
 using UnityEngine;
 
 public class PlayerCameraRaycaster : NetworkBehaviour
 {
     [SerializeField] private float rayDistance;
-    [SerializeField] private Camera camera;
+    [SerializeField] private CinemachineVirtualCamera camera;
     
 
     private ICameraInteractable _lastInteractable;
@@ -20,7 +21,8 @@ public class PlayerCameraRaycaster : NetworkBehaviour
 
     private void Update()
     {
-        Ray ray = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+        var cameraTransform = camera.transform;
+        Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
         RaycastHit hit;
 
         if (Physics.Raycast(ray, out hit, rayDistance))

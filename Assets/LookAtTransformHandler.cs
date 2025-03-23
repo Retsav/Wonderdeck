@@ -1,18 +1,19 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cinemachine;
 using UnityEngine;
 
 public class LookAtTransformHandler : MonoBehaviour
 {
     [SerializeField] private GameObject cameraGameObject;
 
-    private Camera _camera;
+    private CinemachineVirtualCamera _camera;
 
 
     private void Start()
     {
-        _camera = cameraGameObject.GetComponent<Camera>();
+        _camera = cameraGameObject.GetComponent<CinemachineVirtualCamera>();
     }
 
 
