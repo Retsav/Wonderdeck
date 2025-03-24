@@ -60,7 +60,6 @@ public class InventoryLogic : NetworkBehaviour
         }
         else
         {
-            string itemId = "";
             for (int i = 0; i < _itemConfig.itemCards.Count; i++)
             {
                 if (e.ItemName != _itemConfig.itemCards[i].name) continue;
