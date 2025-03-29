@@ -14,10 +14,10 @@ public class LobbyPopupUI : NetworkBehaviour
 {
     [SerializeField] private TextMeshProUGUI firstPlayerNicknameLabel;
     [SerializeField] private TextMeshProUGUI secondPlayerNicknameLabel;
-    [SerializeField] private Button startGameButton;
-    [SerializeField] private Button exitLobbyButton;
+    [SerializeField] private WonderdeckButton startGameButton;
+    [SerializeField] private WonderdeckButton exitLobbyButton;
 
-    // Host jest zawsze połączony, dlatego zaczynamy od 1.
+    //Host has to be always connected so it starts at one.
     private int _connectedPlayers = 1;
 
     private void ResetSecondPlayerNickname() => secondPlayerNicknameLabel.text = "";
@@ -63,7 +63,7 @@ public class LobbyPopupUI : NetworkBehaviour
             firstPlayerNicknameLabel.text = nickname;
             startGameButton.onClick.RemoveAllListeners();
             startGameButton.onClick.AddListener(StartGame);
-            startGameButton.interactable = (_connectedPlayers >= 2);
+            startGameButton.SetInteractable(_connectedPlayers >= 2);
             NetworkManager.ServerManager.OnAuthenticationResult += OnPlayerAuthenticated;
             NetworkManager.ServerManager.OnRemoteConnectionState += OnPlayerDisconnected;
             RequestServerNicknameServerRpc();
@@ -92,13 +92,13 @@ public class LobbyPopupUI : NetworkBehaviour
     {
         if (!result) return;
         _connectedPlayers++;
-        startGameButton.interactable = (_connectedPlayers >= 2);
+        startGameButton.SetInteractable(_connectedPlayers >= 2);
         StartCoroutine(RequestNicknameDelay());
     }
 
     private IEnumerator RequestNicknameDelay()
     {
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.3f);
         RequestNicknameFromPlayerObserverRpc();
     }
     
@@ -108,13 +108,19 @@ public class LobbyPopupUI : NetworkBehaviour
             return;
         _connectedPlayers--;
         ResetSecondPlayerNickname();
-        startGameButton.interactable = (_connectedPlayers >= 2);
+        startGameButton.SetInteractable(_connectedPlayers >= 2);
     }
 
 
     private void OnClientConnectionState(ClientConnectionStateArgs args)
     {
-        if (args.ConnectionState == LocalConnectionState.Stopped) StopConnection();
+        if (args.ConnectionState == LocalConnectionState.Stopped)
+        {
+            InstanceFinder.NetworkManager.ClientManager.StopConnection();
+            NetworkManager.ClientManager.OnClientConnectionState -= OnClientConnectionState;
+            Debug.LogWarning($"Lost connection to the host. Returning to the Main Menu");
+            UnityEngine.SceneManagement.SceneManager.LoadScene("Menu");
+        }
     }
 
     private void StartGame()

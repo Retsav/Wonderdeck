@@ -94,6 +94,7 @@ public class MenuNetworking : MonoBehaviour
         if (InstanceFinder.NetworkManager == null) return;
         InstanceFinder.NetworkManager.ServerManager.OnServerConnectionState -= ServerManager_OnServerConnectionState;
         InstanceFinder.NetworkManager.ClientManager.OnClientConnectionState -= ClientManager_OnClientConnectionState;
+        InstanceFinder.ClientManager.OnClientConnectionState -= OnServerStartedForLobby;
     }
 
     private void ServerManager_OnServerConnectionState(ServerConnectionStateArgs obj) => _serverState = obj.ConnectionState;
@@ -132,6 +133,7 @@ public class MenuNetworking : MonoBehaviour
 
     private void OnServerStartedForLobby(ClientConnectionStateArgs args)
     {
+        
         StartCoroutine(TryToSwitchToLobby(args));
     }
 
