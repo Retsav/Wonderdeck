@@ -107,13 +107,9 @@ public class MenuNetworking : MonoBehaviour
     {
         _tb.SetClientAddress(addressInputField.text);
         if (_serverState == LocalConnectionState.Stopped)
-        {
             InstanceFinder.NetworkManager.ServerManager.StartConnection();
-        }
         else
-        {
             InstanceFinder.NetworkManager.ServerManager.StopConnection(true);
-        }
     }
 
     
@@ -131,11 +127,7 @@ public class MenuNetworking : MonoBehaviour
             
     }
 
-    private void OnServerStartedForLobby(ClientConnectionStateArgs args)
-    {
-        
-        StartCoroutine(TryToSwitchToLobby(args));
-    }
+    private void OnServerStartedForLobby(ClientConnectionStateArgs args) => StartCoroutine(TryToSwitchToLobby(args));
 
     private IEnumerator TryToSwitchToLobby(ClientConnectionStateArgs args)
     {
