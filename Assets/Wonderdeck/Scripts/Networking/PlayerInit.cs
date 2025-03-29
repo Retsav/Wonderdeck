@@ -20,19 +20,13 @@ public class PlayerInit : NetworkBehaviour
 
     [SerializeField] private Animator animator;
     
-    [SerializeField] private float minPitch = -60f;
-    [SerializeField] private float maxPitch = 60f;
 
-    private float pitch = 0f;
-    private float yaw = 0f;    
-    
+
     Vector2 rotation = Vector2.zero;
     const string xAxis = "Mouse X"; 
     const string yAxis = "Mouse Y";
     
     
-    [SerializeField] private float mouseSensitivity = 100f;
-    [SerializeField] private Transform lookAtTransform;
     [Range(0f, 90f)][SerializeField] float yRotationLimit = 88f;
     
 
@@ -52,11 +46,7 @@ public class PlayerInit : NetworkBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         if (IsOwner)
-        {
-            pitch = 0f;
-            yaw = 0f;
             _networkingService.SetMyPlayer(gameObject);
-        }
         else
         {
             cinemachineVirtualCameraObject.GetComponent<CinemachineVirtualCamera>().enabled = false;

@@ -10,15 +10,15 @@ using FishNet.Transporting;
 using FishNet.Transporting.Tugboat;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class MenuNetworking : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI serverStateLabel;
+    
     [SerializeField] private Button startHostButton;
     [SerializeField] private Button startClientButton;
-
-    private int _connectedPlayers;
     
     
     [Header("Side Popup Content")] 
@@ -46,7 +46,14 @@ public class MenuNetworking : MonoBehaviour
         HideSideBar();
         InstanceFinder.NetworkManager.ServerManager.OnServerConnectionState += ServerManager_OnServerConnectionState;
         InstanceFinder.NetworkManager.ClientManager.OnClientConnectionState += ClientManager_OnClientConnectionState;
+
     }
+
+    private void OnDisable()
+    {
+        Debug.Log("Debug");
+    }
+
 
     private void HideSideBar(bool animated = false)
     {
@@ -68,33 +75,33 @@ public class MenuNetworking : MonoBehaviour
             sideBarCanvasGroup.alpha = 1f;
     }
 
-    private void InitClientSideBar()
+    private void InitClientSideBar() => InitSideBar("JOIN", OnStartClient);
+    private void InitHostSideBar() => InitSideBar("HOST", OnStartHost);
+
+
+    private void InitSideBar(string titleLabelText, UnityAction call)
     {
-        sidebarTitleLabel.text = "JOIN";
+        sidebarTitleLabel.text = titleLabelText;
         confirmButton.onClick.RemoveAllListeners();
-        confirmButton.onClick.AddListener(OnStartClient);
+        confirmButton.onClick.AddListener(call);
         if(sideBarCanvasGroup.alpha < .9f)
             ShowSideBar(true);
     }
     
-    private void InitHostSideBar()
-    {
-        sidebarTitleLabel.text = "HOST";
-        confirmButton.onClick.RemoveAllListeners();
-        confirmButton.onClick.AddListener(OnStartHost);
-        if(sideBarCanvasGroup.alpha < .9f)
-            ShowSideBar(true);
-    }
 
     private void OnDestroy()
     {
         if (InstanceFinder.NetworkManager == null) return;
         InstanceFinder.NetworkManager.ServerManager.OnServerConnectionState -= ServerManager_OnServerConnectionState;
         InstanceFinder.NetworkManager.ClientManager.OnClientConnectionState -= ClientManager_OnClientConnectionState;
+        InstanceFinder.ClientManager.OnClientConnectionState -= OnServerStartedForLobby;
     }
 
     private void ServerManager_OnServerConnectionState(ServerConnectionStateArgs obj) => _serverState = obj.ConnectionState;
-    private void ClientManager_OnClientConnectionState(ClientConnectionStateArgs obj) => _clientState = obj.ConnectionState;
+    private void ClientManager_OnClientConnectionState(ClientConnectionStateArgs obj)
+    {
+        _clientState = obj.ConnectionState;
+    }
 
     private void OnStartHost()
     {
@@ -102,58 +109,47 @@ public class MenuNetworking : MonoBehaviour
         if (_serverState == LocalConnectionState.Stopped)
         {
             InstanceFinder.NetworkManager.ServerManager.StartConnection();
-            InstanceFinder.NetworkManager.ServerManager.OnAuthenticationResult += OnAuthenticationResult;
-            InstanceFinder.NetworkManager.ServerManager.OnRemoteConnectionState += OnRemoteConnectionState;
         }
-
         else
         {
             InstanceFinder.NetworkManager.ServerManager.StopConnection(true);
-            InstanceFinder.NetworkManager.ServerManager.OnAuthenticationResult -= OnAuthenticationResult;
-            InstanceFinder.NetworkManager.ServerManager.OnRemoteConnectionState -= OnRemoteConnectionState;
         }
-            
     }
+
     
-
-    private void OnRemoteConnectionState(NetworkConnection conn, RemoteConnectionStateArgs state)
-    {
-        if (state.ConnectionState != RemoteConnectionState.Stopped)
-            return;
-        _connectedPlayers--;
-    }
-
-    private void OnAuthenticationResult(NetworkConnection conn, bool res)
-    {
-        if (!res) return;
-        _connectedPlayers++;
-        CheckForSceneTransition();
-    }
-
-    private void CheckForSceneTransition()
-    {
-        if (_connectedPlayers < 2)
-            return;
-        InstanceFinder.NetworkManager.ServerManager.OnServerConnectionState -= ServerManager_OnServerConnectionState;
-        InstanceFinder.NetworkManager.ClientManager.OnClientConnectionState -= ClientManager_OnClientConnectionState;
-        InstanceFinder.NetworkManager.ServerManager.OnRemoteConnectionState -= OnRemoteConnectionState;
-        InstanceFinder.NetworkManager.ServerManager.OnAuthenticationResult -= OnAuthenticationResult;
-        startHostButton.onClick.RemoveAllListeners();
-        startClientButton.onClick.RemoveAllListeners();
-        _connectedPlayers = 0;
-        SceneLoadData sld = new SceneLoadData(new string[] {"DebugScene 1", "DebugUISCene"});
-        sld.ReplaceScenes = ReplaceOption.All;
-        sld.PreferredActiveScene = new PreferredScene(sld.SceneLookupDatas[0]);
-        InstanceFinder.NetworkManager.SceneManager.LoadGlobalScenes(sld);
-    }
-
     private void OnStartClient()
     {
         _tb.SetClientAddress(addressInputField.text);
         if (_clientState != LocalConnectionState.Stopped)
             InstanceFinder.NetworkManager.ClientManager.StopConnection();
         else
+        {
             InstanceFinder.NetworkManager.ClientManager.StartConnection();
+            InstanceFinder.ClientManager.OnClientConnectionState += OnServerStartedForLobby;
+        }
             
+            
+    }
+
+    private void OnServerStartedForLobby(ClientConnectionStateArgs args)
+    {
+        
+        StartCoroutine(TryToSwitchToLobby(args));
+    }
+
+    private IEnumerator TryToSwitchToLobby(ClientConnectionStateArgs args)
+    {
+        yield return new WaitForSeconds(2f);
+        if (!InstanceFinder.NetworkManager.ClientManager.Connection.IsHost)
+        {
+            InstanceFinder.ClientManager.OnClientConnectionState -= OnServerStartedForLobby;
+            yield break;
+        }   
+        if (args.ConnectionState != LocalConnectionState.Started) yield break;
+        InstanceFinder.ClientManager.OnClientConnectionState -= OnServerStartedForLobby;
+        SceneLoadData sld = new SceneLoadData(new string[] { "Lobby" });
+        sld.ReplaceScenes = ReplaceOption.All;
+        sld.PreferredActiveScene = new PreferredScene(sld.SceneLookupDatas[0]);
+        InstanceFinder.NetworkManager.SceneManager.LoadGlobalScenes(sld);
     }
 }
