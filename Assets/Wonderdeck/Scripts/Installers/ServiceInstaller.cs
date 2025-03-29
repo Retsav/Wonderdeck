@@ -13,5 +13,6 @@ public class ServiceInstaller : Installer<ServiceInstaller>
         Container.Bind<IConsequencesService>().To<ConsequencesService>().AsSingle();
         Container.Bind<IHealthService>().To<HealthService>().AsSingle();
         Container.Bind<IPostProcessingService>().To<PostProcessingService>().AsSingle();
+        Container.Bind<IEnvironmentService>().To<EnvironmentService>().AsSingle();
     }
 }
