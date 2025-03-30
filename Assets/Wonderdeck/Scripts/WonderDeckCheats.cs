@@ -21,8 +21,8 @@ public class WonderDeckCheats : NetworkBehaviour
     {
         if (Input.GetKeyDown(KeyCode.F1))
         {
-            CheatItemDeal(NetworkManager.ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2, "RemoveLastCard", 5);
-            CheatItemDeal(NetworkManager.ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2, "SwapCards", 5);
+            CheatItemDeal(NetworkManager.ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2, "IncreaseDamage30", 5);
+            CheatItemDeal(NetworkManager.ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2, "IncreaseDamage30", 5);
         }
 
         if (Input.GetKeyDown(KeyCode.F2))

@@ -47,6 +47,13 @@ public class BlackjackCardResolver : NetworkBehaviour
             default:
                 throw new ArgumentOutOfRangeException();
         }
+        SendCardsResolvedEventObserverRpc();
+    }
+
+    [ObserversRpc]
+    private void SendCardsResolvedEventObserverRpc()
+    {
+        _blackjackService.OnCardEffectsResolved();
     }
 
     private void ResolveEffects(List<CardEffectSO> effects, PlayerType playerType)

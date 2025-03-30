@@ -29,6 +29,9 @@ public class BlackjackService : IBlackjackService
 
     public event EventHandler<CardPlayedEventArgs> CardPlayed;
     public void OnCardPlayed(CardPlayedEventArgs args) => CardPlayed?.Invoke(this, args);
+    public event EventHandler CardEffectsResolved;
+    public void OnCardEffectsResolved() => CardEffectsResolved?.Invoke(this, EventArgs.Empty);
+
     public event EventHandler<RoundConsequencesEvaluatedEventArgs> RoundConsequencesEvaluated;
     public void OnRoundConsequencesEvaluated(RoundConsequencesEvaluatedEventArgs args) => RoundConsequencesEvaluated?.Invoke(this, args);
 

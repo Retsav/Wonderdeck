@@ -24,6 +24,24 @@ public class BlackjackHealthTracker : NetworkBehaviour
     {
         if (!NetworkManager.ClientManager.Connection.IsHost) return;
         _healthService.ApplyDamageViaResultEvent += OnApplyDamageViaResult;
+        _healthService.ChangeDamageModifierEvent += OnDamageModifierChanged;
+    }
+
+    private void OnDamageModifierChanged(object sender, ChangeDamageModifierEventArgs e)
+    {
+        if (e.PlayerType == PlayerType.Player1)
+            _healthService.SecondPlayerDamageModifier += e.DamageModifier;
+        else
+            _healthService.FirstPlayerDamageModifier += e.DamageModifier;
+        UpdateModifierDataObserverRpc(_healthService.FirstPlayerDamageModifier,
+            _healthService.SecondPlayerDamageModifier);
+    }
+
+    [ObserversRpc(ExcludeServer = true)]
+    private void UpdateModifierDataObserverRpc(int firstPlayerDamageModifier, int secondPlayerDamageModifier)
+    {
+        _healthService.FirstPlayerDamageModifier = firstPlayerDamageModifier;
+        _healthService.SecondPlayerDamageModifier = secondPlayerDamageModifier;
     }
 
     private void OnApplyDamageViaResult(object sender, RoundResult e)
@@ -63,6 +81,14 @@ public class BlackjackHealthTracker : NetworkBehaviour
                 break;
         }
 
+        firstPlayerDamage += _healthService.FirstPlayerDamageModifier;
+        secondPlayerDamage += _healthService.SecondPlayerDamageModifier;
+        DealDamageObserverRpc(firstPlayerDamage, secondPlayerDamage);
+    }
+
+    [ObserversRpc]
+    private void DealDamageObserverRpc(int firstPlayerDamage, int secondPlayerDamage)
+    {
         _healthService.FirstPlayerHealth -= firstPlayerDamage;
         _healthService.SecondPlayerHealth -= secondPlayerDamage;
         _healthService.OnDamageApplied(firstPlayerDamage, secondPlayerDamage);
@@ -71,5 +97,6 @@ public class BlackjackHealthTracker : NetworkBehaviour
     private void OnDestroy()
     {
         _healthService.ApplyDamageViaResultEvent -= OnApplyDamageViaResult;
+        _healthService.ChangeDamageModifierEvent -= OnDamageModifierChanged;
     }
 }

@@ -1,32 +1,33 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using FishNet.Connection;
 using FishNet.Object;
 using TMPro;
 using UnityEngine;
 using Zenject;
 
-public class BlackjackScoring : NetworkBehaviour
+public class DamageCalculatorUI : NetworkBehaviour
 {
-    [SerializeField] private GameObject firstPlayerScoreObject;
-    [SerializeField] private GameObject secondPlayerScoreObject;
-    
-    [SerializeField] private TextMeshProUGUI playerOneScoreLabel;
-    [SerializeField] private TextMeshProUGUI playerSecondScoreLabel;
+    [SerializeField] private GameObject firstPlayerDamageCalculatorGameObject;
+    [SerializeField] private GameObject secondPlayerDamageCalculatorGameObject;
+    private TextMeshProUGUI _firstPlayerDamageLabel;
+    private TextMeshProUGUI _secondPlayerDamageLabel;
     
     
     private IBlackjackService _blackjackService;
-    private INetworkingService _networkingService;
+    private IHealthService _healthService;
+    private Color _orginalTextColor;
 
     private PlayerType _playerType;
     private bool _hasHiddenCard;
 
     [Inject]
-    private void ResolveDependencies(IBlackjackService blackjackService, INetworkingService networkingService)
+    private void ResolveDependencies(IBlackjackService blackjackService, IHealthService healthService)
     {
         _blackjackService = blackjackService;
-        _networkingService = networkingService;
+        _healthService = healthService;
     }
     
     private void OnDestroy() => Unsubscribe();
@@ -40,21 +41,27 @@ public class BlackjackScoring : NetworkBehaviour
         _blackjackService.ScoreThresholdChanged -= ScoreThresholdChanged;
         _blackjackService.CardPlayed -= OnCardPlayed;
         _blackjackService.CardsUpdated -= OnCardsUpdated;
+        _blackjackService.CardEffectsResolved -= OnCardsResolved;
     }
 
     public override void OnStartClient()
     {
-        _playerType = NetworkManager.ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2;
+        _playerType = ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2;
+        _firstPlayerDamageLabel = firstPlayerDamageCalculatorGameObject.GetComponentInChildren<TextMeshProUGUI>();
+        _secondPlayerDamageLabel = secondPlayerDamageCalculatorGameObject.GetComponentInChildren<TextMeshProUGUI>();
+        _orginalTextColor = _firstPlayerDamageLabel.color;
         _blackjackService.CardVisualRequested += OnVisualRequested;
         _blackjackService.RoundEnd += OnRoundEnd;
         _blackjackService.ScoreThresholdChanged += ScoreThresholdChanged;
         _blackjackService.CardsUpdated += OnCardsUpdated;
         _blackjackService.CardPlayed += OnCardPlayed;
-        if (_networkingService.GetPlayerType(NetworkManager.ClientManager.Connection) != PlayerType.Player2) return;
-        firstPlayerScoreObject.transform.Rotate(new Vector3(0f, 180f, 0f));
-        secondPlayerScoreObject.transform.Rotate(new Vector3(0f, 180f, 0f));
-
+        _blackjackService.CardEffectsResolved += OnCardsResolved;
+        if (_playerType != PlayerType.Player2) return;
+        firstPlayerDamageCalculatorGameObject.transform.Rotate(new Vector3(0f, 180f, 0f));
+        secondPlayerDamageCalculatorGameObject.transform.Rotate(new Vector3(0f, 180f, 0f));
     }
+
+    private void OnCardsResolved(object sender, EventArgs e) => RefreshScoresFromServer();
 
     private void OnCardsUpdated(object sender, CardsDataUpdatedEventArgs e) => RefreshScoresFromServer();
 
@@ -67,11 +74,9 @@ public class BlackjackScoring : NetworkBehaviour
 
     private void OnRoundEnd(object sender, EventArgs e)
     {
-        playerOneScoreLabel.text = $"{0}/21";
-        playerSecondScoreLabel.text = $"{0}/21";
+        _firstPlayerDamageLabel.text = $"0";
+        _secondPlayerDamageLabel.text = $"0";
     }
-
-    
 
     private void RefreshScoresFromServer()
     {
@@ -99,29 +104,29 @@ public class BlackjackScoring : NetworkBehaviour
         UpdateScoringObserverRpc(playerType, conn, score, _blackjackService.CurrentScoreThreshold, _hasHiddenCard);
     }
     
-
+    
     [ObserversRpc]
     private void UpdateScoringObserverRpc(PlayerType player,  NetworkConnection conn, float score, int threshold, bool hasHiddenCard)
     {
         if (conn != NetworkManager.ClientManager.Connection)
             return;
-        string result = "";
-        switch (player)
+        var damage = (int)Math.Abs(score - threshold);
+        var damageModifier = player == PlayerType.Player1 
+            ? _healthService.FirstPlayerDamageModifier 
+            : _healthService.SecondPlayerDamageModifier;
+        var label = player == PlayerType.Player1 
+            ? _firstPlayerDamageLabel 
+            : _secondPlayerDamageLabel;
+        if (damageModifier > 0)
         {
-            case PlayerType.Player1:
-                if (hasHiddenCard)
-                    result = score <= 0 ? $"?/{threshold}" : $"{score}+?/{threshold}";
-                else
-                    result = $"{score}/{threshold}";
-                playerOneScoreLabel.text = result;
-                break;
-            case PlayerType.Player2:
-                if (hasHiddenCard)
-                    result = score <= 0 ? $"?/{threshold}" : $"{score}+?/{threshold}";
-                else
-                    result = $"{score}/{threshold}";
-                playerSecondScoreLabel.text = result;
-                break;
+            damage += damageModifier;
+            label.DOColor(Color.red, 0.3f);
         }
+        else
+            label.DOColor(_orginalTextColor, 0.3f);
+        var damageText = damage.ToString();
+        if (hasHiddenCard)
+            damageText += "+?";
+        label.text = damageText;
     }
 }
