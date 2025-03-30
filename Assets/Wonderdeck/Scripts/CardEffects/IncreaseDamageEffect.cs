@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class IncreaseDamageEffect : ICardEffect
+public class IncreaseDamageEffect : BaseCardEffect, ICardEffect
 {
     private readonly IncreaseDamageEffectSO _data;
     private readonly IHealthService _healthService;
@@ -12,5 +12,5 @@ public class IncreaseDamageEffect : ICardEffect
         _data = data;
         _healthService = healthService;
     }
-    public void OnExecute(PlayerType playerType) => _healthService.OnChangedDamageModifier(_data.damageToIncrease, playerType);
+    public void OnExecute(PlayerType playerType, string cardID) => _healthService.OnChangedDamageModifier(_data.damageToIncrease, _data.target, playerType);
 }

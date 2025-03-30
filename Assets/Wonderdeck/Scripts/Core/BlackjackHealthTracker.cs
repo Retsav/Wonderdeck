@@ -30,9 +30,30 @@ public class BlackjackHealthTracker : NetworkBehaviour
     private void OnDamageModifierChanged(object sender, ChangeDamageModifierEventArgs e)
     {
         if (e.PlayerType == PlayerType.Player1)
-            _healthService.SecondPlayerDamageModifier += e.DamageModifier;
+        {
+            switch (e.Target)
+            {
+                case PlayerFilter.Yourself:
+                    _healthService.FirstPlayerDamageModifier += e.DamageModifier;
+                    break;
+                case PlayerFilter.Opponent:
+                    _healthService.SecondPlayerDamageModifier += e.DamageModifier;
+                    break;
+            }
+        }
         else
-            _healthService.FirstPlayerDamageModifier += e.DamageModifier;
+        {
+            switch (e.Target)
+            {
+                case PlayerFilter.Yourself:
+                    _healthService.SecondPlayerDamageModifier += e.DamageModifier;
+                    break;
+                case PlayerFilter.Opponent:
+                    _healthService.FirstPlayerDamageModifier += e.DamageModifier;
+                    break;
+            }
+        }
+            
         UpdateModifierDataObserverRpc(_healthService.FirstPlayerDamageModifier,
             _healthService.SecondPlayerDamageModifier);
     }
@@ -83,6 +104,9 @@ public class BlackjackHealthTracker : NetworkBehaviour
 
         firstPlayerDamage += _healthService.FirstPlayerDamageModifier;
         secondPlayerDamage += _healthService.SecondPlayerDamageModifier;
+        secondPlayerDamage = Mathf.Max(secondPlayerDamage, 0);
+        firstPlayerDamage = Mathf.Max(firstPlayerDamage, 0);
+        
         DealDamageObserverRpc(firstPlayerDamage, secondPlayerDamage);
     }
 

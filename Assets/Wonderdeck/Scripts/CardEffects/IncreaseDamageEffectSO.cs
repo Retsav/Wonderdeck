@@ -8,6 +8,7 @@ using Zenject;
 public class IncreaseDamageEffectSO : CardEffectSO
 {
     public int damageToIncrease;
+    public PlayerFilter target;
     
     public override ICardEffect CreateEffect(DiContainer container)
     {

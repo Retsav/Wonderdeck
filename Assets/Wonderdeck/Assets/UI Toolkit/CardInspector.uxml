@@ -8,6 +8,7 @@
             <ui:VisualElement name="CardSpriteSelectionContainer" style="flex-grow: 1; max-width: 100%; max-height: 100%; width: 100%; height: 100%; min-width: 100px; min-height: 100px; align-items: flex-start; padding-top: 28px;">
                 <uie:ObjectField label="Card Face" allow-scene-objects="false" name="CardFaceObjectField" style="width: 199px; max-height: 30px;" />
                 <uie:ObjectField label="Card Back" allow-scene-objects="false" name="CardBackObjectField" style="width: 199px; max-height: 30px;" />
+                <ui:Toggle label="Is Persistent" name="IsPersistent" />
             </ui:VisualElement>
             <ui:VisualElement name="CardFaceSprite" style="flex-grow: 1; width: 100px; height: 150px; max-width: 100px; max-height: 150px; min-width: 100px; min-height: 150px; background-image: url(&quot;project://database/Assets/Wonderdeck/Assets/Resources/FaceCard.jpg?fileID=2800000&amp;guid=60f513f2c00304a4bba18796b7052674&amp;type=3#FaceCard&quot;);" />
             <ui:VisualElement name="CardBackSprite" style="flex-grow: 1; width: 100px; height: 150px; max-width: 100px; max-height: 150px; min-width: 100px; min-height: 150px; margin-left: 10px; background-image: url(&quot;project://database/Assets/Wonderdeck/Assets/Resources/BackCard.png?fileID=2800000&amp;guid=b5c06a18d36928b49b7b1843d2d9750d&amp;type=3#BackCard&quot;);" />

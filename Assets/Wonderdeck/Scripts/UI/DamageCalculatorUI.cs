@@ -121,12 +121,17 @@ public class DamageCalculatorUI : NetworkBehaviour
         {
             damage += damageModifier;
             label.DOColor(Color.red, 0.3f);
+        } else if (damageModifier < 0)
+        {
+            damage += damageModifier;
+            damage = Math.Max(damage, 0);
+            label.DOColor(Color.green, 0.3f);
         }
         else
             label.DOColor(_orginalTextColor, 0.3f);
         var damageText = damage.ToString();
         if (hasHiddenCard)
-            damageText += "+?";
+            damageText += "/?";
         label.text = damageText;
     }
 }

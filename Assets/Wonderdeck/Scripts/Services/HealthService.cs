@@ -15,7 +15,7 @@ public class HealthService : IHealthService
     public void ApplyDamage(RoundResult result) => ApplyDamageViaResultEvent?.Invoke(this, result);
     public void ApplyDamage(int damage, PlayerType playerType) => ApplyDamageViaNumberEvent?.Invoke(this, new ApplyDamageEventArgs(playerType, damage));
     public void OnDamageApplied(int damageP1, int damageP2) => DamageAppliedEvent?.Invoke(this, new DamageAppliedEventArgs(damageP1, damageP2));
-    public void OnChangedDamageModifier(int damageModifier, PlayerType playerType) => ChangeDamageModifierEvent?.Invoke(this, new ChangeDamageModifierEventArgs(playerType, damageModifier));
+    public void OnChangedDamageModifier(int damageModifier, PlayerFilter target, PlayerType playerType) => ChangeDamageModifierEvent?.Invoke(this, new ChangeDamageModifierEventArgs(playerType, target, damageModifier));
 
     public event EventHandler<DamageAppliedEventArgs> DamageAppliedEvent;
     public event EventHandler<RoundResult> ApplyDamageViaResultEvent;

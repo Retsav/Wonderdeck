@@ -15,6 +15,7 @@ MonoBehaviour:
   consequenceDatas:
   - consequenceID: f273ad3e-a3a6-4434-a5d2-3222752ae58b
     healthPercentage: 90
+    consequenceTier: 1
     consequence:
       rid: 8973552531405537280
   references:

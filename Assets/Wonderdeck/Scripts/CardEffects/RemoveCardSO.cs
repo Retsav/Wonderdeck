@@ -7,13 +7,7 @@ using Zenject;
 [CreateAssetMenu(fileName = "New RemoveCard", menuName = "Wonderdeck/Card Effects/[CARD EFFECT] Remove Card")]
 public class RemoveCardSO : CardEffectSO
 {
-    public RemoveCardPlayerFilter target;
+    public PlayerFilter target;
     
     public override ICardEffect CreateEffect(DiContainer container) => container.Instantiate<RemoveCard>(new object[] { this });
-    
-    public enum RemoveCardPlayerFilter
-    {
-        Yourself,
-        Opponent
-    }
 }

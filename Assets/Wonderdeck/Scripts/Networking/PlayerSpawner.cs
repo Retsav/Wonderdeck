@@ -8,6 +8,7 @@ using FishNet.Managing.Scened;
 using FishNet.Object;
 using FishNet.Transporting;
 using UnityEngine;
+using Zenject;
 
 public class PlayerSpawner : NetworkBehaviour
 {
@@ -18,6 +19,14 @@ public class PlayerSpawner : NetworkBehaviour
 
     private HashSet<NetworkConnection> _handledConnections = new HashSet<NetworkConnection>();
 
+    private INetworkingService _networkingService;
+
+    [Inject]
+    private void ResolveDependencies(INetworkingService networkingService)
+    {
+        _networkingService = networkingService;
+    }
+
     private void Start()
     {
         _networkManager = InstanceFinder.NetworkManager;
@@ -27,6 +36,28 @@ public class PlayerSpawner : NetworkBehaviour
             return;
         }
         _networkManager.SceneManager.OnClientPresenceChangeEnd += OnClientLoaded;
+    }
+
+    public override void OnStartClient()
+    {
+        var player = NetworkManager.ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2;
+        var nickname = PlayerPrefs.GetString("Nickname");
+        _networkingService.RegisterNickname(player, nickname);
+        SendNicknameServerRpc(player, nickname);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SendNicknameServerRpc(PlayerType playerType, string nickname)
+    {
+        _networkingService.RegisterNickname(playerType, nickname);
+        SendNicknamesObserversRpc(_networkingService.FirstPlayerNickname, _networkingService.SecondPlayerNickname);
+    }
+
+    [ObserversRpc]
+    private void SendNicknamesObserversRpc(string firstPlayerNickname, string secondPlayerNickname)
+    {
+        _networkingService.FirstPlayerNickname = firstPlayerNickname;
+        _networkingService.SecondPlayerNickname = secondPlayerNickname;
     }
 
     private void OnClientLoaded(ClientPresenceChangeEventArgs obj)

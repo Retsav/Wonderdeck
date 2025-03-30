@@ -5,15 +5,10 @@ using Zenject;
 
 
 [CreateAssetMenu(fileName = "New AddValueEffect", menuName = "Wonderdeck/Card Effects/[CARD EFFECT] Debug Effect")]
-public class DebugEffect : CardEffectSO, ICardEffect
+public class DebugEffect : BaseCardEffect, ICardEffect
 {
-    public void OnExecute(PlayerType playerType)
+    public void OnExecute(PlayerType playerType, string cardID)
     {
         Debug.Log("Execute");
-    }
-
-    public override ICardEffect CreateEffect(DiContainer container)
-    {
-        throw new System.NotImplementedException();
     }
 }

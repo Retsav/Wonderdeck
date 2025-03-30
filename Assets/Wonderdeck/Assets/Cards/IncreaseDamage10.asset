@@ -15,10 +15,12 @@ MonoBehaviour:
   CardId: a2c37598-1e3d-4b66-a484-6b17c9bb5570
   CardFace: {fileID: 917559892, guid: 696ba61f1423261459135a1b8ec15d91, type: 3}
   CardBack: {fileID: 21300000, guid: b5c06a18d36928b49b7b1843d2d9750d, type: 3}
+  ItemIsPersistent: 1
   DrawCardEffects: []
   PlayCardEffects:
   - {fileID: 11400000, guid: b4510f3e9b6faf146a235ba2aae52fd5, type: 2}
-  DiscardCardEffects: []
+  DiscardCardEffects:
+  - {fileID: 11400000, guid: 43c1004a734c3e34886fd3420681a1c1, type: 2}
   description: Increases the damage the oponent will take if he loses this round.
   cardFacePath: ITEM_Damage|SmallDamage
   cardBackPath: BackCard

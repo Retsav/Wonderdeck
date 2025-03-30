@@ -32,7 +32,8 @@ public class CardSOEditor : Editor
     private DropdownField _cardPlayDropdownField;
     private DropdownField _cardDiscardDropdownField;
     private Type[] _effectTypes;
-    
+    private Toggle _toggleIsPersistent;
+
     private const string ResourcesFolderPath = "Assets/Wonderdeck/Assets/Resources/";
     public override VisualElement CreateInspectorGUI()
     {
@@ -52,7 +53,8 @@ public class CardSOEditor : Editor
               AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Wonderdeck/Assets/UI Toolkit/CardInspector.uss");
         _root.styleSheets.Add(styleSheet);
         _root.Bind(serializedObject);
-        //_cardTarget.CardId = Guid.NewGuid().ToString();
+        if(string.IsNullOrEmpty(_cardTarget.CardId))
+            _cardTarget.CardId = Guid.NewGuid().ToString();
         InitializeLogic();
         return _root; 
     }
@@ -60,11 +62,18 @@ public class CardSOEditor : Editor
     private void InitializeLogic()
     {
         InitTextField();
+        InitIsPersistent();
         InitSpriteContainer();
         InitEffectsLists();
         SetSpritePath(_cardTarget.CardBack, ref _cardTarget.cardBackPath, ResourcesFolderPath);
         SetSpritePath(_cardTarget.CardFace, ref _cardTarget.cardFacePath, ResourcesFolderPath);
         EditorUtility.SetDirty(_cardTarget);
+    }
+
+    private void InitIsPersistent()
+    {
+        _toggleIsPersistent = _root.Q<Toggle>("IsPersistent");
+        _toggleIsPersistent.bindingPath = "ItemIsPersistent";
     }
 
     private void InitEffectsLists()

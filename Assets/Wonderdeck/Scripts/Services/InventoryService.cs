@@ -32,10 +32,15 @@ public class InventoryService : IInventoryService
     public CardSO GetItemByID(string id)
     {
         var itemConfig = DebugConfigLoader.Instance.GetConfig<ItemConfig>();
-        for (int i = 0; i < itemConfig.itemCards.Count; i++)
+        List<CardSO> fullItemsList = new List<CardSO>();
+        fullItemsList.AddRange(itemConfig.itemCards);
+        fullItemsList.AddRange(itemConfig.consequenceItemCardsFirstTier);
+        fullItemsList.AddRange(itemConfig.consequenceItemCardsSecondTier);
+        fullItemsList.AddRange(itemConfig.consequenceItemCardsThirdTier);
+        for (int i = 0; i < fullItemsList.Count; i++)
         {
-            if (id == itemConfig.itemCards[i].CardId)
-                return itemConfig.itemCards[i];
+            if (id == fullItemsList[i].CardId)
+                return fullItemsList[i];
         }
         return null;
     }
