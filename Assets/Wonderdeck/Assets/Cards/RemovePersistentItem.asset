@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4473df207fef80d40abb6400af3ab2fa, type: 3}
+  m_Name: RemovePersistentItem
+  m_EditorClassIdentifier: 
+  CardId: f81ddc16-e3a3-4ffb-a4c4-5bbd9ea5d9dd
+  CardFace: {fileID: -91424431, guid: 9ef2cfe3b2ac02d4f93bfa5408e49567, type: 3}
+  CardBack: {fileID: 21300000, guid: b5c06a18d36928b49b7b1843d2d9750d, type: 3}
+  ItemIsPersistent: 0
+  DrawCardEffects: []
+  PlayCardEffects:
+  - {fileID: 11400000, guid: e85300a19b67a2448a0ac88e3584fb7e, type: 2}
+  DiscardCardEffects: []
+  description: 'Allows you to select a persistent item on the table that will be
+    destroyed. Effect
+
+    of destroyed item will revert.
+
+'
+  cardFacePath: ITEM_DestroyItem|ITEM_DestroyItem_2
+  cardBackPath: BackCard

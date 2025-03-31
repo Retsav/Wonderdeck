@@ -36,25 +36,32 @@ public class BlackjackCardResolver : NetworkBehaviour
         switch (e.PlayType)
         {
             case PlayType.Draw:
-                ResolveEffects(card.DrawCardEffects, e.PlayerType);
+                ResolveEffects(card.DrawCardEffects, e.PlayerType, card.CardId);
                 break;
             case PlayType.Play:
-                ResolveEffects(card.PlayCardEffects, e.PlayerType);
+                ResolveEffects(card.PlayCardEffects, e.PlayerType, card.CardId);
                 break;
             case PlayType.Discard:
-                ResolveEffects(card.DiscardCardEffects, e.PlayerType);
+                ResolveEffects(card.DiscardCardEffects, e.PlayerType, card.CardId);
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
+        SendCardsResolvedEventObserverRpc();
     }
 
-    private void ResolveEffects(List<CardEffectSO> effects, PlayerType playerType)
+    [ObserversRpc]
+    private void SendCardsResolvedEventObserverRpc()
+    {
+        _blackjackService.OnCardEffectsResolved();
+    }
+
+    private void ResolveEffects(List<CardEffectSO> effects, PlayerType playerType, string cardID)
     {
         for (int i = 0; i < effects.Count; i++)
         {
             var effect = effects[i].CreateEffect(_container);
-            effect.OnExecute(playerType);
+            effect.OnExecute(playerType, cardID);
         }
     }
 

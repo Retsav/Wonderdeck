@@ -9,42 +9,50 @@ using Zenject;
 public class DebugPlayerButtons : NetworkBehaviour
 {
     [SerializeField] private CanvasGroup _buttonsCanvasGroup;
-    [SerializeField] private Button _drawButton;
-    [SerializeField] private Button _standButton;
+
 
 
     private IBlackjackService _blackjackService;
     private INetworkingService _networkingService;
+    private ISelectModeService _selectModeService;
 
     private PlayerType _playerType;
 
     [Inject]
-    private void ResolveDependencies(IBlackjackService blackjackService, INetworkingService networkingService)
+    private void ResolveDependencies(IBlackjackService blackjackService, INetworkingService networkingService, ISelectModeService selectModeService)
     {
         _blackjackService = blackjackService;
         _networkingService = networkingService;
+        _selectModeService = selectModeService;
     }
     
     
     private void Awake()
     {
         Hide();
-        _drawButton.onClick.RemoveAllListeners();
-        _standButton.onClick.RemoveAllListeners();
     }
 
 
     public override void OnStartClient()
     {
         _playerType = _networkingService.GetPlayerType(NetworkManager.ClientManager.Connection);
-        _drawButton.onClick.AddListener(RequestDrawClicked);
-        _standButton.onClick.AddListener(RequestStandClicked);
         _blackjackService.GameStateSet += OnBlackjackStateSet;
+        _selectModeService.SelectionModeStateChanged += OnSelectModeStateChanged;
+    }
+
+    private void OnSelectModeStateChanged(object sender, bool e)
+    {
+        if(e)
+            Hide();
+        else
+            Show();
     }
 
 
     private void Update()
     {
+        if (_selectModeService.IsSelectionMode)
+            return;
         if(Input.GetKeyDown(KeyCode.Q))
             RequestDrawClicked();
         if(Input.GetKeyDown(KeyCode.E))
@@ -130,8 +138,7 @@ public class DebugPlayerButtons : NetworkBehaviour
 
     private void OnDestroy()
     {
-        _drawButton.onClick.RemoveAllListeners();
-        _standButton.onClick.RemoveAllListeners();
         _blackjackService.GameStateSet -= OnBlackjackStateSet;
+        _selectModeService.SelectionModeStateChanged -= OnSelectModeStateChanged;
     }
 }

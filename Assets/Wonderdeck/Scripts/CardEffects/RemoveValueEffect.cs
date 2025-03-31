@@ -4,7 +4,7 @@ using UnityEngine;
 
 
 
-public class RemoveValueEffect : ICardEffect
+public class RemoveValueEffect : BaseCardEffect, ICardEffect
 {
     private readonly RemoveValueEffectSO _data;
     private readonly IBlackjackService _blackjackService;
@@ -15,7 +15,7 @@ public class RemoveValueEffect : ICardEffect
         _blackjackService = blackjackService;
     }
     
-    public void OnExecute(PlayerType playerType)
+    public void OnExecute(PlayerType playerType, string cardID)
     {
         if (playerType == PlayerType.Player1)
             _blackjackService.FirstPlayerScore -= (int)_data.valueToRemove;

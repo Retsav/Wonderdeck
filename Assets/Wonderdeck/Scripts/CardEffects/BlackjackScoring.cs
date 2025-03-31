@@ -61,6 +61,8 @@ public class BlackjackScoring : NetworkBehaviour
     private void OnCardPlayed(object sender, CardPlayedEventArgs e) => RefreshScoresFromServer();
 
     private void ScoreThresholdChanged() => OnVisualRequested(null, null);
+    
+    private void OnVisualRequested(object sender, CardVisualRequestedEventArgs e) => RefreshScoresFromServer();
 
 
     private void OnRoundEnd(object sender, EventArgs e)
@@ -69,10 +71,7 @@ public class BlackjackScoring : NetworkBehaviour
         playerSecondScoreLabel.text = $"{0}/21";
     }
 
-    private void OnVisualRequested(object sender, CardVisualRequestedEventArgs e)
-    {
-        RefreshScoresFromServer();
-    }
+    
 
     private void RefreshScoresFromServer()
     {

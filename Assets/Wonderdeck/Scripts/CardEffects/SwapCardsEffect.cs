@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SwapCardsEffect : ICardEffect
+public class SwapCardsEffect : BaseCardEffect, ICardEffect
 {
     private readonly SwapCardsEffectSO _data;
     private readonly IBlackjackService _blackjackService;
@@ -12,5 +12,5 @@ public class SwapCardsEffect : ICardEffect
         _data = data;
         _blackjackService = blackjackService;
     }
-    public void OnExecute(PlayerType playerType) => _blackjackService.OnRequestCardSwap();
+    public void OnExecute(PlayerType playerType, string cardID) => _blackjackService.OnRequestCardSwap();
 }

@@ -13,59 +13,93 @@ public class InventoryTokensVisual : NetworkBehaviour
 
     private IBlackjackService _blackjackService;
     private IInventoryService _inventoryService;
+    private ISelectModeService _selectModeService;
 
     private readonly List<GameObject> _spawnedTokens = new();
 
     [Inject]
-    private void ResolveDependencies(IBlackjackService blackjackService, IInventoryService inventoryService)
+    private void ResolveDependencies(IBlackjackService blackjackService, IInventoryService inventoryService, ISelectModeService selectModeService)
     {
         _blackjackService = blackjackService;
         _inventoryService = inventoryService;
+        _selectModeService = selectModeService;
     }
     
     
     public override void OnStartClient()
     {
         _blackjackService.RoundEnd += OnRoundEnd;
+        _selectModeService.RequestSelectionEffectExecution += OnRequestSelection;
         if (!NetworkManager.ClientManager.Connection.IsHost) return;
         _blackjackService.CardPlayed += OnCardPlayed;
+        
+    }
+
+    private void OnRequestSelection(object sender, SelectionEffectExecutionEventArgs e)
+    {
+        RequestTokenDeletionServerRpc(e.SelectedCardID);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void RequestTokenDeletionServerRpc(string selectedCardID)
+    {
+        DeleteTokenObserverRpc(selectedCardID);
+    }
+
+    [ObserversRpc]
+    private void DeleteTokenObserverRpc(string selectedCardID)
+    {
+        GameObject goForDeletion = null;
+        for (int i = 0; i < _spawnedTokens.Count; i++)
+        {
+            if (!_spawnedTokens[i].TryGetComponent(out InventoryTokenUIHandler inventoryToken)) continue;
+            if (inventoryToken.item.CardId != selectedCardID)
+                continue;
+            goForDeletion = _spawnedTokens[i];
+        }
+
+        if (goForDeletion != null)
+        {
+            _spawnedTokens.Remove(goForDeletion);
+            Destroy(goForDeletion);
+        }
+
     }
 
     private void OnRoundEnd(object sender, EventArgs e)
     {
-        for (int i = _spawnedTokens.Count - 1; i >= 0; i--)
-        {
-            Destroy(_spawnedTokens[i].gameObject);
-        }
+        for (int i = _spawnedTokens.Count - 1; i >= 0; i--) Destroy(_spawnedTokens[i].gameObject);
         _spawnedTokens.Clear();
     }
 
     private void OnCardPlayed(object sender, CardPlayedEventArgs e)
     {
+        if (e.PlayType != PlayType.Play)
+            return;
         var card = _blackjackService.GetCardByID(e.CardID);
         if (card != null)
             return;
         var item = _inventoryService.GetItemByID(e.CardID);
+        
         if (item == null)
         {
             Debug.LogError($"Item {item.name} is null in InventoryService.");
             return;
         }
-        SpawnItemTokenObserverRpc(item.CardId);
+        SpawnItemTokenObserverRpc(item.CardId, e.PlayerType);
     }
 
     [ObserversRpc]
-    private void SpawnItemTokenObserverRpc(string cardId)
+    private void SpawnItemTokenObserverRpc(string cardId, PlayerType owner)
     {
         var go = Instantiate(
             itemTokenPrefab, 
             firstItemTokenSpawnPoint.position + new Vector3(_spawnedTokens.Count * itemTokensSpacing, 0f, 0f),
             Quaternion.identity
             );
-
         go.transform.eulerAngles = new Vector3(0f, NetworkManager.ClientManager.Connection.IsHost ? 0f : 180f, 0f);
         _spawnedTokens.Add(go);
-        if (go.TryGetComponent(out InventoryTokenUIHandler uiHandler)) uiHandler.Init(cardId);
+        if (go.TryGetComponent(out InventoryTokenUIHandler uiHandler)) uiHandler.Init(cardId, owner);
         else
             Debug.LogError("Couldnt find InventoryTokenUIHandler in Spawned Token.");
     }
@@ -73,6 +107,7 @@ public class InventoryTokensVisual : NetworkBehaviour
     private void OnDestroy()
     {
         _spawnedTokens.Clear();
+        _selectModeService.RequestSelectionEffectExecution -= OnRequestSelection;
         if (_blackjackService == null)
             return;
         _blackjackService.CardPlayed -= OnCardPlayed;

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SetScoreLimitEffect : ICardEffect
+public class SetScoreLimitEffect : BaseCardEffect, ICardEffect
 {
     private readonly SetScoreLimitEffectSO _data;
     private readonly IBlackjackService _blackjackService;
@@ -14,7 +14,7 @@ public class SetScoreLimitEffect : ICardEffect
         _blackjackService = blackjackService;
     }
     
-    public void OnExecute(PlayerType playerType)
+    public void OnExecute(PlayerType playerType, string cardID)
     {
         _blackjackService.OnGameScoreUpdated(_data.newScore);
     }

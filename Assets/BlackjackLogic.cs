@@ -56,6 +56,7 @@ public class BlackjackLogic : NetworkBehaviour
 
    public override void OnStartClient()
    {
+      _environmentService.ChangeScenery("SceneryFirst");
       if (NetworkManager.ClientManager.Connection.IsHost)
       {
          _deckConfig = DebugConfigLoader.Instance.GetConfig<DeckConfig>();
@@ -305,6 +306,8 @@ public class BlackjackLogic : NetworkBehaviour
       _secondPlayerFinishedTurn = false;
       _clientCardDataFirstPlayer.Clear();
       _clientCardDataSecondPlayer.Clear();
+      _healthService.FirstPlayerDamageModifier = 0;
+      _healthService.SecondPlayerDamageModifier = 0;
       OrginalCardToDummy.Clear();
       if (!NetworkManager.ClientManager.Connection.IsHost) return;
       ShuffleCards();
@@ -536,7 +539,8 @@ public class BlackjackLogic : NetworkBehaviour
    [ObserversRpc]
    private void StartGameObserverRpc(BlackjackState state)
    {
-      _environmentService.ChangeScenery("SceneryFirst");
+      _healthService.FirstPlayerDamageModifier = 0;
+      _healthService.SecondPlayerDamageModifier = 0;
       _blackjackService.OnGameStateSet(state);
    }
 

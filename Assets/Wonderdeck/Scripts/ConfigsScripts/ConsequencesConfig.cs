@@ -18,5 +18,6 @@ public class ConsequenceData
 {
     public string consequenceID = Guid.NewGuid().ToString();
     public int healthPercentage;
+    public int consequenceTier = 1;
     [SerializeReference] public BaseConsequence consequence;
 }

@@ -1,5 +1,5 @@
 
-public class DrawValueCardEffect : ICardEffect
+public class DrawValueCardEffect : BaseCardEffect, ICardEffect
 {
     private readonly DrawValueCardEffectSO _data;
     private readonly IBlackjackService _blackjackService;
@@ -10,5 +10,5 @@ public class DrawValueCardEffect : ICardEffect
         _blackjackService = blackjackService;
     }
     
-    public void OnExecute(PlayerType playerType) => _blackjackService.OnGetCardWithSpecificValue(new GetCardWithSpecificValueEventArgs(_data.valueToDraw, playerType));
+    public void OnExecute(PlayerType playerType, string cardID) => _blackjackService.OnGetCardWithSpecificValue(new GetCardWithSpecificValueEventArgs(_data.valueToDraw, playerType));
 }
