@@ -32,4 +32,9 @@ public class SelectionModeUI : MonoBehaviour
         else
             selectionModeCanvasGroup.DOFade(0f, 0.3f);
     }
+
+    private void OnDestroy()
+    {
+        _selectModeService.SelectionModeStateChanged -= OnSelectionModeStateChanged;
+    }
 }
