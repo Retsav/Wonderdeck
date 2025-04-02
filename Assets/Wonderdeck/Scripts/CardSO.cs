@@ -13,7 +13,8 @@ public class CardSO : ScriptableObject
     
     public Sprite CardFace;
     public Sprite CardBack;
-    
+
+    public bool ItemIsPersistent;
 
     public List<CardEffectSO> DrawCardEffects = new List<CardEffectSO>();
     public List<CardEffectSO> PlayCardEffects = new List<CardEffectSO>();

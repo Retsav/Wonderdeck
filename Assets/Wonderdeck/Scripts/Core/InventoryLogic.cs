@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using FishNet.Object;
 using UnityEngine;
@@ -19,15 +20,18 @@ public class InventoryLogic : NetworkBehaviour
     private bool isProcessingQueue = false;
 
     private IInventoryService _inventoryService;
+    private IConsequencesService _consequencesService;
+    
     private static Random _random = new Random();
 
 
     private ItemConfig _itemConfig;
 
     [Inject]
-    private void ResolveDependencies(IInventoryService inventoryService)
+    private void ResolveDependencies(IInventoryService inventoryService, IConsequencesService consequencesService)
     {
         _inventoryService = inventoryService;
+        _consequencesService = consequencesService;
     }
     
     public override void OnStartClient()
@@ -43,43 +47,81 @@ public class InventoryLogic : NetworkBehaviour
 
     private void DealInventoryItems(object sender, ItemsDealRequestedEventArgs e)
     {
-        if (_itemConfig.itemCards == null || _itemConfig.itemCards.Count == 0)
+        List<CardSO> availableCards = new List<CardSO>();
+        if (string.IsNullOrEmpty(e.ItemName))
         {
-            Debug.LogError($"ItemCards is null or ItemCards count is 0.");
-            return;
+            if (_itemConfig.itemCards == null || _itemConfig.itemCards.Count == 0)
+            {
+                Debug.LogError("ItemCards is null or empty.");
+                return;
+            }
+            
+            availableCards.AddRange(_itemConfig.itemCards);
+            int highestConsequenceTier = _consequencesService.GetHighestConsequenceTierOnPlayer(e.Player);
+            if (highestConsequenceTier >= 1 && _itemConfig.consequenceItemCardsFirstTier != null)
+                availableCards.AddRange(_itemConfig.consequenceItemCardsFirstTier);
+            if (highestConsequenceTier >= 2 && _itemConfig.consequenceItemCardsSecondTier != null)
+                availableCards.AddRange(_itemConfig.consequenceItemCardsSecondTier);
+            if (highestConsequenceTier >= 3 && _itemConfig.consequenceItemCardsThirdTier != null)
+                availableCards.AddRange(_itemConfig.consequenceItemCardsThirdTier);
         }
-        List<string> inventoryItems = new List<string>();
+        else
+        {
+            if (_itemConfig.itemCards != null && _itemConfig.itemCards.Count > 0)
+                availableCards.AddRange(_itemConfig.itemCards);
+            if (_itemConfig.consequenceItemCardsFirstTier != null)
+                availableCards.AddRange(_itemConfig.consequenceItemCardsFirstTier);
+            if (_itemConfig.consequenceItemCardsSecondTier != null)
+                availableCards.AddRange(_itemConfig.consequenceItemCardsSecondTier);
+            if (_itemConfig.consequenceItemCardsThirdTier != null)
+                availableCards.AddRange(_itemConfig.consequenceItemCardsThirdTier);
+        }
 
+        List<string> inventoryItems = new List<string>();
         if (string.IsNullOrEmpty(e.ItemName))
         {
             for (int i = 0; i < e.Amount; i++)
             {
-                int index = _random.Next(_itemConfig.itemCards.Count);
-                inventoryItems.Add(_itemConfig.itemCards[index].CardId);
+                int index = _random.Next(availableCards.Count);
+                inventoryItems.Add(availableCards[index].CardId);
             }
         }
         else
         {
-            string itemId = "";
-            for (int i = 0; i < _itemConfig.itemCards.Count; i++)
+            List<CardSO> matchingCards = new List<CardSO>();
+            for (int i = 0; i < availableCards.Count; i++)
             {
-                if (e.ItemName != _itemConfig.itemCards[i].name) continue;
-                for (int j = 0; j < e.Amount; j++) inventoryItems.Add(_itemConfig.itemCards[i].CardId);
+                if (availableCards[i].name == e.ItemName)
+                {
+                    matchingCards.Add(availableCards[i]);
+                }
+            }
+
+            if (matchingCards.Count == 0)
+            {
+                Debug.LogWarning($"No matching item found for {e.ItemName}");
+                return;
+            }
+
+            for (int i = 0; i < e.Amount; i++)
+            {
+                int index = _random.Next(matchingCards.Count);
+                inventoryItems.Add(matchingCards[index].CardId);
             }
         }
-
-    
+        
         for (int i = 0; i < inventoryItems.Count; i++)
         {
-            if(e.Player == PlayerType.Player1)
-                _inventoryService.AddItem(inventoryItems[i], PlayerType.Player1);
-            if (e.Player == PlayerType.Player2) 
-                AddItemObserverRpc(inventoryItems[i], PlayerType.Player2);
+            string cardId = inventoryItems[i];
+            if (e.Player == PlayerType.Player1)
+            {
+                _inventoryService.AddItem(cardId, PlayerType.Player1);
+            }
+            else if (e.Player == PlayerType.Player2) AddItemObserverRpc(cardId, PlayerType.Player2);
         }
-
         SpawnItemsVisualObserverRpc(e.Player, e.Amount);
     }
-    
+        
     
     [ObserversRpc]
     private void SpawnItemsVisualObserverRpc(PlayerType player, int amount)

@@ -5,5 +5,5 @@ using UnityEngine;
 public interface ICardEffect
 {
     
-    void OnExecute(PlayerType playerType);
+    public void OnExecute(PlayerType playerType, string cardID);
 }

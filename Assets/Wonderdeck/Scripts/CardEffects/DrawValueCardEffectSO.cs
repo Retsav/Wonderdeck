@@ -10,5 +10,8 @@ public class DrawValueCardEffectSO : CardEffectSO
 {
     public float valueToDraw;
     
-    public override ICardEffect CreateEffect(DiContainer container) => container.Instantiate<DrawValueCardEffect>(new object[] { this });
+    public override ICardEffect CreateEffect(DiContainer container)
+    {
+        return container.Instantiate<DrawValueCardEffect>(new object[] { this });
+    }
 }

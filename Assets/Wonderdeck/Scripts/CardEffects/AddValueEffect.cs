@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AddValueEffect : ICardEffect
+public class AddValueEffect : BaseCardEffect, ICardEffect
 {
     private readonly AddValueEffectSO _data;
     private readonly IBlackjackService _blackjackService;
@@ -13,7 +13,7 @@ public class AddValueEffect : ICardEffect
         _blackjackService = blackjackService;
     }
     
-    public void OnExecute(PlayerType playerType)
+    public void OnExecute(PlayerType playerType, string cardID)
     {
         if (playerType == PlayerType.Player1)
             _blackjackService.FirstPlayerScore += (int)_data.cardValue;

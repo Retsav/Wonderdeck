@@ -25,6 +25,8 @@ public interface IBlackjackService
     public void OnScoreUpdated(PlayerScoreUpdatedEventArgs args);
     public event EventHandler<CardPlayedEventArgs> CardPlayed;
     public void OnCardPlayed(CardPlayedEventArgs args);
+    public event EventHandler CardEffectsResolved;
+    public void OnCardEffectsResolved();
     public event EventHandler<RoundConsequencesEvaluatedEventArgs> RoundConsequencesEvaluated;
     public void OnRoundConsequencesEvaluated(RoundConsequencesEvaluatedEventArgs args);
     public CardSO GetCardByID(string id, NetworkConnection conn, PlayerType playerType);

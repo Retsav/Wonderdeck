@@ -27,6 +27,7 @@ public class InventoryUI : NetworkBehaviour
     private IInventoryService _inventoryService;
     private IBlackjackService _blackjackService;
     private IAudioService _audioService;
+    private ISelectModeService _selectModeService;
 
     private AudioConfig _audioConfig;
 
@@ -34,11 +35,12 @@ public class InventoryUI : NetworkBehaviour
 
     
     [Inject]
-    private void ResolveDependencies(IInventoryService inventoryService, IBlackjackService blackjackService, IAudioService audioService)
+    private void ResolveDependencies(IInventoryService inventoryService, IBlackjackService blackjackService, IAudioService audioService, ISelectModeService selectModeService)
     {
         _inventoryService = inventoryService;
         _blackjackService = blackjackService;
         _audioService = audioService;
+        _selectModeService = selectModeService;
     }
 
     private void Start()
@@ -91,6 +93,8 @@ public class InventoryUI : NetworkBehaviour
 
     private void Update()
     {
+        if (_selectModeService.IsSelectionMode)
+            return;
         if (Input.GetKeyDown(KeyCode.Tab))
             switch (_inventoryPopupOpened)
             {

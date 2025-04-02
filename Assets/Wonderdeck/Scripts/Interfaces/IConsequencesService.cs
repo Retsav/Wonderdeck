@@ -7,6 +7,8 @@ public interface IConsequencesService
     public List<string> AppliedConsequenceIDsSecondPlayer { get; set; }
     public event EventHandler<ConsequenceAppliedEventArgs> ConsequenceAppliedEvent;
     public void OnConsequenceApplied(BaseConsequence consequence, string consequenceID, PlayerType playerType);
+    public int GetHighestConsequenceTierOnPlayer(PlayerType playerType);
+    public ConsequenceData GetConsequenceData(string id);
 }
 
 

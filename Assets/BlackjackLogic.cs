@@ -25,6 +25,7 @@ public class BlackjackLogic : NetworkBehaviour
    private IBlackjackService _blackjackService;
    private IInventoryService _inventoryService;
    private IHealthService _healthService;
+   private IEnvironmentService _environmentService;
 
    private Dictionary<string, CardClientData> OrginalCardToDummy = new Dictionary<string, CardClientData>();
 
@@ -42,11 +43,12 @@ public class BlackjackLogic : NetworkBehaviour
    
 
    [Inject]
-   private void ResolveDependencies(IBlackjackService blackjackService, IInventoryService inventoryService, IHealthService healthService)
+   private void ResolveDependencies(IBlackjackService blackjackService, IInventoryService inventoryService, IHealthService healthService, IEnvironmentService environmentService)
    {
       _blackjackService = blackjackService;
       _inventoryService = inventoryService;
       _healthService = healthService;
+      _environmentService = environmentService;
    }
 
 
@@ -54,6 +56,7 @@ public class BlackjackLogic : NetworkBehaviour
 
    public override void OnStartClient()
    {
+      _environmentService.ChangeScenery("SceneryFirst");
       if (NetworkManager.ClientManager.Connection.IsHost)
       {
          _deckConfig = DebugConfigLoader.Instance.GetConfig<DeckConfig>();
@@ -72,11 +75,9 @@ public class BlackjackLogic : NetworkBehaviour
    private void OnClientLoadedScenes(ClientPresenceChangeEventArgs obj)
    {
       if (_gameStarted) return;
-      if (AreBothPlayersConnected())
-      {
-         StartGameServerRpc();
-         _gameStarted = true;
-      }
+      if (!AreBothPlayersConnected()) return;
+      StartGameServerRpc();
+      _gameStarted = true;
    }
    
 
@@ -84,6 +85,8 @@ public class BlackjackLogic : NetworkBehaviour
    private void StartGameServerRpc()
    {
       if (!AreBothPlayersConnected()) return;
+      
+      
       _blackjackService.CurrentScoreThreshold = _blackjackConfig.baseScoreThreshold;
       _blackjackService.FirstPlayerCards = DealCards(_blackjackConfig.cardsToDeal);
       _blackjackService.SecondPlayerCards = DealCards(_blackjackConfig.cardsToDeal);
@@ -303,6 +306,8 @@ public class BlackjackLogic : NetworkBehaviour
       _secondPlayerFinishedTurn = false;
       _clientCardDataFirstPlayer.Clear();
       _clientCardDataSecondPlayer.Clear();
+      _healthService.FirstPlayerDamageModifier = 0;
+      _healthService.SecondPlayerDamageModifier = 0;
       OrginalCardToDummy.Clear();
       if (!NetworkManager.ClientManager.Connection.IsHost) return;
       ShuffleCards();
@@ -532,7 +537,12 @@ public class BlackjackLogic : NetworkBehaviour
    
 
    [ObserversRpc]
-   private void StartGameObserverRpc(BlackjackState state) => _blackjackService.OnGameStateSet(state);
+   private void StartGameObserverRpc(BlackjackState state)
+   {
+      _healthService.FirstPlayerDamageModifier = 0;
+      _healthService.SecondPlayerDamageModifier = 0;
+      _blackjackService.OnGameStateSet(state);
+   }
 
    private List<string> DealCards(int cardsCount)
    {

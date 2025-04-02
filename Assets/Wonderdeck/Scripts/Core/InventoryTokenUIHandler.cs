@@ -1,9 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using DG.Tweening;
+using FishNet.Object;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Zenject;
 
 public class InventoryTokenUIHandler : MonoBehaviour, ICameraInteractable
@@ -12,33 +15,63 @@ public class InventoryTokenUIHandler : MonoBehaviour, ICameraInteractable
     [SerializeField] private TextMeshProUGUI uiTextLabel;
 
     private bool _initialized;
+    private bool _hovered;
+
+    private PlayerType _owner;
+    [FormerlySerializedAs("_item")] public CardSO item;
     
-    private CardSO _item;
     private IInventoryService _inventoryService;
+    private ISelectModeService _selectModeService;
+    private INetworkingService _networkingService;
 
     [Inject]
-    private void ResolveDependencies(IInventoryService inventoryService)
+    private void ResolveDependencies(IInventoryService inventoryService, ISelectModeService selectModeService, INetworkingService networkingService)
     {
         _inventoryService = inventoryService;
+        _selectModeService = selectModeService;
+        _networkingService = networkingService;
     }
     
     private void Start() => uiCanvasGroup.DOFade(0f, 0f);
 
-    public void Init(string itemID)
+    private void Update()
     {
-        _item = _inventoryService.GetItemByID(itemID);
-        if (_item == null)
+        if (!_selectModeService.IsSelectionMode)
+            return;
+        if (!_hovered)
+            return;
+        if (!Input.GetKeyDown(KeyCode.E) || !item.ItemIsPersistent) return;
+        _selectModeService.OnItemTokenClicked(item, _owner);
+    }
+    
+
+    public void Init(string itemID, PlayerType owner)
+    {
+        item = _inventoryService.GetItemByID(itemID);
+        if (item == null)
         {
             Debug.LogError($"Can't find inventory item in InventoryTokenUIHandler.");
             return;
         }
-        uiTextLabel.text = $"USED ITEM:\n{_item.name}";
+        _owner = owner;
+        StringBuilder textBuilder = new StringBuilder();
+        if (item.ItemIsPersistent) textBuilder.AppendLine("<color=red>PERSISTENT</color>");
+        if (_owner == PlayerType.Player1)
+            textBuilder.Append("Owner: ").Append(_networkingService.FirstPlayerNickname);
+        else
+            textBuilder.Append("Owner: ").Append(_networkingService.SecondPlayerNickname);
+        textBuilder.AppendLine(); 
+        textBuilder.Append(item.name);
+        uiTextLabel.text = textBuilder.ToString();
         _initialized = true;
     }
+    
+
     public void OnCameraOver()
     {
         if (!_initialized)
             return;
+        _hovered = true;
         uiCanvasGroup.DOFade(1f, 0.3f);
     }
 
@@ -46,6 +79,7 @@ public class InventoryTokenUIHandler : MonoBehaviour, ICameraInteractable
     {
         if (!_initialized)
             return;
+        _hovered = false;
         uiCanvasGroup.DOFade(0f, 0.3f);
     }
 }

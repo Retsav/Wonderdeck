@@ -34,6 +34,7 @@ public class QuitHandler : MonoBehaviour
 
         if (InstanceFinder.NetworkManager.ClientManager.Connection.IsHost)
             InstanceFinder.NetworkManager.ServerManager.StopConnection(true);
-        //InstanceFinder.NetworkManager.ClientManager.StopConnection();
+        else
+            InstanceFinder.NetworkManager.ClientManager.StopConnection();
     }
 }
