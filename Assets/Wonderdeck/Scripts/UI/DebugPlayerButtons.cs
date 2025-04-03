@@ -57,6 +57,14 @@ public class DebugPlayerButtons : NetworkBehaviour
             RequestDrawClicked();
         if(Input.GetKeyDown(KeyCode.E))
             RequestStandClicked();
+        if (Input.GetKeyDown(KeyCode.F))
+            RequestDebugDraw();
+    }
+
+    private void RequestDebugDraw()
+    {
+        RequestDrawServerRpc(_playerType, HideType.HideFromYourself);
+        _blackjackService.OnCardDrawRequestedClientEvent(_playerType, HideType.HideFromYourself);
     }
 
     private void OnBlackjackStateSet(object sender, GameStateSetEventArgs e)
@@ -123,16 +131,19 @@ public class DebugPlayerButtons : NetworkBehaviour
             case PlayerType.Player2 when _blackjackService.BlackjackState != BlackjackState.Player2Turn:
                 return;
             default:
-                RequestDrawServerRpc(_playerType);
-                _blackjackService.OnCardDrawRequestedClientEvent(_playerType, false);
+                RequestDrawServerRpc(_playerType, HideType.None);
+                _blackjackService.OnCardDrawRequestedClientEvent(_playerType, HideType.None);
                 break;
         }
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void RequestDrawServerRpc(PlayerType player)
+    private void RequestDrawServerRpc(PlayerType player, HideType hideType)
     {
-        _blackjackService.OnCardDrawRequestedServerEvent(player, false);
+        if(player == PlayerType.Player1 ? _blackjackService.FirstPlayerDrawsHidden : _blackjackService.SecondPlayerDrawsHidden)
+            _blackjackService.OnCardDrawRequestedServerEvent(player, HideType.HideFromYourself);
+        else
+            _blackjackService.OnCardDrawRequestedServerEvent(player, hideType);
         _blackjackService.RequestPassTurnToOtherPlayer(player);
     }
 

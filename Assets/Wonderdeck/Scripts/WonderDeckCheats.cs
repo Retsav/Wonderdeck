@@ -22,8 +22,8 @@ public class WonderDeckCheats : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.F1))
         {
             CheatItemDeal(NetworkManager.ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2, "RemovePersistentItem", 2);
-            CheatItemDeal(NetworkManager.ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2, "ReduceDamage10", 2);
-            CheatItemDeal(NetworkManager.ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2, "RemovePersistentItem", 2);
+            CheatItemDeal(NetworkManager.ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2, "HiddenDrawingOpponent", 2);
+            CheatItemDeal(NetworkManager.ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2, "RevealOpponentCards", 2);
         }
 
         if (Input.GetKeyDown(KeyCode.F2))

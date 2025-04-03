@@ -22,12 +22,15 @@ public class PlayerHand : NetworkBehaviour
     {
         if (!IsOwner) return;
         _playerType = NetworkManager.ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2;
-        _blackjackService.CardsUpdated += OnCardsDraw;
+        //_blackjackService.CardsUpdated += OnCardsDraw;
     }
 
 
 
-    private void OnDestroy() => _blackjackService.CardsUpdated -= OnCardsDraw;
+    private void OnDestroy()
+    {
+        //_blackjackService.CardsUpdated -= OnCardsDraw;
+    }
 
     private void OnCardsDraw(object sender, CardsDataUpdatedEventArgs e)
     {

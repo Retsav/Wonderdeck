@@ -4,6 +4,7 @@ using FishNet.Utility.Extension;
 using GameKit.Dependencies.Utilities;
 using System;
 using System.Runtime.CompilerServices;
+using FishNet.Component.Transforming;
 using UnityEngine;
 using UnityEngine.Scripting;
 
