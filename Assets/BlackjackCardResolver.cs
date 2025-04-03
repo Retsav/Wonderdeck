@@ -12,6 +12,7 @@ public class BlackjackCardResolver : NetworkBehaviour
     private IInventoryService _inventoryService;
     
     
+    
     [Inject]
     private void ResolveDependencies(DiContainer container, IBlackjackService blackjackService, IInventoryService inventoryService)
     {
@@ -26,12 +27,18 @@ public class BlackjackCardResolver : NetworkBehaviour
         if (!NetworkManager.ClientManager.Connection.IsHost) return;
         _blackjackService.CardPlayed += OnCardPlayed;
     }
+    
 
     private void OnCardPlayed(object sender, CardPlayedEventArgs e)
     {
         CardSO card = _blackjackService.GetCardByID(e.CardID, NetworkManager.ClientManager.Connection, e.PlayerType);
         if (card == null) card = _inventoryService.GetItemByID(e.CardID);
-        
+
+        if (card == null)
+        {
+            return;
+        }
+            
 
         switch (e.PlayType)
         {

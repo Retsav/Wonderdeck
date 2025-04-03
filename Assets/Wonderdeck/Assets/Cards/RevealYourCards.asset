@@ -10,19 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4473df207fef80d40abb6400af3ab2fa, type: 3}
-  m_Name: SwapCards
+  m_Name: RevealYourCards
   m_EditorClassIdentifier: 
-  CardId: 0baf8ff8-247b-4fea-a73a-32244749757c
-  CardFace: {fileID: 1001797783, guid: 06afb8ee849337d4bbea9f3d1902af20, type: 3}
+  CardId: 74a3fb81-983c-43c6-93bb-8704dc079a72
+  CardFace: {fileID: 1483242399, guid: 6ef35c7f363e1c1499fa50e39ebba000, type: 3}
   CardBack: {fileID: 21300000, guid: b5c06a18d36928b49b7b1843d2d9750d, type: 3}
   ItemIsPersistent: 0
   DrawCardEffects: []
   PlayCardEffects:
-  - {fileID: 11400000, guid: 41bb107f0efca094fab2242b81a66bce, type: 2}
+  - {fileID: 11400000, guid: 732032c31e1e20747b2ece0e2c312e8c, type: 2}
   DiscardCardEffects: []
-  description: 'Swap the last cards drawn by you and your opponent. Concealed cards
-    will become visible.
-
-'
-  cardFacePath: ITEM_Delete_Swap|ITEM_Delete_Swap_2
+  description: Reveals your hidden cards.
+  cardFacePath: ITEM_RevealYourCards|ITEM_RevealYourCards_0
   cardBackPath: BackCard

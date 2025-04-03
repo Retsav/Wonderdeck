@@ -50,9 +50,38 @@ public class BlackjackCardVisual : NetworkBehaviour
     public override void OnStartClient()
     {
         _blackjackService.CardVisualRequested += OnCardVisualRequested;
+        _blackjackService.RevealCardsVisualEvent += OnCardsReveal;
         _mpb = new MaterialPropertyBlock();
         _audioConfig = DebugConfigLoader.Instance.GetConfig<AudioConfig>();
         foreach (Transform child in cardsParent) Destroy(child.gameObject);
+    }
+
+    private void OnCardsReveal(object sender, RevealCardsEventVisualArgs e)
+    {
+        foreach (Transform child in cardsParent)
+        {
+            if (child.TryGetComponent(out CardVisual cardVisual))
+            {
+                if(cardVisual.cardID != e.DummyCardID)
+                    continue;
+                cardVisual.cardID = e.OrginalCardID;
+                var card = _blackjackService.GetCardByID(e.OrginalCardID);
+                var uvCoordinates = GetUVCoordinatesForSprite(card.cardFacePath);
+                if (uvCoordinates != Vector4.zero)
+                {
+                    _mpb.SetVector("_BaseMap_ST", new Vector4(uvCoordinates.z, uvCoordinates.w, uvCoordinates.x, uvCoordinates.y));
+                    _mpb.SetTexture("_BaseMap", cardsSpriteAtlas);
+                }
+                else
+                {
+                    _mpb.SetVector("_BaseMap_ST", new Vector4(1, 1, 0, 0));
+                    _mpb.SetTexture("_BaseMap", unknownCardTexture);
+                }
+                cardVisual.cardMeshRenderer.SetPropertyBlock(_mpb);
+            }
+            else
+                Debug.LogWarning("There is a child in CardsParent without CardVisual Component.");
+        }
     }
 
     private void OnCardVisualRequested(object sender, CardVisualRequestedEventArgs e)

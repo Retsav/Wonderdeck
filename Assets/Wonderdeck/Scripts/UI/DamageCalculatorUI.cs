@@ -36,11 +36,12 @@ public class DamageCalculatorUI : NetworkBehaviour
 
     private void Unsubscribe()
     {
+        _blackjackService.RefreshScoreEvent -= OnRefreshScore;
         _blackjackService.CardVisualRequested  -= OnVisualRequested;
         _blackjackService.RoundEnd -= OnRoundEnd;
         _blackjackService.ScoreThresholdChanged -= ScoreThresholdChanged;
         _blackjackService.CardPlayed -= OnCardPlayed;
-        _blackjackService.CardsUpdated -= OnCardsUpdated;
+        _blackjackService.CardsUpdatedObserverEvent -= OnCardsUpdated;
         _blackjackService.CardEffectsResolved -= OnCardsResolved;
     }
 
@@ -50,16 +51,19 @@ public class DamageCalculatorUI : NetworkBehaviour
         _firstPlayerDamageLabel = firstPlayerDamageCalculatorGameObject.GetComponentInChildren<TextMeshProUGUI>();
         _secondPlayerDamageLabel = secondPlayerDamageCalculatorGameObject.GetComponentInChildren<TextMeshProUGUI>();
         _orginalTextColor = _firstPlayerDamageLabel.color;
+        _blackjackService.RefreshScoreEvent += OnRefreshScore;
         _blackjackService.CardVisualRequested += OnVisualRequested;
         _blackjackService.RoundEnd += OnRoundEnd;
         _blackjackService.ScoreThresholdChanged += ScoreThresholdChanged;
-        _blackjackService.CardsUpdated += OnCardsUpdated;
+        _blackjackService.CardsUpdatedObserverEvent += OnCardsUpdated;
         _blackjackService.CardPlayed += OnCardPlayed;
         _blackjackService.CardEffectsResolved += OnCardsResolved;
         if (_playerType != PlayerType.Player2) return;
         firstPlayerDamageCalculatorGameObject.transform.Rotate(new Vector3(0f, 180f, 0f));
         secondPlayerDamageCalculatorGameObject.transform.Rotate(new Vector3(0f, 180f, 0f));
     }
+
+    private void OnRefreshScore(object sender, EventArgs e) => RefreshScoresFromServer();
 
     private void OnCardsResolved(object sender, EventArgs e) => RefreshScoresFromServer();
 
@@ -91,7 +95,7 @@ public class DamageCalculatorUI : NetworkBehaviour
         _hasHiddenCard = false;
         foreach (var card in cardClientDataList)
         {
-            if (card.IsHidden && card.Owner != currentPlayer)
+            if (card.IsHidden && string.IsNullOrEmpty(card.CardName))
             {
                 _hasHiddenCard = true;
                 continue;

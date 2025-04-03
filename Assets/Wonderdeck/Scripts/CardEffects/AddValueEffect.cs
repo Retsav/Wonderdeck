@@ -15,9 +15,8 @@ public class AddValueEffect : BaseCardEffect, ICardEffect
     
     public void OnExecute(PlayerType playerType, string cardID)
     {
-        if (playerType == PlayerType.Player1)
-            _blackjackService.FirstPlayerScore += (int)_data.cardValue;
-        else
-            _blackjackService.SecondPlayerScore += (int)_data.cardValue;
+        //if (playerType == PlayerType.Player1)
+            //_blackjackService.FirstPlayerScore += (int)_data.cardValue;
+            //_blackjackService.SecondPlayerScore += (int)_data.cardValue;
     }
 }

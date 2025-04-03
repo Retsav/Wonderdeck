@@ -18,14 +18,76 @@ public class BlackjackPlayerClientData : NetworkBehaviour
     
     public override void OnStartClient()
     {
+        _playerType = NetworkManager.ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2;
         if (!IsOwner)
             return;
-        _playerType = NetworkManager.ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2;
         _blackjackService.LocalFirstPlayerCards = new List<CardClientData>();
         _blackjackService.LocalSecondPlayerCards = new List<CardClientData>();
-        _blackjackService.CardsUpdated += OnCardsUpdated;
+        _blackjackService.CardsUpdatedObserverEvent += OnCardsUpdated;
+        _blackjackService.RevealCardsVisualEvent += OnRevealCardsVisual;
         _blackjackService.RoundEnd += OnRoundEnd;
     }
+
+    private void OnRevealCardsVisual(object sender, RevealCardsEventVisualArgs e)
+    {
+        SwitchLocalCardServerRpc(e.DummyCardID, e.OrginalCardID, e.TargetedPlayer, _playerType);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SwitchLocalCardServerRpc(string dummyCardID, string orginalCardID, PlayerType targetedPlayer, PlayerType targetingPlayer)
+    {
+        var playerCards = targetedPlayer == PlayerType.Player1
+            ? _blackjackService.ClientCardDataFirstPlayerNotObfuscated
+            : _blackjackService.ClientCardDataSecondPlayerNotObfuscated;
+
+        CardClientData orginalClientData = null;
+        for (int i = 0; i < playerCards.Count; i++)
+        {
+            var card = playerCards[i];
+            if(card.CardID != orginalCardID)
+                continue;
+            orginalClientData = card;
+            break;
+        }
+
+        if (orginalClientData == null)
+        {
+            //Debug.LogError($"Cant find card in SwitchLocalCardServerRpc, DummyID: {dummyCardID}, OrginalCardID {orginalCardID}");
+            return;
+        }
+
+        SwitchLocalCardObserverRpc(orginalClientData, dummyCardID, targetedPlayer, targetingPlayer);
+    }
+
+    [ObserversRpc]
+    private void SwitchLocalCardObserverRpc(CardClientData orginalClientData, string dummyCardID, PlayerType targetedPlayer, PlayerType targetingPlayer)
+    {
+        _playerType = NetworkManager.ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2;
+        if (targetingPlayer != _playerType)
+            return;
+        var playerCards = targetedPlayer == PlayerType.Player1
+            ? _blackjackService.LocalFirstPlayerCards
+            : _blackjackService.LocalSecondPlayerCards;
+        
+        
+        int index = -1;
+        for (int i = 0; i < playerCards.Count; i++)
+        {
+            var card = playerCards[i];
+            if (card.CardID != dummyCardID)
+                continue;
+            index = playerCards.IndexOf(card);
+            break;
+        }
+        if (index == -1)
+        {
+            //Debug.LogError($"Cant find card in SwitchLocalCardObserverRpc, DummyID: {dummyCardID}, OrginalCardID {orginalClientData.CardID}");
+            return;
+        }
+        playerCards[index] = orginalClientData;
+        _blackjackService.OnRefreshScore();
+    }
+
 
     private void OnRoundEnd(object sender, EventArgs e)
     {
@@ -40,35 +102,47 @@ public class BlackjackPlayerClientData : NetworkBehaviour
         {
             targetPlayerCards.Add(e.Card);
             if(_playerType == e.PlayerType)
-                RequestCardPlay(_playerType, PlayType.Draw, e.Card.CardID);
+                RequestCardPlayServerRpc(_playerType, PlayType.Draw, e.Card.CardID);
         }
         else
         {
             if (targetPlayerCards.Count > 0)
             {
+                
                 var index = -1;
                 for (int i = 0; i < targetPlayerCards.Count; i++)
                 {
                     var card = targetPlayerCards[i];
+                    
+                    
                     if (card.CardID == e.Card.CardID)
                     {
                         index = targetPlayerCards.IndexOf(card);
                         break;
                     }
-                }
 
-                if (index == -1)
-                {
-                    Debug.LogError($"Cant find card {e.Card}");
+                    if (card.IsHidden)
+                    {
+                        var orginalCard = _blackjackService.TryGetOriginalCard(card.CardID);
+                        if (orginalCard == null)
+                            continue;
+                        if (orginalCard.CardId == e.Card.CardID)
+                        {
+                            index = targetPlayerCards.IndexOf(card);
+                            break;
+                        }
+                    }
+                    
                 }
-                targetPlayerCards.RemoveAt(index);
+                if (index != -1) 
+                    targetPlayerCards.RemoveAt(index);;
             }
         }
         _blackjackService.OnCardVisualRequested(e.Card, e.PlayerType, e.TransactionType);
     }
 
     [ServerRpc(RequireOwnership = true)]
-    private void RequestCardPlay(PlayerType playerType, PlayType playType, string cardId)
+    private void RequestCardPlayServerRpc(PlayerType playerType, PlayType playType, string cardId)
     {
         if (string.IsNullOrEmpty(cardId)) return;
         _blackjackService.OnCardPlayed(new CardPlayedEventArgs(cardId, playerType, playType));
@@ -85,7 +159,7 @@ public class BlackjackPlayerClientData : NetworkBehaviour
 
     private void Unsubscribe()
     {
-        _blackjackService.CardsUpdated -= OnCardsUpdated;
+        _blackjackService.CardsUpdatedObserverEvent -= OnCardsUpdated;
         _blackjackService.RoundEnd -= OnRoundEnd;
     }
 }
