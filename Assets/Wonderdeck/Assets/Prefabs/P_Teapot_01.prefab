@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &231125134995432473
+--- !u!1 &7355281773780764425
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,23 +8,23 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5804095373579644239}
-  - component: {fileID: 276270968725266292}
-  - component: {fileID: 5363279437334869932}
+  - component: {fileID: 7276047626022027873}
+  - component: {fileID: 8835185378660323807}
+  - component: {fileID: 3071693494249065162}
   m_Layer: 0
-  m_Name: P_Clock_01
+  m_Name: P_Teapot_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5804095373579644239
+--- !u!4 &7276047626022027873
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 231125134995432473}
+  m_GameObject: {fileID: 7355281773780764425}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -33,21 +33,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &276270968725266292
+--- !u!33 &8835185378660323807
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 231125134995432473}
-  m_Mesh: {fileID: -1056891584527724956, guid: 1dc5e1ff21776b94796d3993204ed97a, type: 3}
---- !u!23 &5363279437334869932
+  m_GameObject: {fileID: 7355281773780764425}
+  m_Mesh: {fileID: 6888475344074434352, guid: b6904a1af6c94184a95f79b73717f6b8, type: 3}
+--- !u!23 &3071693494249065162
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 231125134995432473}
+  m_GameObject: {fileID: 7355281773780764425}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
