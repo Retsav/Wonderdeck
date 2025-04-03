@@ -8,28 +8,53 @@ using Zenject;
 
 public class BlackjackService : IBlackjackService
 {
-    public List<string> FirstPlayerCards { get; set; }
-    public List<string> SecondPlayerCards { get; set; }
-    public List<CardClientData> LocalFirstPlayerCards { get; set; }
-    public List<CardClientData> LocalSecondPlayerCards { get; set; }
-    public List<string> OrginalDeck { get; set; }
-    public List<string> CurrentDeck { get; set; }
+    public List<string> FirstPlayerCards { get; set; } = new();
+    public List<string> SecondPlayerCards { get; set; } = new();
+    public List<CardClientData> ClientCardDataFirstPlayerNotObfuscated { get; set; } = new();
+    public List<CardClientData> ClientCardDataSecondPlayerNotObfuscated { get; set; } = new();
+    public List<CardClientData> LocalFirstPlayerCards { get; set; } = new();
+    public List<CardClientData> LocalSecondPlayerCards { get; set; } = new();
+    public Dictionary<string, CardClientData> OrginalCardToDummy { get; set; } = new();
+    public List<string> OrginalDeck { get; set; } = new();
+    public List<string> CurrentDeck { get; set; } = new();
     public int FirstPlayerScore { get; set; }
     public int SecondPlayerScore { get; set; }
     public int CurrentScoreThreshold { get; set; }
     public BlackjackState BlackjackState { get; set; }
-    
-    public event EventHandler<CardsDataUpdatedEventArgs> CardsUpdated;
+    public bool FirstPlayerDrawsHidden { get; set; }
+    public bool SecondPlayerDrawsHidden { get; set; }
+
+    public event EventHandler<CardsDataUpdatedEventArgs> CardsUpdatedObserverEvent;
     public event EventHandler<GetCardWithSpecificValueEventArgs> CardWithSpecificValueRequested;
     public void OnGetCardWithSpecificValue(GetCardWithSpecificValueEventArgs args) => CardWithSpecificValueRequested?.Invoke(this, args);
 
-    public void OnCardsUpdated(CardsDataUpdatedEventArgs args) => CardsUpdated?.Invoke(this, args);
+    public void OnCardsUpdatedObserverEvent(CardsDataUpdatedEventArgs args) => CardsUpdatedObserverEvent?.Invoke(this, args);
     public event EventHandler<PlayerScoreUpdatedEventArgs> ScoreUpdated;
     public void OnScoreUpdated(PlayerScoreUpdatedEventArgs args) => ScoreUpdated?.Invoke(this, args);
 
     public event EventHandler<CardPlayedEventArgs> CardPlayed;
     public void OnCardPlayed(CardPlayedEventArgs args) => CardPlayed?.Invoke(this, args);
+    public CardSO TryGetOriginalCard(string dummyCardID)
+    {
+        foreach (var cardData in OrginalCardToDummy)
+        {
+            if(cardData.Value.CardID != dummyCardID)
+                continue;
+            return GetCardByID(cardData.Key);
+            /*foreach (var cardID in FirstPlayerCards)
+            {
+                if (cardID != orginalCardID)
+                    continue;
+                return GetCardByID(cardID);
+            }*/
+        }
+        return null;
+    }
+
+    public event EventHandler RoundEndEarly;
     public event EventHandler CardEffectsResolved;
+    public void OnRoundEndEarly() => RoundEndEarly?.Invoke(this, EventArgs.Empty);
+
     public void OnCardEffectsResolved() => CardEffectsResolved?.Invoke(this, EventArgs.Empty);
 
     public event EventHandler<RoundConsequencesEvaluatedEventArgs> RoundConsequencesEvaluated;
@@ -83,9 +108,18 @@ public class BlackjackService : IBlackjackService
         return null;
     }
 
+    public CardSO GetCardByIDFromDeck(string id)
+    {
+        if (!CurrentDeck.Contains(id))
+        {
+            Debug.LogError($"Card with {id} not found in Current Deck.");
+            return null;
+        }
+        var card = GetCardByID(id);
+        return card;
+    }
 
 
-    
     public Sprite GetCardFaceSprite(string id)
     {
         var card = GetCardByID(id);
@@ -118,18 +152,6 @@ public class BlackjackService : IBlackjackService
         Sprite sprite = Array.Find(sprites, s => s.name == spriteName);
         return sprite;
     }
-
-    public event EventHandler<DealSpecificCardEventArgs> DealSpecificCard;
-
-    public void OnDealSpecificCard(string id, PlayerType playerType, bool hideCard)
-    {
-        if (!CurrentDeck.Contains(id))
-        {
-            Debug.LogError($"Card with {id} not found in Current Deck.");
-            return;
-        }
-        DealSpecificCard?.Invoke(this, new DealSpecificCardEventArgs(playerType, id, hideCard));
-    }
     
 
     public event EventHandler<GameStateSetEventArgs> GameStateSet;
@@ -140,10 +162,10 @@ public class BlackjackService : IBlackjackService
     }
 
     public event EventHandler<CardRequestedEventArgs> CardRequestedServer;
-    public void OnCardDrawRequestedServerEvent(PlayerType playerType, bool hideCard) => CardRequestedServer?.Invoke(this, new CardRequestedEventArgs(playerType, hideCard));
+    public void OnCardDrawRequestedServerEvent(PlayerType playerType, HideType hideType) => CardRequestedServer?.Invoke(this, new CardRequestedEventArgs(playerType, hideType));
     public event EventHandler<CardRequestedEventArgs> CardRequestedClient;
 
-    public void OnCardDrawRequestedClientEvent(PlayerType playerType, bool hideCard) => CardRequestedClient?.Invoke(this, new CardRequestedEventArgs(playerType, hideCard));
+    public void OnCardDrawRequestedClientEvent(PlayerType playerType, HideType hideType) => CardRequestedClient?.Invoke(this, new CardRequestedEventArgs(playerType, hideType));
 
     public event EventHandler<PassTurnRequestedEventArgs> PassTurnRequestedServer;
     public event EventHandler RoundEnd;
@@ -163,6 +185,25 @@ public class BlackjackService : IBlackjackService
     public event EventHandler RequestCardSwap;
 
     public void OnRequestCardSwap() => RequestCardSwap?.Invoke(this, EventArgs.Empty);
+    public event EventHandler RefreshScoreEvent;
+    public void OnRefreshScore() => RefreshScoreEvent?.Invoke(this, EventArgs.Empty);
+    public void ChangeDrawHidden(PlayerType playerType, PlayerFilter playerFilter, bool drawHidden)
+    {
+        if (playerType == PlayerType.Player1)
+        {
+            if (playerFilter == PlayerFilter.Opponent)
+                SecondPlayerDrawsHidden = drawHidden;
+            else
+                FirstPlayerDrawsHidden = drawHidden;
+        }
+        else
+        {
+            if (playerFilter == PlayerFilter.Opponent)
+                FirstPlayerDrawsHidden = drawHidden;
+            else
+                SecondPlayerDrawsHidden = drawHidden;
+        }
+    }
 
     public event EventHandler<CardVisualRequestedEventArgs> CardVisualRequested;
     public event EventHandler<int> GameScoreUpdated;
@@ -171,5 +212,10 @@ public class BlackjackService : IBlackjackService
     public void OnScoreThresholdChanged() => ScoreThresholdChanged?.Invoke();
 
     public void OnCardVisualRequested(CardClientData card, PlayerType owner, TransactionType transactionType) => CardVisualRequested?.Invoke(this, new CardVisualRequestedEventArgs(card, owner, transactionType));
+    public event EventHandler<RevealCardsEventArgs> RevealCardsEvent;
+    public void OnRevealCards(PlayerType playerType, PlayerFilter playerFilter) => RevealCardsEvent?.Invoke(this, new RevealCardsEventArgs(playerType, playerFilter));
+    public void OnRevealCardVisual(string orginalCardID, string dummyCardID, PlayerType targetedPlayer) => RevealCardsVisualEvent?.Invoke(this, new RevealCardsEventVisualArgs(orginalCardID, dummyCardID, targetedPlayer));
+
+    public event EventHandler<RevealCardsEventVisualArgs> RevealCardsVisualEvent;
 }
 

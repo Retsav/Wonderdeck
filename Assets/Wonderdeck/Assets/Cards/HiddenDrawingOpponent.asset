@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4473df207fef80d40abb6400af3ab2fa, type: 3}
+  m_Name: HiddenDrawingOpponent
+  m_EditorClassIdentifier: 
+  CardId: 723f0e62-3560-4089-a55d-e8c48bd3c742
+  CardFace: {fileID: -1883756663, guid: 9c9c78f2faad1ab448ff506ace2058bf, type: 3}
+  CardBack: {fileID: 21300000, guid: b5c06a18d36928b49b7b1843d2d9750d, type: 3}
+  ItemIsPersistent: 1
+  DrawCardEffects: []
+  PlayCardEffects:
+  - {fileID: 11400000, guid: a3a49a31d2130b74a8b2770c9ff66772, type: 2}
+  DiscardCardEffects:
+  - {fileID: 11400000, guid: d35f847d30605ee4cba5baa1079236f1, type: 2}
+  description: 'Your opponent will only draw hidden cards until this item gets destroyed.
+    Items
+
+    dealing specific cards will not be hidden from opponent. You can see
+    the hidden
+
+    cards.'
+  cardFacePath: ITEM_HiddenCardDrawing|ITEM_HiddenCardDrawing_0
+  cardBackPath: BackCard

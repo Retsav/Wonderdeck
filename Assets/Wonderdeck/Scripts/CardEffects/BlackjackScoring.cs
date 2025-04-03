@@ -35,11 +35,12 @@ public class BlackjackScoring : NetworkBehaviour
 
     private void Unsubscribe()
     {
+        _blackjackService.RefreshScoreEvent -= OnRefreshScore;
         _blackjackService.CardVisualRequested  -= OnVisualRequested;
         _blackjackService.RoundEnd -= OnRoundEnd;
         _blackjackService.ScoreThresholdChanged -= ScoreThresholdChanged;
         _blackjackService.CardPlayed -= OnCardPlayed;
-        _blackjackService.CardsUpdated -= OnCardsUpdated;
+        _blackjackService.CardsUpdatedObserverEvent -= OnCardsUpdated;
     }
 
     public override void OnStartClient()
@@ -48,13 +49,16 @@ public class BlackjackScoring : NetworkBehaviour
         _blackjackService.CardVisualRequested += OnVisualRequested;
         _blackjackService.RoundEnd += OnRoundEnd;
         _blackjackService.ScoreThresholdChanged += ScoreThresholdChanged;
-        _blackjackService.CardsUpdated += OnCardsUpdated;
+        _blackjackService.CardsUpdatedObserverEvent += OnCardsUpdated;
         _blackjackService.CardPlayed += OnCardPlayed;
+        _blackjackService.RefreshScoreEvent += OnRefreshScore;
         if (_networkingService.GetPlayerType(NetworkManager.ClientManager.Connection) != PlayerType.Player2) return;
         firstPlayerScoreObject.transform.Rotate(new Vector3(0f, 180f, 0f));
         secondPlayerScoreObject.transform.Rotate(new Vector3(0f, 180f, 0f));
 
     }
+
+    private void OnRefreshScore(object sender, EventArgs e) => RefreshScoresFromServer();
 
     private void OnCardsUpdated(object sender, CardsDataUpdatedEventArgs e) => RefreshScoresFromServer();
 
@@ -86,7 +90,7 @@ public class BlackjackScoring : NetworkBehaviour
         _hasHiddenCard = false;
         foreach (var card in cardClientDataList)
         {
-            if (card.IsHidden && card.Owner != currentPlayer)
+            if (card.IsHidden || string.IsNullOrEmpty(card.CardName))
             {
                 _hasHiddenCard = true;
                 continue;

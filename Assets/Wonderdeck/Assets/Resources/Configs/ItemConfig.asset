@@ -23,6 +23,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 66d94d4be6f75804fac082aa887347ed, type: 2}
   - {fileID: 11400000, guid: 9cbe17699dfb39a418a786d29b14f36d, type: 2}
   - {fileID: 11400000, guid: 4ebca699ab5fc9248a7cc15a04067526, type: 2}
+  - {fileID: 11400000, guid: f8d20e52d73e4e047acca402bc018820, type: 2}
+  - {fileID: 11400000, guid: b57a28ade1309024d86653a252a6ec14, type: 2}
+  - {fileID: 11400000, guid: c878e9728c191de46b0ac245aff81602, type: 2}
   consequenceItemCardsFirstTier:
   - {fileID: 11400000, guid: f7592ee5032fc8741a4f81fc6e486e94, type: 2}
   - {fileID: 11400000, guid: caa8877195ebd0a4795dcf8d075906d9, type: 2}

@@ -8,38 +8,46 @@ public interface IBlackjackService
 {
     public List<string> FirstPlayerCards { get; set; }
     public List<string> SecondPlayerCards { get; set; }
-    public List<CardClientData> LocalFirstPlayerCards { get; set; }
+    public List<CardClientData> ClientCardDataFirstPlayerNotObfuscated { get; set; }
+    public List<CardClientData> ClientCardDataSecondPlayerNotObfuscated { get; set; }
+    public List<CardClientData> LocalFirstPlayerCards { get; set; } 
     public List<CardClientData> LocalSecondPlayerCards { get; set; }
+    public Dictionary<string, CardClientData> OrginalCardToDummy { get; set; }
+    
     public List<string> OrginalDeck { get; set; }
     public List<string> CurrentDeck { get; set; }
     public int FirstPlayerScore { get; set; }
     public int SecondPlayerScore { get; set; }
     public int CurrentScoreThreshold { get; set; }
     public BlackjackState BlackjackState { get; set; }
+    public bool FirstPlayerDrawsHidden { get; set; }
+    public bool SecondPlayerDrawsHidden { get; set; }
     
-    public event EventHandler<CardsDataUpdatedEventArgs> CardsUpdated;
+    public event EventHandler<CardsDataUpdatedEventArgs> CardsUpdatedObserverEvent;
     public event EventHandler<GetCardWithSpecificValueEventArgs> CardWithSpecificValueRequested;
     public void OnGetCardWithSpecificValue(GetCardWithSpecificValueEventArgs args);
-    public void OnCardsUpdated(CardsDataUpdatedEventArgs args);
+    public void OnCardsUpdatedObserverEvent(CardsDataUpdatedEventArgs args);
     public event EventHandler<PlayerScoreUpdatedEventArgs> ScoreUpdated;
     public void OnScoreUpdated(PlayerScoreUpdatedEventArgs args);
     public event EventHandler<CardPlayedEventArgs> CardPlayed;
     public void OnCardPlayed(CardPlayedEventArgs args);
+    public CardSO TryGetOriginalCard(string dummyCardID);
     public event EventHandler CardEffectsResolved;
+    public event EventHandler RoundEndEarly;
+    public void OnRoundEndEarly();
     public void OnCardEffectsResolved();
     public event EventHandler<RoundConsequencesEvaluatedEventArgs> RoundConsequencesEvaluated;
     public void OnRoundConsequencesEvaluated(RoundConsequencesEvaluatedEventArgs args);
     public CardSO GetCardByID(string id, NetworkConnection conn, PlayerType playerType);
     public CardSO GetCardByID(string id);
+    public CardSO GetCardByIDFromDeck(string id);
     public Sprite GetCardFaceSprite(string id);
-    public event EventHandler<DealSpecificCardEventArgs> DealSpecificCard; 
-    public void OnDealSpecificCard(string id, PlayerType playerType, bool hideCard);
     public event EventHandler<GameStateSetEventArgs> GameStateSet;
     public void OnGameStateSet(BlackjackState state);
     public event EventHandler<CardRequestedEventArgs> CardRequestedServer;
-    public void OnCardDrawRequestedServerEvent(PlayerType playerType, bool hideCard);
+    public void OnCardDrawRequestedServerEvent(PlayerType playerType, HideType hideType);
     public event EventHandler<CardRequestedEventArgs> CardRequestedClient;
-    public void OnCardDrawRequestedClientEvent(PlayerType playerType, bool hideCard);
+    public void OnCardDrawRequestedClientEvent(PlayerType playerType, HideType hideType);
     public event EventHandler<PassTurnRequestedEventArgs> PassTurnRequestedServer;
     public event EventHandler RoundEnd;
     public void OnRoundEnd();
@@ -52,6 +60,9 @@ public interface IBlackjackService
     public event EventHandler<PlayerType> RequestCardDeletion;
     public event EventHandler RequestCardSwap;
     public void OnRequestCardSwap();
+    public event EventHandler RefreshScoreEvent;
+    public void OnRefreshScore();
+    public void ChangeDrawHidden(PlayerType playerType, PlayerFilter playerFilter, bool drawHidden);
     
     public event EventHandler<CardVisualRequestedEventArgs> CardVisualRequested;
     public event EventHandler<int> GameScoreUpdated;
@@ -59,7 +70,26 @@ public interface IBlackjackService
     public event Action ScoreThresholdChanged;
     public void OnScoreThresholdChanged();
     public void OnCardVisualRequested(CardClientData card, PlayerType owner, TransactionType transactionType);
+    public event EventHandler<RevealCardsEventArgs> RevealCardsEvent;
+    public void OnRevealCards(PlayerType playerType, PlayerFilter playerFilter);
+    public void OnRevealCardVisual(string orginalCardID, string dummyCardID, PlayerType targetedPlayer);
+    public event EventHandler<RevealCardsEventVisualArgs> RevealCardsVisualEvent;
 }
+
+public class RevealCardsEventVisualArgs : EventArgs
+{
+    public string OrginalCardID;
+    public string DummyCardID;
+    public PlayerType TargetedPlayer;
+
+    public RevealCardsEventVisualArgs(string orginalCardID, string dummyCardID, PlayerType targetedPlayer)
+    {
+        OrginalCardID = orginalCardID;
+        DummyCardID = dummyCardID;
+        TargetedPlayer = targetedPlayer;
+    }
+}
+
 
 public class CardVisualRequestedEventArgs : EventArgs
 {
@@ -91,13 +121,13 @@ public class DealSpecificCardEventArgs : EventArgs
 {
     public PlayerType Player { get; private set; }
     public string CardID { get; private set; }
-    public bool HideCard;
+    public HideType HideType;
 
-    public DealSpecificCardEventArgs(PlayerType playerType, string cardID, bool hideCard)
+    public DealSpecificCardEventArgs(PlayerType playerType, string cardID, HideType hideType)
     {
         Player = playerType;
         CardID = cardID;
-        HideCard = hideCard;
+        HideType = hideType;
     }
 }
 
@@ -148,12 +178,12 @@ public class GameStateSetEventArgs : EventArgs
 public class CardRequestedEventArgs : EventArgs
 {
     public PlayerType PlayerType { get; private set; }
-    public bool HideCard { get; private set; }
+    public HideType HideType { get; private set; }
 
-    public CardRequestedEventArgs(PlayerType playerType, bool hideCard)
+    public CardRequestedEventArgs(PlayerType playerType, HideType hideType)
     {
         PlayerType = playerType;
-        HideCard = hideCard;
+        HideType = hideType;
     }
 }
 
@@ -195,7 +225,23 @@ public class CardPlayedEventArgs : EventArgs
     }
 }
 
-public enum PlayerType { Player1, Player2 }
+public class RevealCardsEventArgs : EventArgs
+{
+    public PlayerType PlayerType;
+    public PlayerFilter PlayerFilter;
+
+    public RevealCardsEventArgs(PlayerType playerType, PlayerFilter playerFilter)
+    {
+        PlayerType = playerType;
+        PlayerFilter = playerFilter;
+    }
+}
+
+public enum PlayerType
+{
+    Player1 = 0, 
+    Player2 = 1
+}
 public enum BlackjackState
 {
     Player1Turn,
