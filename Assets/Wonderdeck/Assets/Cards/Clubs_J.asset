@@ -15,6 +15,7 @@ MonoBehaviour:
   CardId: fdf0802d-0718-46b9-a1bd-df9f2df27855
   CardFace: {fileID: 405725805, guid: ffc29d20e2d951f438322e7afd913fc9, type: 3}
   CardBack: {fileID: 21300000, guid: b5c06a18d36928b49b7b1843d2d9750d, type: 3}
+  ItemIsPersistent: 0
   DrawCardEffects:
   - {fileID: 11400000, guid: 72c384d84eaceec439fbca04bc7a21c2, type: 2}
   PlayCardEffects: []

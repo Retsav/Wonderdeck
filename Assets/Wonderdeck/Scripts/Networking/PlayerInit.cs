@@ -13,7 +13,7 @@ public class PlayerInit : NetworkBehaviour
     [SerializeField] private Material firstPlayerMaterial;
     [SerializeField] private Material secondPlayerMaterial;
     
-    [FormerlySerializedAs("cameraObject")] [SerializeField] private GameObject cinemachineVirtualCameraObject;
+    [SerializeField] private GameObject cinemachineVirtualCameraObject;
     [SerializeField] private GameObject cameraGameObject;
     [SerializeField] private CinemachineBrain _cinemachineBrain;
 

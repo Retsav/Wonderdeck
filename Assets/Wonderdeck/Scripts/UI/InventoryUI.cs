@@ -121,10 +121,6 @@ public class InventoryUI : NetworkBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         confirmButton.interactable = CanUseItems(_blackjackService.BlackjackState);
-        if (!confirmButton.interactable)
-        {
-            
-        }
         ShowGroup();
         PopulateItemButtons();
     }
@@ -146,7 +142,8 @@ public class InventoryUI : NetworkBehaviour
 
     public void SelectItem(InventoryButtonUI button)
     {
-        if (_currentlySelectedInventoryButton != null) _currentlySelectedInventoryButton.shadow.enabled = false;
+        if (_currentlySelectedInventoryButton != null) 
+            _currentlySelectedInventoryButton.shadow.enabled = false;
         _currentlySelectedInventoryButton = button;
         _currentlySelectedInventoryButton.shadow.enabled = true;
         if (!string.IsNullOrEmpty(_currentlySelectedInventoryButton.itemID))
@@ -169,10 +166,7 @@ public class InventoryUI : NetworkBehaviour
             if (child.TryGetComponent(out InventoryButtonUI inventoryButton))
                 inventoryButton.Clear();
             else
-            {
                 Debug.LogError("Child of InventoryButtonParent doesnt have InventoryButtonUI attached.");
-                continue;
-            }
         }
     }
 
@@ -199,7 +193,6 @@ public class InventoryUI : NetworkBehaviour
             else
             {
                 Debug.LogError("Child of InventoryButtonParent doesnt have InventoryButtonUI attached.");
-                continue;
             }
         }
     }

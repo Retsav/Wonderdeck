@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: Diamonds_A
   m_EditorClassIdentifier: 
   CardId: e7baff6f-673f-44a6-ac7d-b37403a25ac8
-  CardFace: {fileID: 1690691268, guid: ffc29d20e2d951f438322e7afd913fc9, type: 3}
+  CardFace: {fileID: 42137829, guid: ffc29d20e2d951f438322e7afd913fc9, type: 3}
   CardBack: {fileID: 21300000, guid: b5c06a18d36928b49b7b1843d2d9750d, type: 3}
+  ItemIsPersistent: 0
   DrawCardEffects:
   - {fileID: 11400000, guid: 92c5318ba0fd90c439df1f5a2ecedd68, type: 2}
   - {fileID: 11400000, guid: 72c384d84eaceec439fbca04bc7a21c2, type: 2}
@@ -22,5 +23,6 @@ MonoBehaviour:
   DiscardCardEffects:
   - {fileID: 11400000, guid: 929aae6d68839334fb9798b533b0570e, type: 2}
   - {fileID: 11400000, guid: d10d4c80a27d53e448283da5e1ec3cc2, type: 2}
-  cardFacePath: Cards|Cards_1
+  description: 
+  cardFacePath: Cards|Cards_0
   cardBackPath: BackCard
