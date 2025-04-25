@@ -23,13 +23,15 @@ public class InventoryTokenUIHandler : MonoBehaviour, ICameraInteractable
     private IInventoryService _inventoryService;
     private ISelectModeService _selectModeService;
     private INetworkingService _networkingService;
+    private ITutorialService _tutorialService;
 
     [Inject]
-    private void ResolveDependencies(IInventoryService inventoryService, ISelectModeService selectModeService, INetworkingService networkingService)
+    private void ResolveDependencies(IInventoryService inventoryService, ISelectModeService selectModeService, INetworkingService networkingService, ITutorialService tutorialService)
     {
         _inventoryService = inventoryService;
         _selectModeService = selectModeService;
         _networkingService = networkingService;
+        _tutorialService = tutorialService;
     }
     
     private void Start() => uiCanvasGroup.DOFade(0f, 0f);
@@ -56,10 +58,18 @@ public class InventoryTokenUIHandler : MonoBehaviour, ICameraInteractable
         _owner = owner;
         StringBuilder textBuilder = new StringBuilder();
         if (item.ItemIsPersistent) textBuilder.AppendLine("<color=red>PERSISTENT</color>");
-        if (_owner == PlayerType.Player1)
-            textBuilder.Append("Owner: ").Append(_networkingService.FirstPlayerNickname);
+
+        if (!_tutorialService.IsTutorial)
+        {
+            textBuilder.Append("Owner: ").Append(_owner == PlayerType.Player1
+                ? _networkingService.FirstPlayerNickname
+                : _networkingService.SecondPlayerNickname);
+        }
         else
-            textBuilder.Append("Owner: ").Append(_networkingService.SecondPlayerNickname);
+        {
+            textBuilder.Append("Owner: Kizo");
+        }
+
         textBuilder.AppendLine(); 
         textBuilder.Append(item.name);
         uiTextLabel.text = textBuilder.ToString();

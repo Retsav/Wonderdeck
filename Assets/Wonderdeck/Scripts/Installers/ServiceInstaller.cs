@@ -15,5 +15,6 @@ public class ServiceInstaller : Installer<ServiceInstaller>
         Container.Bind<IPostProcessingService>().To<PostProcessingService>().AsSingle();
         Container.Bind<IEnvironmentService>().To<EnvironmentService>().AsSingle();
         Container.Bind<ISelectModeService>().To<SelectModeService>().AsSingle();
+        Container.Bind<ITutorialService>().To<TutorialService>().AsSingle();
     }
 }
