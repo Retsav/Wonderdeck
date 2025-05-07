@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RevealOpponentCards
   m_EditorClassIdentifier: 
   CardId: 1c92a2e6-1679-4adb-bec1-2266315505d2
-  CardFace: {fileID: 1734770724, guid: a6dc2f34cd4b1ab4989bdc41bd1796fe, type: 3}
+  CardFace: {fileID: 1946523847, guid: 2a99b63b33128b741989d9dceb88dfbe, type: 3}
   CardBack: {fileID: 21300000, guid: b5c06a18d36928b49b7b1843d2d9750d, type: 3}
   ItemIsPersistent: 0
   DrawCardEffects: []
@@ -23,5 +23,5 @@ MonoBehaviour:
   description: 'Reveals hidden cards of your opponent.
 
 '
-  cardFacePath: ITEM_RevealOpponentCards|ITEM_RevealOpponentCards_0
+  cardFacePath: ITEM_Additional|ITEM_Additional_2
   cardBackPath: BackCard

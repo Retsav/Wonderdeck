@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ReduceDamage10
   m_EditorClassIdentifier: 
   CardId: 388a3701-2d67-45fd-b40d-0a8ea2d19c0b
-  CardFace: {fileID: 315855765, guid: c9ff2fc26ee4e764f884e2b8bf57c755, type: 3}
+  CardFace: {fileID: -281918067, guid: 3a7af05202c13934ea22c1b36e1580c3, type: 3}
   CardBack: {fileID: 21300000, guid: b5c06a18d36928b49b7b1843d2d9750d, type: 3}
   ItemIsPersistent: 1
   DrawCardEffects: []
@@ -22,5 +22,5 @@ MonoBehaviour:
   DiscardCardEffects:
   - {fileID: 11400000, guid: 2f7fe3e731efd02429119ca7fb1184a6, type: 2}
   description: Decreases the damage you will take if this round will be lost.
-  cardFacePath: ITEM_ReduceDamage|ITEM_ReduceDamage_1
+  cardFacePath: ITEM_ReduceDamage 1|ITEM_ReduceDamage 1_2
   cardBackPath: BackCard
