@@ -6,14 +6,15 @@ using FishNet.Connection;
 using FishNet.Object;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Zenject;
 
 public class DamageCalculatorUI : NetworkBehaviour
 {
     [SerializeField] private GameObject firstPlayerDamageCalculatorGameObject;
     [SerializeField] private GameObject secondPlayerDamageCalculatorGameObject;
-    private TextMeshProUGUI _firstPlayerDamageLabel;
-    private TextMeshProUGUI _secondPlayerDamageLabel;
+    [FormerlySerializedAs("_firstPlayerDamageLabel")] [SerializeField] private TextMeshProUGUI firstPlayerDamageLabel;
+    [FormerlySerializedAs("_secondPlayerDamageLabel")] [SerializeField] private TextMeshProUGUI secondPlayerDamageLabel;
     
     
     private IBlackjackService _blackjackService;
@@ -48,9 +49,7 @@ public class DamageCalculatorUI : NetworkBehaviour
     public override void OnStartClient()
     {
         _playerType = ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2;
-        _firstPlayerDamageLabel = firstPlayerDamageCalculatorGameObject.GetComponentInChildren<TextMeshProUGUI>();
-        _secondPlayerDamageLabel = secondPlayerDamageCalculatorGameObject.GetComponentInChildren<TextMeshProUGUI>();
-        _orginalTextColor = _firstPlayerDamageLabel.color;
+        _orginalTextColor = firstPlayerDamageLabel.color;
         _blackjackService.RefreshScoreEvent += OnRefreshScore;
         _blackjackService.CardVisualRequested += OnVisualRequested;
         _blackjackService.RoundEnd += OnRoundEnd;
@@ -78,8 +77,8 @@ public class DamageCalculatorUI : NetworkBehaviour
 
     private void OnRoundEnd(object sender, EventArgs e)
     {
-        _firstPlayerDamageLabel.text = $"0";
-        _secondPlayerDamageLabel.text = $"0";
+        firstPlayerDamageLabel.text = $"0";
+        secondPlayerDamageLabel.text = $"0";
     }
 
     private void RefreshScoresFromServer()
@@ -119,8 +118,8 @@ public class DamageCalculatorUI : NetworkBehaviour
             ? _healthService.FirstPlayerDamageModifier 
             : _healthService.SecondPlayerDamageModifier;
         var label = player == PlayerType.Player1 
-            ? _firstPlayerDamageLabel 
-            : _secondPlayerDamageLabel;
+            ? firstPlayerDamageLabel 
+            : secondPlayerDamageLabel;
         if (damageModifier > 0)
         {
             damage += damageModifier;
