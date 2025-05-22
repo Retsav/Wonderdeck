@@ -138,7 +138,7 @@ public class BlackjackPlayerClientData : NetworkBehaviour
                     targetPlayerCards.RemoveAt(index);;
             }
         }
-        _blackjackService.OnCardVisualRequested(e.Card, e.PlayerType, e.TransactionType);
+        _blackjackService.OnCardVisualRequested(e.Card, e.PlayerType, e.TransactionType, e.ActivateParticles);
     }
 
     [ServerRpc(RequireOwnership = true)]

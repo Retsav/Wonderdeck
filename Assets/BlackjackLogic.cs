@@ -229,7 +229,7 @@ public class BlackjackLogic : NetworkBehaviour
                var cardData = createdCardDatas[i];
                var fakeCardData = CreateFakeCardData(cardData.CardID, playerType);
                _blackjackService.OrginalCardToDummy.Add(cardData.CardID, fakeCardData);
-               updateEventDatas.Add(new CardUpdateEventData(cardData, playerType, playerType));
+               updateEventDatas.Add(new CardUpdateEventData(cardData, playerType, playerType, true));
                updateEventDatas.Add(new CardUpdateEventData(fakeCardData, playerType, playerType.GetOppositeType()));
             }
             break;
@@ -239,7 +239,7 @@ public class BlackjackLogic : NetworkBehaviour
                var cardData = createdCardDatas[i];
                var fakeCardData = CreateFakeCardData(cardData.CardID, playerType);
                updateEventDatas.Add(new CardUpdateEventData(fakeCardData, playerType, playerType));
-               updateEventDatas.Add(new CardUpdateEventData(cardData, playerType, playerType.GetOppositeType()));
+               updateEventDatas.Add(new CardUpdateEventData(cardData, playerType, playerType.GetOppositeType(), true));
                _blackjackService.OrginalCardToDummy.Add(cardData.CardID, fakeCardData);
             }
             break;
@@ -304,7 +304,7 @@ public class BlackjackLogic : NetworkBehaviour
                var cardData = createdCardDatas[i];
                var fakeCardData = CreateFakeCardData(cardData.CardID, playerType);
                _blackjackService.OrginalCardToDummy.Add(cardData.CardID, fakeCardData);
-               updateEventDatas.Add(new CardUpdateEventData(cardData, playerType, playerType));
+               updateEventDatas.Add(new CardUpdateEventData(cardData, playerType, playerType, true));
                updateEventDatas.Add(new CardUpdateEventData(fakeCardData, playerType, playerType.GetOppositeType()));
             }
             break;
@@ -314,7 +314,7 @@ public class BlackjackLogic : NetworkBehaviour
                var cardData = createdCardDatas[i];
                var fakeCardData = CreateFakeCardData(cardData.CardID, playerType);
                updateEventDatas.Add(new CardUpdateEventData(fakeCardData, playerType, playerType));
-               updateEventDatas.Add(new CardUpdateEventData(cardData, playerType, playerType.GetOppositeType()));
+               updateEventDatas.Add(new CardUpdateEventData(cardData, playerType, playerType.GetOppositeType(), true));
                _blackjackService.OrginalCardToDummy.Add(cardData.CardID, fakeCardData);
             }
             break;
@@ -572,7 +572,7 @@ public class BlackjackLogic : NetworkBehaviour
       {
          if (updateEvent.cardReceiver != _playerType)
             continue;
-         _blackjackService.OnCardsUpdatedObserverEvent(new CardsDataUpdatedEventArgs(updateEvent.cardClientData, updateEvent.cardOwner, TransactionType.ADD));
+         _blackjackService.OnCardsUpdatedObserverEvent(new CardsDataUpdatedEventArgs(updateEvent.cardClientData, updateEvent.cardOwner, TransactionType.ADD, updateEvent.activateParticles));
       }
 
    }
