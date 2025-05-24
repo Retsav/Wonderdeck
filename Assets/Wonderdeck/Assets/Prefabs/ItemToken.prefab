@@ -545,11 +545,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43aceb4f46f3d7d4eb779ba09959a487, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 0
-  _addedNetworkObject: {fileID: 0}
-  _networkObjectCache: {fileID: 0}
   uiCanvasGroup: {fileID: 8384739682276305063}
   uiTextLabel: {fileID: 532471008890497253}
+  item: {fileID: 0}
 --- !u!65 &6800935847154437182
 BoxCollider:
   m_ObjectHideFlags: 0

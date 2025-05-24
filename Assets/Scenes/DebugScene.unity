@@ -183,7 +183,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -990,7 +991,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -1393,6 +1395,11 @@ MonoBehaviour:
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: 987237194}
   _networkObjectCache: {fileID: 0}
+  dummyTokenPrefab: {fileID: 0}
+  player1DummyTokenSpawnPoint: {fileID: 0}
+  player1DummyTokenTargetPoint: {fileID: 0}
+  player2DummyTokenSpawnPoint: {fileID: 0}
+  player2DummyTokenTargetPoint: {fileID: 0}
 --- !u!4 &987237196
 Transform:
   m_ObjectHideFlags: 0
@@ -2111,7 +2118,11 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 0}
   firstPlayerCardsSpawnPoint: {fileID: 1843158586}
   secondPlayerCardsSpawnPoint: {fileID: 606443031}
+  firstPlayerFirstCardPosition: {fileID: 0}
+  secondPlayerFirstCardPosition: {fileID: 0}
   cardsParent: {fileID: 756025465}
+  unknownCardTexture: {fileID: 0}
+  cardsSpriteAtlas: {fileID: 0}
   cardPrefab: {fileID: 3239276678880340020, guid: 036596ffb6cfe934b943fb51bdf606fc,
     type: 3}
   cardSpacing: 0.2
