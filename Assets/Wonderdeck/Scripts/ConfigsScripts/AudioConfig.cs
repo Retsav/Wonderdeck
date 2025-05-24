@@ -14,6 +14,7 @@ public class AudioConfig : ScriptableObject
     public string uiClickPath;
     public string useItemPath;
     public string openInventoryPath;
+    public string tokenPlaced;
     public string standDrawPath;
     public string winPath;
 }

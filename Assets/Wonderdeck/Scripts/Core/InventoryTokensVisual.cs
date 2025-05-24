@@ -14,20 +14,25 @@ public class InventoryTokensVisual : NetworkBehaviour
     private IBlackjackService _blackjackService;
     private IInventoryService _inventoryService;
     private ISelectModeService _selectModeService;
+    private IAudioService _audioService;
+
+    private AudioConfig _audioConfig;
 
     private readonly List<GameObject> _spawnedTokens = new();
 
     [Inject]
-    private void ResolveDependencies(IBlackjackService blackjackService, IInventoryService inventoryService, ISelectModeService selectModeService)
+    private void ResolveDependencies(IBlackjackService blackjackService, IInventoryService inventoryService, ISelectModeService selectModeService, IAudioService audioService)
     {
         _blackjackService = blackjackService;
         _inventoryService = inventoryService;
         _selectModeService = selectModeService;
+        _audioService = audioService;
     }
     
     
     public override void OnStartClient()
     {
+        _audioConfig = DebugConfigLoader.Instance.GetConfig<AudioConfig>();
         _blackjackService.RoundEnd += OnRoundEnd;
         _selectModeService.RequestSelectionEffectExecution += OnRequestSelection;
         if (!NetworkManager.ClientManager.Connection.IsHost) return;
@@ -102,6 +107,7 @@ public class InventoryTokensVisual : NetworkBehaviour
         if (go.TryGetComponent(out InventoryTokenUIHandler uiHandler)) uiHandler.Init(cardId, owner);
         else
             Debug.LogError("Couldnt find InventoryTokenUIHandler in Spawned Token.");
+        _audioService.OnPlaySoundAtPosition(go.transform.position, _audioConfig.tokenPlaced);
     }
 
     private void OnDestroy()

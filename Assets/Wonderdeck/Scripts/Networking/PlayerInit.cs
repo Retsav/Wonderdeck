@@ -16,6 +16,8 @@ public class PlayerInit : NetworkBehaviour
     [SerializeField] private GameObject cinemachineVirtualCameraObject;
     [SerializeField] private GameObject cameraGameObject;
     [SerializeField] private CinemachineBrain _cinemachineBrain;
+    [SerializeField] private MusicManager musicManager;
+    
 
 
     [SerializeField] private Animator animator;
@@ -46,7 +48,10 @@ public class PlayerInit : NetworkBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         if (IsOwner)
+        {
             _networkingService.SetMyPlayer(gameObject);
+            musicManager.StartMusic();
+        }
         else
         {
             cinemachineVirtualCameraObject.GetComponent<CinemachineVirtualCamera>().enabled = false;

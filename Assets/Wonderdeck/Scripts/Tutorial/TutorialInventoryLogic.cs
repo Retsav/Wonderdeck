@@ -21,6 +21,7 @@ public class TutorialInventoryLogic : MonoBehaviour
     
     private IInventoryService _inventoryService;
     private ITutorialService _tutorialService;
+    private IAudioService _audioService;
     
     private Queue<SpawnRequest> spawnQueue = new Queue<SpawnRequest>();
     private bool isProcessingQueue;
@@ -29,10 +30,11 @@ public class TutorialInventoryLogic : MonoBehaviour
 
 
     [Inject]
-    private void ResolveDependencies(IInventoryService inventoryService, ITutorialService tutorialService)
+    private void ResolveDependencies(IInventoryService inventoryService, ITutorialService tutorialService, IAudioService audioService)
     {
         _inventoryService = inventoryService;
         _tutorialService = tutorialService;
+        _audioService = audioService;
     }
     
     public void DealItem(PlayerType playerType, string itemID)
