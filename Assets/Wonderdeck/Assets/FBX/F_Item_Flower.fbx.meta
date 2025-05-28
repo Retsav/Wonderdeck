@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 2edb271d6083b11438cd1e8d44b6a378
+guid: aec10e0eed146b04e8916bf0dc5b034d
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -7,13 +7,8 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: M_Queen
-    second: {fileID: 2100000, guid: 0e0d10b99d0cc914ba35eae37c69641c, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: M_Queen_Hair
-    second: {fileID: 2100000, guid: ccc4a35a92c09114391a16e5c22687af, type: 2}
+      name: M_Folaige
+    second: {fileID: 2100000, guid: d99c531b4b59dad46824e0ac87a956a7, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -34,7 +29,7 @@ ModelImporter:
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
     importConstraints: 0
-    animationCompression: 3
+    animationCompression: 1
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
@@ -103,13 +98,13 @@ ModelImporter:
     globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
-    hasExtraRoot: 1
+    hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   autoGenerateAvatarMappingIfUnspecified: 1
-  animationType: 3
+  animationType: 2
   humanoidOversampling: 1
-  avatarSetup: 1
+  avatarSetup: 0
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
   importBlendShapeDeformPercent: 1
   remapMaterialsIfMaterialImportModeIsNone: 0
