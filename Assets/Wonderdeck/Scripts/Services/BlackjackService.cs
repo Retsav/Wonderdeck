@@ -211,7 +211,7 @@ public class BlackjackService : IBlackjackService
     public event Action ScoreThresholdChanged;
     public void OnScoreThresholdChanged() => ScoreThresholdChanged?.Invoke();
 
-    public void OnCardVisualRequested(CardClientData card, PlayerType owner, TransactionType transactionType) => CardVisualRequested?.Invoke(this, new CardVisualRequestedEventArgs(card, owner, transactionType));
+    public void OnCardVisualRequested(CardClientData card, PlayerType owner, TransactionType transactionType, bool showParticles = false) => CardVisualRequested?.Invoke(this, new CardVisualRequestedEventArgs(card, owner, transactionType, showParticles));
     public event EventHandler<RevealCardsEventArgs> RevealCardsEvent;
     public void OnRevealCards(PlayerType playerType, PlayerFilter playerFilter) => RevealCardsEvent?.Invoke(this, new RevealCardsEventArgs(playerType, playerFilter));
     public void OnRevealCardVisual(string orginalCardID, string dummyCardID, PlayerType targetedPlayer) => RevealCardsVisualEvent?.Invoke(this, new RevealCardsEventVisualArgs(orginalCardID, dummyCardID, targetedPlayer));

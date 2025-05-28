@@ -35,5 +35,6 @@ MonoBehaviour:
   uiClickPath: Audio/Audio_ClickUI
   useItemPath: Audio/Audio_Item_01
   openInventoryPath: Audio/Audio_Inventory
+  tokenPlaced: Audio/Audio_Item_Placed
   standDrawPath: Audio/Audio_StandDraw
   winPath: Audio/Audio_Win

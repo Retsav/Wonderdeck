@@ -69,7 +69,7 @@ public interface IBlackjackService
     public void OnGameScoreUpdated(int newScore);
     public event Action ScoreThresholdChanged;
     public void OnScoreThresholdChanged();
-    public void OnCardVisualRequested(CardClientData card, PlayerType owner, TransactionType transactionType);
+    public void OnCardVisualRequested(CardClientData card, PlayerType owner, TransactionType transactionType, bool activateParticles = false);
     public event EventHandler<RevealCardsEventArgs> RevealCardsEvent;
     public void OnRevealCards(PlayerType playerType, PlayerFilter playerFilter);
     public void OnRevealCardVisual(string orginalCardID, string dummyCardID, PlayerType targetedPlayer);
@@ -96,12 +96,14 @@ public class CardVisualRequestedEventArgs : EventArgs
     public CardClientData Card;
     public PlayerType Owner;
     public TransactionType Transaction;
+    public bool ShowParticles;
 
-    public CardVisualRequestedEventArgs(CardClientData card, PlayerType owner, TransactionType transactionType)
+    public CardVisualRequestedEventArgs(CardClientData card, PlayerType owner, TransactionType transactionType, bool showParticles = false)
     {
         Card = card;
         Owner = owner;
         Transaction = transactionType;
+        ShowParticles = showParticles;
     } 
 }
 
@@ -192,11 +194,13 @@ public class CardsDataUpdatedEventArgs : EventArgs
     public CardClientData Card { get; private set; }
     public PlayerType PlayerType { get; private set; }
     public TransactionType TransactionType { get; private set; }
-    public CardsDataUpdatedEventArgs(CardClientData card, PlayerType playerType, TransactionType transactionType)
+    public bool ActivateParticles { get; private set; }
+    public CardsDataUpdatedEventArgs(CardClientData card, PlayerType playerType, TransactionType transactionType, bool activateParticles = false)
     {
         Card = card;
         PlayerType = playerType;
         TransactionType = transactionType;
+        ActivateParticles = activateParticles;
     }
 }
 

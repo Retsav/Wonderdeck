@@ -62,35 +62,35 @@ public class LightHallucination : BaseConsequence
     private void ApplyCameraEffectsTween()
     {
         if (_noise == null) return;
-        DOTween.To(() => _noise.m_AmplitudeGain, x => _noise.m_AmplitudeGain = x, 0.5f, 0.5f).SetId(this);
-        DOTween.To(() => _noise.m_FrequencyGain, x => _noise.m_FrequencyGain = x, 0.5f, 0.5f).SetId(this);
+        DOTween.To(() => _noise.m_AmplitudeGain, x => _noise.m_AmplitudeGain = x, 0.5f, 0.5f).SetId(this).SetUpdate(true);
+        DOTween.To(() => _noise.m_FrequencyGain, x => _noise.m_FrequencyGain = x, 0.5f, 0.5f).SetId(this).SetUpdate(true);
     }
     
     private void ResetCameraEffectsTween()
     {
         if (_noise == null) return;
-        DOTween.To(() => _noise.m_AmplitudeGain, x => _noise.m_AmplitudeGain = x, 0f, 0.5f).SetId(this);
-        DOTween.To(() => _noise.m_FrequencyGain, x => _noise.m_FrequencyGain = x, 0f, 0.5f).SetId(this);
+        DOTween.To(() => _noise.m_AmplitudeGain, x => _noise.m_AmplitudeGain = x, 0f, 0.5f).SetId(this).SetUpdate(true);
+        DOTween.To(() => _noise.m_FrequencyGain, x => _noise.m_FrequencyGain = x, 0f, 0.5f).SetId(this).SetUpdate(true);
     }
     
     private void ApplyEffectsTween()
     {
         if (_vignette != null)
-            DOTween.To(() => _vignette.intensity.value, x => _vignette.intensity.value = x, 0.4f, 0.5f).SetId(this);
+            DOTween.To(() => _vignette.intensity.value, x => _vignette.intensity.value = x, 0.4f, 0.5f).SetId(this).SetUpdate(true);
         if (_filmGrain != null)
-            DOTween.To(() => _filmGrain.intensity.value, x => _filmGrain.intensity.value = x, 1f, 0.5f).SetId(this);
+            DOTween.To(() => _filmGrain.intensity.value, x => _filmGrain.intensity.value = x, 1f, 0.5f).SetId(this).SetUpdate(true);
         if (_depthOfField != null)
-            DOTween.To(() => _depthOfField.focalLength.value, x => _depthOfField.focalLength.value = x, 300f, 0.5f).SetId(this);
+            DOTween.To(() => _depthOfField.focalLength.value, x => _depthOfField.focalLength.value = x, 300f, 0.5f).SetId(this).SetUpdate(true);
     }
     
     private void ResetEffectsTween()
     {
         if (_vignette != null)
-            DOTween.To(() => _vignette.intensity.value, x => _vignette.intensity.value = x, _defaultVignetteIntensity, 0.5f).SetId(this);
+            DOTween.To(() => _vignette.intensity.value, x => _vignette.intensity.value = x, _defaultVignetteIntensity, 0.5f).SetId(this).SetUpdate(true);
         if (_filmGrain != null)
-            DOTween.To(() => _filmGrain.intensity.value, x => _filmGrain.intensity.value = x, _defaultFilmGrainIntensity, 0.5f).SetId(this);
+            DOTween.To(() => _filmGrain.intensity.value, x => _filmGrain.intensity.value = x, _defaultFilmGrainIntensity, 0.5f).SetId(this).SetUpdate(true);
         if (_depthOfField != null)
-            DOTween.To(() => _depthOfField.focalLength.value, x => _depthOfField.focalLength.value = x, _defaultFocalLength, 0.5f).SetId(this);
+            DOTween.To(() => _depthOfField.focalLength.value, x => _depthOfField.focalLength.value = x, _defaultFocalLength, 0.5f).SetId(this).SetUpdate(true);
     }
     
     private void StartRandomToggleLoop()
@@ -99,7 +99,7 @@ public class LightHallucination : BaseConsequence
         if (_toggleSequence != null && _toggleSequence.IsActive())
             _toggleSequence.Kill();
         float delayOn = Random.Range(4f, 10f);
-        float delayOff = Random.Range(4f, 10f);
+        float delayOff = Random.Range(3f, 6f);
         _toggleSequence = DOTween.Sequence();
         _toggleSequence.AppendInterval(delayOn)
             .AppendCallback(() =>
@@ -121,14 +121,14 @@ public class LightHallucination : BaseConsequence
                 if (_consequenceActive)
                     StartRandomToggleLoop();
             })
-            .SetId(this);
+            .SetId(this).SetUpdate(true);
     }
     
     private void StartFailsafeTimer()
     {
         if (_failsafeTween != null && _failsafeTween.IsActive())
             _failsafeTween.Kill();
-        _failsafeTween.Append(DOVirtual.DelayedCall(12f, () =>
+        _failsafeTween = DOTween.Sequence().SetId(this).Append(DOVirtual.DelayedCall(12f, () =>
         {
             if (_consequenceActive)
             {
@@ -136,7 +136,7 @@ public class LightHallucination : BaseConsequence
                 ResetEffectsTween();
                 ResetCameraEffectsTween();
             }
-        }).SetId(this));
+        }).SetUpdate(true));
     }
     
     public override void RemoveConsequence()

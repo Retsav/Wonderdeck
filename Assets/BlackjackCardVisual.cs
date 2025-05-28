@@ -71,11 +71,13 @@ public class BlackjackCardVisual : NetworkBehaviour
                 {
                     _mpb.SetVector("_BaseMap_ST", new Vector4(uvCoordinates.z, uvCoordinates.w, uvCoordinates.x, uvCoordinates.y));
                     _mpb.SetTexture("_BaseMap", cardsSpriteAtlas);
+                    cardVisual.particleSystemGameObject.SetActive(false);
                 }
                 else
                 {
                     _mpb.SetVector("_BaseMap_ST", new Vector4(1, 1, 0, 0));
                     _mpb.SetTexture("_BaseMap", unknownCardTexture);
+                    cardVisual.particleSystemGameObject.SetActive(true);
                 }
                 cardVisual.cardMeshRenderer.SetPropertyBlock(_mpb);
             }
@@ -90,13 +92,13 @@ public class BlackjackCardVisual : NetworkBehaviour
         {
             case PlayerType.Player1:
                 if (e.Transaction == TransactionType.ADD)
-                    EnqueueCardSpawn(e.Card, firstPlayerCardsSpawnPoint, -0.4f, PlayerType.Player1);
+                    EnqueueCardSpawn(e.Card, firstPlayerCardsSpawnPoint, -0.4f, PlayerType.Player1, e.ShowParticles);
                 else
                     RemoveCards(e.Card, ref firstPlayerSpawnedCardsCount, PlayerType.Player1);
                 break;
             case PlayerType.Player2:
                 if (e.Transaction == TransactionType.ADD)
-                    EnqueueCardSpawn(e.Card, secondPlayerCardsSpawnPoint, -0.4f, PlayerType.Player2);
+                    EnqueueCardSpawn(e.Card, secondPlayerCardsSpawnPoint, -0.4f, PlayerType.Player2, e.ShowParticles);
                 else
                     RemoveCards(e.Card, ref secondPlayerSpawnedCardsCount, PlayerType.Player2);
                 break;
@@ -124,7 +126,7 @@ public class BlackjackCardVisual : NetworkBehaviour
         }
     }
 
-    private IEnumerator SpawnAndPositionCards(CardClientData card, Transform spawnPoint, float initialPositionOffset, PlayerType playerType)
+    private IEnumerator SpawnAndPositionCards(CardClientData card, Transform spawnPoint, float initialPositionOffset, PlayerType playerType, bool showParticles)
     {
         yield return new WaitForSeconds(0.15f);
         var cardVisualPrefab = Instantiate(cardPrefab, spawnPoint.position, NetworkManager.ClientManager.Connection.IsHost ? Quaternion.identity : Quaternion.Euler(new Vector3(0f, 180f, 0f)), cardsParent);
@@ -138,13 +140,18 @@ public class BlackjackCardVisual : NetworkBehaviour
             {
                 _mpb.SetVector("_BaseMap_ST", new Vector4(uvCoordinates.z, uvCoordinates.w, uvCoordinates.x, uvCoordinates.y));
                 _mpb.SetTexture("_BaseMap", cardsSpriteAtlas);
+                cardVisual.particleSystemGameObject.SetActive(false);
             }
             else
             {
                 _mpb.SetVector("_BaseMap_ST", new Vector4(1, 1, 0, 0));
                 _mpb.SetTexture("_BaseMap", unknownCardTexture);
+                cardVisual.particleSystemGameObject.SetActive(true);
             }
-                
+            
+            if(showParticles)
+                cardVisual.particleSystemGameObject.SetActive(true);
+            
             cardVisual.cardMeshRenderer.SetPropertyBlock(_mpb);
         }
 
@@ -164,9 +171,9 @@ public class BlackjackCardVisual : NetworkBehaviour
         _audioService.OnPlaySoundAtPosition(cardVisualPrefab.transform.position, _audioConfig.cardSwooshPaths[Random.Range(0, _audioConfig.cardSwooshPaths.Count)]);
     }
     
-    private void EnqueueCardSpawn(CardClientData card, Transform spawnPoint, float initialPositionOffset, PlayerType playerType)
+    private void EnqueueCardSpawn(CardClientData card, Transform spawnPoint, float initialPositionOffset, PlayerType playerType, bool showParticles)
     {
-        _cardSpawnQueue.Enqueue(SpawnAndPositionCards(card, spawnPoint, initialPositionOffset, playerType));
+        _cardSpawnQueue.Enqueue(SpawnAndPositionCards(card, spawnPoint, initialPositionOffset, playerType, showParticles));
         if (!_isProcessingQueue) StartCoroutine(ProcessCardSpawnQueue());
     }
 
