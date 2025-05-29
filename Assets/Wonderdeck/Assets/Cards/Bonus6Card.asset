@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CardId: 9b5c817c-ea58-4b5a-a5a4-38832b38c9c4
   CardFace: {fileID: -639026447, guid: 06bcf0c0dc7c59a44862791b61876c85, type: 3}
-  CardBack: {fileID: 21300000, guid: b5c06a18d36928b49b7b1843d2d9750d, type: 3}
+  CardBack: {fileID: 21300000, guid: 2fd7f64e814458543ac1e6575f129323, type: 3}
   ItemIsPersistent: 0
   DrawCardEffects: []
   PlayCardEffects:
@@ -25,4 +25,4 @@ MonoBehaviour:
 
     If there is no card in deck with this value - item will be lost.'
   cardFacePath: ITEM_Potion|ITEM_Potion_4
-  cardBackPath: BackCard
+  cardBackPath: CardBack.PNG
