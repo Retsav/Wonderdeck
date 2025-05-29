@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using EasyTextEffects;
 using FishNet.Connection;
 using FishNet.Object;
 using TMPro;
@@ -13,22 +14,26 @@ public class DamageCalculatorUI : NetworkBehaviour
 {
     [SerializeField] private GameObject firstPlayerDamageCalculatorGameObject;
     [SerializeField] private GameObject secondPlayerDamageCalculatorGameObject;
-    [FormerlySerializedAs("_firstPlayerDamageLabel")] [SerializeField] private TextMeshProUGUI firstPlayerDamageLabel;
-    [FormerlySerializedAs("_secondPlayerDamageLabel")] [SerializeField] private TextMeshProUGUI secondPlayerDamageLabel;
+    [SerializeField] private TextMeshProUGUI firstPlayerDamageLabel;
+    [SerializeField] private TextMeshProUGUI secondPlayerDamageLabel;
+    [SerializeField] private TextEffect firstTextEffect;
+    [SerializeField] private TextEffect secondTextEffect;
     
     
     private IBlackjackService _blackjackService;
     private IHealthService _healthService;
+    private IPostProcessingService _postProcessingService;
     private Color _orginalTextColor;
 
     private PlayerType _playerType;
     private bool _hasHiddenCard;
 
     [Inject]
-    private void ResolveDependencies(IBlackjackService blackjackService, IHealthService healthService)
+    private void ResolveDependencies(IBlackjackService blackjackService, IHealthService healthService, IPostProcessingService postProcessingService)
     {
         _blackjackService = blackjackService;
         _healthService = healthService;
+        _postProcessingService = postProcessingService;
     }
     
     private void OnDestroy() => Unsubscribe();
@@ -44,6 +49,7 @@ public class DamageCalculatorUI : NetworkBehaviour
         _blackjackService.CardPlayed -= OnCardPlayed;
         _blackjackService.CardsUpdatedObserverEvent -= OnCardsUpdated;
         _blackjackService.CardEffectsResolved -= OnCardsResolved;
+        _postProcessingService.activateTextChange -= ActivateTextChange;
     }
 
     public override void OnStartClient()
@@ -57,9 +63,18 @@ public class DamageCalculatorUI : NetworkBehaviour
         _blackjackService.CardsUpdatedObserverEvent += OnCardsUpdated;
         _blackjackService.CardPlayed += OnCardPlayed;
         _blackjackService.CardEffectsResolved += OnCardsResolved;
+        _postProcessingService.activateTextChange += ActivateTextChange;
         if (_playerType != PlayerType.Player2) return;
         firstPlayerDamageCalculatorGameObject.transform.Rotate(new Vector3(0f, 180f, 0f));
         secondPlayerDamageCalculatorGameObject.transform.Rotate(new Vector3(0f, 180f, 0f));
+    }
+
+    private void ActivateTextChange(object sender, EventArgs e)
+    {
+        firstTextEffect.enabled = true;
+        secondTextEffect.enabled = true;
+        firstTextEffect.Refresh();
+        secondTextEffect.Refresh();
     }
 
     private void OnRefreshScore(object sender, EventArgs e) => RefreshScoresFromServer();

@@ -7,7 +7,10 @@ using Zenject;
 
 public class BlackjackHealthTracker : NetworkBehaviour
 {
-
+    [SerializeField] private GameObject axeGameObject;
+    
+    
+    
     private IHealthService _healthService;
     private IBlackjackService _blackjackService;
     
@@ -22,9 +25,16 @@ public class BlackjackHealthTracker : NetworkBehaviour
     
     public override void OnStartClient()
     {
+        _blackjackService.RoundEnd += OnRoundEnd;
         if (!NetworkManager.ClientManager.Connection.IsHost) return;
         _healthService.ApplyDamageViaResultEvent += OnApplyDamageViaResult;
         _healthService.ChangeDamageModifierEvent += OnDamageModifierChanged;
+    }
+
+    private void OnRoundEnd(object sender, EventArgs e)
+    {
+        if (axeGameObject.activeInHierarchy)
+            axeGameObject.SetActive(false);
     }
 
     private void OnDamageModifierChanged(object sender, ChangeDamageModifierEventArgs e)
@@ -56,6 +66,9 @@ public class BlackjackHealthTracker : NetworkBehaviour
             
         UpdateModifierDataObserverRpc(_healthService.FirstPlayerDamageModifier,
             _healthService.SecondPlayerDamageModifier);
+        if (axeGameObject.activeInHierarchy)
+            return;
+        axeGameObject.SetActive(true);
     }
 
     [ObserversRpc(ExcludeServer = true)]
@@ -63,6 +76,9 @@ public class BlackjackHealthTracker : NetworkBehaviour
     {
         _healthService.FirstPlayerDamageModifier = firstPlayerDamageModifier;
         _healthService.SecondPlayerDamageModifier = secondPlayerDamageModifier;
+        if (axeGameObject.activeInHierarchy)
+            return;
+        axeGameObject.SetActive(true);
     }
 
     private void OnApplyDamageViaResult(object sender, RoundResult e)

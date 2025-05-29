@@ -51,6 +51,7 @@ MonoBehaviour:
   owner: 0
   cardMeshRenderer: {fileID: 8126962799257245189}
   particleSystemGameObject: {fileID: 7184139105282216528}
+  faceRenderer: {fileID: 8126962799257245189}
 --- !u!1 &3357723103805691511
 GameObject:
   m_ObjectHideFlags: 0

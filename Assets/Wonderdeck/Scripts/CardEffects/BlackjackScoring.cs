@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using EasyTextEffects;
 using FishNet.Connection;
 using FishNet.Object;
 using TMPro;
@@ -14,19 +15,23 @@ public class BlackjackScoring : NetworkBehaviour
     
     [SerializeField] private TextMeshProUGUI playerOneScoreLabel;
     [SerializeField] private TextMeshProUGUI playerSecondScoreLabel;
+    [SerializeField] private TextEffect firstTextEffect;
+    [SerializeField] private TextEffect secondTextEffect;
     
     
     private IBlackjackService _blackjackService;
     private INetworkingService _networkingService;
+    private IPostProcessingService _processingService;
 
     private PlayerType _playerType;
     private bool _hasHiddenCard;
 
     [Inject]
-    private void ResolveDependencies(IBlackjackService blackjackService, INetworkingService networkingService)
+    private void ResolveDependencies(IBlackjackService blackjackService, INetworkingService networkingService, IPostProcessingService processingService)
     {
         _blackjackService = blackjackService;
         _networkingService = networkingService;
+        _processingService = processingService;
     }
     
     private void OnDestroy() => Unsubscribe();
@@ -41,6 +46,7 @@ public class BlackjackScoring : NetworkBehaviour
         _blackjackService.ScoreThresholdChanged -= ScoreThresholdChanged;
         _blackjackService.CardPlayed -= OnCardPlayed;
         _blackjackService.CardsUpdatedObserverEvent -= OnCardsUpdated;
+        _processingService.activateTextChange -= OnTextActivate;
     }
 
     public override void OnStartClient()
@@ -52,10 +58,19 @@ public class BlackjackScoring : NetworkBehaviour
         _blackjackService.CardsUpdatedObserverEvent += OnCardsUpdated;
         _blackjackService.CardPlayed += OnCardPlayed;
         _blackjackService.RefreshScoreEvent += OnRefreshScore;
+        _processingService.activateTextChange += OnTextActivate;
         if (_networkingService.GetPlayerType(NetworkManager.ClientManager.Connection) != PlayerType.Player2) return;
         firstPlayerScoreObject.transform.Rotate(new Vector3(0f, 180f, 0f));
         secondPlayerScoreObject.transform.Rotate(new Vector3(0f, 180f, 0f));
 
+    }
+
+    private void OnTextActivate(object sender, EventArgs e)
+    {
+        firstTextEffect.enabled = true;
+        secondTextEffect.enabled = true;
+        firstTextEffect.Refresh();
+        secondTextEffect.Refresh();
     }
 
     private void OnRefreshScore(object sender, EventArgs e) => RefreshScoresFromServer();

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,9 @@ public class PostProcessingService : IPostProcessingService
 {
     private Volume _volume;
     public void RegisterVolume(Volume volume) => _volume = volume;
+    public void OnActivateTextChange() => activateTextChange?.Invoke(this, EventArgs.Empty);
+
+    public event EventHandler activateTextChange;
     public void ResetVolume() => _volume = null;
     public Volume GetVolume()
     {

@@ -117,7 +117,17 @@ public class BlackjackCardVisual : NetworkBehaviour
                 if (cardVisual.owner != playerType) continue;
                 if (removedCard.CardID == cardVisual.cardID)
                 {
-                    Destroy(cardVisual.transform.gameObject);
+                    cardVisual.cardMeshRenderer.GetPropertyBlock(_mpb);
+                    cardVisual.particleSystemGameObject.SetActive(false);
+                    DOVirtual.Float(0f, 1f, 1.5f, v =>
+                        {
+                            _mpb.SetFloat("_Dissolve", v);
+                            cardVisual.cardMeshRenderer.SetPropertyBlock(_mpb);
+                        })
+                        .OnComplete(() =>
+                        {
+                            Destroy(cardVisual.gameObject);
+                        });
                     spawnedCardsCount--;
                 }
             }
@@ -136,16 +146,26 @@ public class BlackjackCardVisual : NetworkBehaviour
             cardVisual.owner = playerType;
 
             var uvCoordinates = GetUVCoordinatesForSprite(card.CardFaceSpritePath);
+            var scaleX  = uvCoordinates.z;
+            var scaleY  = uvCoordinates.w;
+            var offsetX = uvCoordinates.x;
+            var offsetY = uvCoordinates.y;
             if (uvCoordinates != Vector4.zero)
             {
-                _mpb.SetVector("_BaseMap_ST", new Vector4(uvCoordinates.z, uvCoordinates.w, uvCoordinates.x, uvCoordinates.y));
+                //_mpb.SetVector("_BaseMap_ST", new Vector4(uvCoordinates.z, uvCoordinates.w, uvCoordinates.x, uvCoordinates.y));
                 _mpb.SetTexture("_BaseMap", cardsSpriteAtlas);
+                _mpb.SetVector("_Tiling", new Vector2(scaleX, scaleY));
+                _mpb.SetVector("_Offest", new Vector2(offsetX, offsetY));
+                _mpb.SetFloat("_Dissolve", 0);
                 cardVisual.particleSystemGameObject.SetActive(false);
             }
             else
             {
-                _mpb.SetVector("_BaseMap_ST", new Vector4(1, 1, 0, 0));
+                //_mpb.SetVector("_BaseMap_ST", new Vector4(1, 1, 0, 0));
                 _mpb.SetTexture("_BaseMap", unknownCardTexture);
+                _mpb.SetVector("_Tiling", new Vector2(1, 1));
+                _mpb.SetVector("_Offest", new Vector2(0, 0));
+                _mpb.SetFloat("_Dissolve", 0);
                 cardVisual.particleSystemGameObject.SetActive(true);
             }
             
