@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Spades_10
   m_EditorClassIdentifier: 
   CardId: c1340929-3905-42fc-8a79-4b2432149a2b
-  CardFace: {fileID: -284119005, guid: ffc29d20e2d951f438322e7afd913fc9, type: 3}
-  CardBack: {fileID: 21300000, guid: b5c06a18d36928b49b7b1843d2d9750d, type: 3}
+  CardFace: {fileID: 881579358, guid: ffc29d20e2d951f438322e7afd913fc9, type: 3}
+  CardBack: {fileID: 21300000, guid: 2fd7f64e814458543ac1e6575f129323, type: 3}
   ItemIsPersistent: 0
   DrawCardEffects:
   - {fileID: 11400000, guid: 72c384d84eaceec439fbca04bc7a21c2, type: 2}
@@ -22,5 +22,5 @@ MonoBehaviour:
   DiscardCardEffects:
   - {fileID: 11400000, guid: d10d4c80a27d53e448283da5e1ec3cc2, type: 2}
   description: 
-  cardFacePath: Cards|Cards_37
-  cardBackPath: BackCard
+  cardFacePath: Cards|Cards_35
+  cardBackPath: CardBack.PNG

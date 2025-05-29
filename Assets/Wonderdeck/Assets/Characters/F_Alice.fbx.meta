@@ -487,6 +487,11 @@ ModelImporter:
       position: {x: -0, y: 0, z: 0}
       rotation: {x: 0.7071069, y: 0, z: -0, w: 0.7071067}
       scale: {x: 0.01, y: 0.01, z: 0.01}
+    - name: F_Alice_Skirt
+      parentName: F_Alice(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0.7071069, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.01, y: 0.01, z: 0.01}
     - name: Rig_Alice
       parentName: F_Alice(Clone)
       position: {x: -0, y: 0, z: 0}
