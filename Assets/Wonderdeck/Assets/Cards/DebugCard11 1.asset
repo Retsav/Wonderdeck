@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CardId: 3fea2bb4-96e6-48fe-96dc-35908fbad081
   CardFace: {fileID: 1033368985, guid: ffc29d20e2d951f438322e7afd913fc9, type: 3}
-  CardBack: {fileID: 21300000, guid: b5c06a18d36928b49b7b1843d2d9750d, type: 3}
+  CardBack: {fileID: 21300000, guid: 2fd7f64e814458543ac1e6575f129323, type: 3}
+  ItemIsPersistent: 0
   DrawCardEffects:
   - {fileID: 11400000, guid: 72c384d84eaceec439fbca04bc7a21c2, type: 2}
   - {fileID: 11400000, guid: 92c5318ba0fd90c439df1f5a2ecedd68, type: 2}
@@ -24,4 +25,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 929aae6d68839334fb9798b533b0570e, type: 2}
   description: 
   cardFacePath: Cards|Cards_13
-  cardBackPath: BackCard
+  cardBackPath: CardBack.PNG
