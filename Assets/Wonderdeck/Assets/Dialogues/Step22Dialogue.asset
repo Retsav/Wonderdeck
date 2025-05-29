@@ -14,12 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TutorialStepIndex: 22
   DialogueList:
-  - "Splendid! You\u2019ve mastered the foundations: shaping your hand, standing
-    at will, juggling items, trimming persistents and unmasking secrets."
-  - 'But take this to heart: the lower your health drips, the stranger Wonderland
-    turns. Screens may shimmer, cards can hide, and opponents will get nastier opportunities.'
-  - "Yet danger breeds opportunity\u2014at the edge of defeat you\u2019ll draw rarer,
-    far mightier curios, powerful enough to flip any duel."
-  - "I shan\u2019t spoil all the marvels that lie ahead\u2014discover them yourself,
-    and relish every surprise!"
+  - "Splendid! You\u2019ve mastered the fundamentals: shaping your hand, drawing
+    and standing, juggling items, destroying persistent cards, and unmasking hidden
+    cards."
+  - 'But take this to heart: the lower your health falls, the stranger Wonderland
+    becomes. Screens may shimmer, cards can hide, and opponents will seize nastier
+    opportunities.'
+  - "Yet danger breeds opportunity\u2014at the edge of defeat, you\u2019ll draw rarer,
+    far mightier curios, powerful enough to turn the tide of any duel."
+  - "I won't spoil all the marvels that lie ahead\u2014discover them yourself, and
+    relish every surprise!"
   - Good luck.

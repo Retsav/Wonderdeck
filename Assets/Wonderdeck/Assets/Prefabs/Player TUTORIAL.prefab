@@ -99,6 +99,7 @@ MonoBehaviour:
   cinemachineVirtualCameraObject: {fileID: 6434330004977556459}
   cameraGameObject: {fileID: 1251329308796362270}
   _cinemachineBrain: {fileID: 146939949457355795}
+  musicManager: {fileID: 2836651062646327356}
   animator: {fileID: 1249673158880209589}
   yRotationLimit: 88
   sensitivity: 2
@@ -232,7 +233,15 @@ PrefabInstance:
     - {fileID: 2212793198279644227, guid: d223a80e7a5dd77489bd2be000e0d82c, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3362909085045674234, guid: d223a80e7a5dd77489bd2be000e0d82c,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2836651062646327356}
+    - targetCorrespondingSourceObject: {fileID: 3362909085045674234, guid: d223a80e7a5dd77489bd2be000e0d82c,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 480842624215669379}
   m_SourcePrefab: {fileID: 100100000, guid: d223a80e7a5dd77489bd2be000e0d82c, type: 3}
 --- !u!114 &146939949457355795 stripped
 MonoBehaviour:
@@ -258,6 +267,119 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 4609133634014891748}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2836651062646327356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1251329308796362270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba5f0c35ae2bdcd43b1333b26b97d460, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSource: {fileID: 480842624215669379}
+  musicList:
+  - {fileID: 8300000, guid: 8fb4dc34fa3c9ac4485ddbd1026bac6a, type: 3}
+  - {fileID: 8300000, guid: 7ab3c49cdde8f26468d1eb1d8b71adca, type: 3}
+  - {fileID: 8300000, guid: 5f62ea7d18c287d42af91674980f59c8, type: 3}
+--- !u!82 &480842624215669379
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1251329308796362270}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 0.06
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!114 &2486885950646884206 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2122848016857880970, guid: d223a80e7a5dd77489bd2be000e0d82c,

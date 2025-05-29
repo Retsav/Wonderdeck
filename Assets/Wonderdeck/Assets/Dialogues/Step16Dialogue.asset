@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TutorialStepIndex: 16
   DialogueList:
-  - Fortunately, am item that will help you just sprouted in your backpack. Snip
-    a persistent item in the middle of the table to end its mischief.
+  - Fortunately, a new item that will help you just showed up in your inventory.
+    Destroy a persistent item in the middle of the table to end its mischief.

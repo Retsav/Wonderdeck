@@ -9,6 +9,7 @@ public class InventoryService : IInventoryService
 {
     public List<string> FirstPlayerItems { get; set; }
     public List<string> SecondPlayerItems { get; set; }
+    public bool IsInventoryOpened { get; set; }
     public event EventHandler<RequestInventoryUsageEventArgs> RequestInventoryUsage;
     public event EventHandler<InventoryRequestedEventArgs> RequestInventory;
     public event EventHandler<ItemsDealRequestedEventArgs> ItemsDealRequested;

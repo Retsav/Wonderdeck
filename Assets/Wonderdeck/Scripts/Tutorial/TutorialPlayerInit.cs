@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class TutorialPlayerInit : MonoBehaviour
 {
+    public static TutorialPlayerInit Instance;
+    
     [SerializeField] private Material firstPlayerMaterial;
     [SerializeField] private Material secondPlayerMaterial;
     
@@ -13,6 +15,8 @@ public class TutorialPlayerInit : MonoBehaviour
     [SerializeField] private GameObject cameraGameObject;
     [SerializeField] private CinemachineBrain _cinemachineBrain;
 
+    [SerializeField] private MusicManager musicManager;
+    
 
     [SerializeField] private Animator animator;
     
@@ -36,6 +40,10 @@ public class TutorialPlayerInit : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        musicManager.StartMusic();
+        if (Instance != null) Destroy(Instance);
+        Instance = this;
     }
 
     private void Update()

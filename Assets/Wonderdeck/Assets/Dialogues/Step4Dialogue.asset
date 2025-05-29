@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TutorialStepIndex: 4
   DialogueList:
-  - "If you\u2019re satisfied with your size, press Stand to freeze your hand for
-    the rest of the round."
+  - "If you\u2019re happy with your total, press Stand to freeze your hand for the
+    rest of the round."

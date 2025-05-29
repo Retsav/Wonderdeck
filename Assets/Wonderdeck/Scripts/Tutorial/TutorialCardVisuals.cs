@@ -5,6 +5,7 @@ using DG.Tweening;
 using FishNet.Managing;
 using UnityEngine;
 using Zenject;
+using Random = UnityEngine.Random;
 
 public class TutorialCardVisuals : MonoBehaviour
 {
@@ -29,6 +30,7 @@ public class TutorialCardVisuals : MonoBehaviour
 
     [SerializeField] private float cardSpacing = .3f;
 
+    private AudioConfig _audioConfig;
     private Queue<IEnumerator> _cardSpawnQueue = new Queue<IEnumerator>();
     private CardVisual _hiddenCard = null;
     
@@ -47,6 +49,7 @@ public class TutorialCardVisuals : MonoBehaviour
     private void Start()
     {
         _mpb = new MaterialPropertyBlock();
+        _audioConfig = DebugConfigLoader.Instance.GetConfig<AudioConfig>();
     }
 
     public void SpawnCardVisual(CardSO card, PlayerType playerType, bool hidden)
@@ -146,12 +149,13 @@ public class TutorialCardVisuals : MonoBehaviour
             }
             cardVisual.cardMeshRenderer.SetPropertyBlock(_mpb);
         }
+        cardVisual.particleSystemGameObject.SetActive(false);
 
         if (playerType == PlayerType.Player1)
             firstPlayerSpawnedCardsCount++;
         else
             secondPlayerSpawnedCardsCount++;
-        
+        TutorialAudioManager.Instance.OnPlaySoundAtPosition(cardVisualPrefab.transform.position, _audioConfig.cardSwooshPaths[Random.Range(0, _audioConfig.cardSwooshPaths.Count)]);
         cardVisualPrefab.transform.DOMoveX(_positionOffset + 
                                            (playerType == PlayerType.Player1 
                                                ? firstPlayerSpawnedCardsCount

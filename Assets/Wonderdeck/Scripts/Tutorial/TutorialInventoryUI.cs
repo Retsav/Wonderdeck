@@ -44,7 +44,7 @@ public class TutorialInventoryUI : MonoBehaviour
         itemNameLabel.text = "";
         confirmButton.onClick.RemoveAllListeners();
         confirmButton.onClick.AddListener(OnConfirmClicked);
-
+        _audioConfig = DebugConfigLoader.Instance.GetConfig<AudioConfig>();
         _tutorialService.DialogueFinished += OnDialogueFinished;
     }
 
@@ -114,6 +114,7 @@ public class TutorialInventoryUI : MonoBehaviour
         confirmButton.interactable = true;
         ShowGroup();
         PopulateItemButtons();
+        TutorialAudioManager.Instance.OnPlaySoundAtPosition(TutorialPlayerInit.Instance.transform.position, _audioConfig.openInventoryPath);
     }
 
     private void PopulateItemButtons()

@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TutorialStepIndex: 8
   DialogueList:
-  - "Wonderland rewards curiosity\u2014every new round delivers a shiny curio."
+  - Wonderland rewards curiosity - every new round delivers a shiny curio.

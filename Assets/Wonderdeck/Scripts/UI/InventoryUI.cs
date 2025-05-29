@@ -210,6 +210,7 @@ public class InventoryUI : NetworkBehaviour
         inventoryCanvasGroup.blocksRaycasts = false;
         inventoryCanvasGroup.interactable = false;
         _inventoryPopupOpened = false;
+        _inventoryService.IsInventoryOpened = false;
     }
     
     private void ShowGroup()
@@ -218,5 +219,6 @@ public class InventoryUI : NetworkBehaviour
         inventoryCanvasGroup.interactable = true;
         inventoryCanvasGroup.alpha = 1f;
         _inventoryPopupOpened = true;
+        _inventoryService.IsInventoryOpened = true;
     }
 }

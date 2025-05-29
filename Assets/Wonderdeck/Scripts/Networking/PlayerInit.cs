@@ -35,11 +35,13 @@ public class PlayerInit : NetworkBehaviour
     [SerializeField] float sensitivity = 2f;
 
     private INetworkingService _networkingService;
+    private IInventoryService _inventoryService;
 
     [Inject]
-    private void ResolveDependencies(INetworkingService networkingService)
+    private void ResolveDependencies(INetworkingService networkingService, IInventoryService inventoryService)
     {
         _networkingService = networkingService;
+        _inventoryService = inventoryService;
     }
 
 
@@ -64,6 +66,8 @@ public class PlayerInit : NetworkBehaviour
     private void Update()
     {
         if (!IsOwner)
+            return;
+        if (_inventoryService.IsInventoryOpened)
             return;
         rotation.x += Input.GetAxis(xAxis) * sensitivity;
         rotation.y += Input.GetAxis(yAxis) * sensitivity;

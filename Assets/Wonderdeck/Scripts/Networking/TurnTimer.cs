@@ -6,15 +6,15 @@ using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
 
 public class TurnTimer : NetworkBehaviour
 {
-    [SerializeField] private GameObject timerGameObject;
     [SerializeField] private float turnDuration;
-    [SerializeField] private TextMeshProUGUI firstPlayerTurnTimerLabel;
-    [SerializeField] private TextMeshProUGUI secondPlayerTurnTimerLabel;
     
+    [SerializeField] private Image firstPlayerTimerImage;
+    [SerializeField] private Image secondPlayerTimerImage;
     
     private double turnEndTime;
     private double remainingTime;
@@ -32,12 +32,8 @@ public class TurnTimer : NetworkBehaviour
 
     public override void OnStartClient()
     {
-
         if (!NetworkManager.ClientManager.Connection.IsHost)
-        {
-            timerGameObject.transform.eulerAngles = new Vector3(0f, 180f, 0f);
             return;
-        }
         _blackjackService.GameStateSet += OnGameStateSet;
     }
 
@@ -58,6 +54,7 @@ public class TurnTimer : NetworkBehaviour
         turnEndTime = InstanceFinder.TimeManager.Tick + turnDuration * InstanceFinder.TimeManager.TickRate;
         remainingTime = (turnEndTime - InstanceFinder.TimeManager.Tick) / InstanceFinder.TimeManager.TickRate;
         UpdateRemainingTimeObserverRpc(remainingTime);
+        UpdateTimerUI(1f);
         if (turnTimerCoroutine != null)
         {
             
@@ -101,13 +98,21 @@ public class TurnTimer : NetworkBehaviour
         if (_blackjackService.BlackjackState == BlackjackState.Intermission)
             return;
         float time = GetRemainingTime();
-        firstPlayerTurnTimerLabel.text = time.ToString("F0");
-        secondPlayerTurnTimerLabel.text = time.ToString("F0");
+        float fillAmount = time / turnDuration;
+        UpdateTimerUI(fillAmount);
     }
 
     private float GetRemainingTime()
     {
         double RemainingTime = remainingTime;
         return Mathf.Max((float)RemainingTime, 0f);
+    }
+    
+    private void UpdateTimerUI(float fill)
+    {
+        if (firstPlayerTimerImage != null)
+            firstPlayerTimerImage.fillAmount = fill;
+        if (secondPlayerTimerImage != null)
+            secondPlayerTimerImage.fillAmount = fill;
     }
 }

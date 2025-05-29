@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
@@ -22,7 +23,8 @@ public class TutorialInventoryLogic : MonoBehaviour
     private IInventoryService _inventoryService;
     private ITutorialService _tutorialService;
     private IAudioService _audioService;
-    
+
+    private AudioConfig _audioConfig;
     private Queue<SpawnRequest> spawnQueue = new Queue<SpawnRequest>();
     private bool isProcessingQueue;
     
@@ -36,7 +38,12 @@ public class TutorialInventoryLogic : MonoBehaviour
         _tutorialService = tutorialService;
         _audioService = audioService;
     }
-    
+
+    private void Start()
+    {
+        _audioConfig = DebugConfigLoader.Instance.GetConfig<AudioConfig>();
+    }
+
     public void DealItem(PlayerType playerType, string itemID)
     {
         var item = _inventoryService.GetItemByID(itemID);
@@ -66,6 +73,7 @@ public class TutorialInventoryLogic : MonoBehaviour
             Debug.LogError("Couldnt find InventoryTokenUIHandler in Spawned Token.");
         tutorialDamageCalculatorUI.ChangeModifier(-50);
         tutorialDamageCalculatorUI.RefreshDamageCalculation();
+        TutorialAudioManager.Instance.OnPlaySoundAtPosition(TutorialPlayerInit.Instance.transform.position, _audioConfig.tokenPlaced);
     }
     
     public void DestroyPersistentItems()

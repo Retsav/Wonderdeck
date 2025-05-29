@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TutorialStepIndex: 20
   DialogueList:
-  - "Some numbers prefer to hide in the shadows\u2026"
-  - 'Allow me to demonstrate: every card I draw from this moment on will arrive cloaked.'
+  - "Some cards prefer to not show themselves\u2026"
+  - 'Allow me to demonstrate: every card I draw from this moment on will arrive hidden.'

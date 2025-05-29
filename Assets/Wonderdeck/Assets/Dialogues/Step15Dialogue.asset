@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TutorialStepIndex: 15
   DialogueList:
-  - "Notice how the shield token is parked on the centre felt? That\u2019s the hallmark
+  - "Notice how the shield token is placed on the centert? That\u2019s the hallmark
     of a persistent item: it stays visible and active for every player\u2019s turn
     until destroyed or round gets resolved."
   - If you leave it untouched, I will stroll off without a scratch when the scores

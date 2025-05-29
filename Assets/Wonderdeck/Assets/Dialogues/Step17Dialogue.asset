@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TutorialStepIndex: 17
   DialogueList:
-  - "The table is clear again\u2014now any damage i will earn will land right where
-    it hurts."
-  - Because my score is busted, you will always be declared a winner of this round.
-  - "But if we both bust, we\u2019ll both take damage!"
-  - Now stand and watch as I get tremendous damage.
+  - 'The table is clear again - now any damage I take will land right where it hurts.  '
+  - "Because my score is well over the limit, you\u2019ll always be declared the
+    winner of this round."
+  - "But if both our scores exceed the limit, we\u2019ll both take damage!"
+  - Now stand back and watch as I take a massive hit.

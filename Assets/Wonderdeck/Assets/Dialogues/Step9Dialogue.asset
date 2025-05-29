@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TutorialStepIndex: 9
   DialogueList:
-  - "Look, a Pocket\_Mirror popped into your paw. It can swap one of your cards with
-    one of mine."
-  - Using an item does not end your turn. Open your inventory, give the mirror a
-    click and use it!
+  - Look, a new item popped into your inventory. It can swap one of your cards with
+    one of mine.
+  - Using an item does not end your turn. Open your inventory, give the item a click
+    and use it!

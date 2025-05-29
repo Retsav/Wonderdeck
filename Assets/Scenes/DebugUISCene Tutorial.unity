@@ -2003,6 +2003,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueBox: {fileID: 1808034901}
   dialogueLabel: {fileID: 1029608819}
+  dialogueTextEffect: {fileID: 1029608821}
 --- !u!1001 &758116106
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2584,6 +2585,7 @@ GameObject:
   - component: {fileID: 1029608818}
   - component: {fileID: 1029608820}
   - component: {fileID: 1029608819}
+  - component: {fileID: 1029608821}
   m_Layer: 5
   m_Name: DialogueLabel
   m_TagString: Untagged
@@ -2632,7 +2634,11 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'HELLO AND WELCOME TO THE TUTORIAL.
 
-    Lorem ipsum'
+    Lorem ipsum AAAAAAAAAAAAAAAA
+
+    AAAAAAAAAAA
+
+    Aaaaaa'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d2cb9832ce31f5a4ba907006481e3b06, type: 2}
   m_sharedMaterial: {fileID: 2213459365792606267, guid: d2cb9832ce31f5a4ba907006481e3b06,
@@ -2711,6 +2717,30 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1029608817}
   m_CullTransparentMesh: 1
+--- !u!114 &1029608821
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1029608817}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9840f87219df84505803024c796e739d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  text: {fileID: 1029608819}
+  usePreset: 0
+  preset: {fileID: 0}
+  tagEffects: []
+  globalEffects:
+  - triggerWhen: 0
+    effect: {fileID: 11400000, guid: 7430c30012d434411aec0d5268f4985a, type: 2}
+    onEffectCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+    overrideTagEffects: 0
+  updatesPerSecond: 30
 --- !u!1 &1043284449
 GameObject:
   m_ObjectHideFlags: 0

@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TutorialStepIndex: 5
   DialogueList:
-  - "You\u2019ve locked your hand in place\u2014brave choice! If I stand as well,
-    the round is judged immediately."
+  - "You\u2019ve locked your hand in place - good choice! If I stand as well, the
+    round is judged immediately."
   - And i will do so!

@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TutorialStepIndex: 7
   DialogueList:
-  - Ouch! I was three short of perfection, so three drops leaked from my vigour.
-  - We can see our life at all times next to us! Whoever health goes to zero loses!
+  - Ouch! I fell three points short of perfection, so I lost three health.
+  - Your health is always shown beside you. When it reaches zero, you lose!

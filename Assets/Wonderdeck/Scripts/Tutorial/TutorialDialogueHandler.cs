@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Beautify.Universal;
+using DG.Tweening;
+using EasyTextEffects;
 using TMPro;
 using UnityEngine;
 using Zenject;
@@ -12,7 +15,10 @@ public class TutorialDialogueHandler : MonoBehaviour
 
     [SerializeField] private GameObject dialogueBox;
     [SerializeField] private TextMeshProUGUI dialogueLabel;
+    [SerializeField] private TextEffect dialogueTextEffect;
+    
     private DialogueScriptableObject currentDialogue;
+    private AudioConfig _audioConfig;
     private int dialogueIndex = 0;
     
     
@@ -27,6 +33,11 @@ public class TutorialDialogueHandler : MonoBehaviour
         dialogueBox.SetActive(false);
     }
 
+    private void Start()
+    {
+        _audioConfig = DebugConfigLoader.Instance.GetConfig<AudioConfig>();
+    }
+
     private void OnDestroy()
     {
         _tutorialService.OnDialoguePlay -= StartDialoguePlay;
@@ -34,6 +45,7 @@ public class TutorialDialogueHandler : MonoBehaviour
 
     private void StartDialoguePlay(object sender, DialogueScriptableObject e)
     {
+        DOVirtual.Float(0f, 0.5f, 0.3f, v => BeautifySettings.settings.vignettingOuterRing.Override(v));
         dialogueBox.SetActive(true);
         currentDialogue = e;
         dialogueIndex = 0;
@@ -49,16 +61,20 @@ public class TutorialDialogueHandler : MonoBehaviour
             return;
         }
         dialogueLabel.SetText(currentDialogue.DialogueList[dialogueIndex]);
+        TutorialAudioManager.Instance.OnPlaySoundAtPosition(TutorialPlayerInit.Instance.transform.position, _audioConfig.dialogueBoxPath);
+        dialogueTextEffect.Refresh();
         dialogueIndex++;
     }
 
     private void FinishDialogue()
     {
+        DOVirtual.Float(0.5f, 0f, 0.3f, v => BeautifySettings.settings.vignettingOuterRing.Override(v));
         Debug.Log("Dialogue Finished");
         _isDialoguePlaying = false;
         dialogueIndex = 0;
         currentDialogue = null;
         dialogueLabel.SetText("");
+        dialogueTextEffect.Refresh();
         dialogueBox.SetActive(false);
         _tutorialService.OnDialogueFinished(_tutorialService.TutorialStep);
     }

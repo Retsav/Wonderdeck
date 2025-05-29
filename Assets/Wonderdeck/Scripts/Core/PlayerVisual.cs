@@ -8,6 +8,9 @@ using Zenject;
 
 public class PlayerVisual : NetworkBehaviour
 {
+    [SerializeField] private GameObject firstShield;
+    [SerializeField] private GameObject secondShield;
+    
     private IBlackjackService _blackjackService;
     private PlayerType _playerType;
     

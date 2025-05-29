@@ -10,7 +10,8 @@ public class AudioConfig : ScriptableObject
     public List<string> callumVoiceLinesStandPaths;
     public List<string> callumVoiceLinesHitPaths;
     public List<string> cardSwooshPaths;
-    
+
+    public string dialogueBoxPath;
     public string uiClickPath;
     public string useItemPath;
     public string openInventoryPath;

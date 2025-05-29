@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TutorialStepIndex: 21
   DialogueList:
-  - Hidden cards can be maddening, but not unbeatable.
-  - This Looking-Glass Lens lets you peek at enemy hidden cards. Give it a whirl!
+  - "Hidden cards can be frustrating, but they\u2019re far from unbeatable."
+  - "The Looking-Glass Lens lets you peek at enemies\u2019 hidden cards. Give it
+    a try!"

@@ -32,6 +32,7 @@ MonoBehaviour:
   - Audio/Audio_Card_02
   - Audio/Audio_Card_03
   - Audio/Audio_Card_04
+  dialogueBoxPath: Audio/Audio_BoxOpen
   uiClickPath: Audio/Audio_ClickUI
   useItemPath: Audio/Audio_Item_01
   openInventoryPath: Audio/Audio_Inventory

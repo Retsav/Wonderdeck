@@ -15,8 +15,8 @@ MonoBehaviour:
   TutorialStepIndex: 2
   DialogueList:
   - "The rules are delightfully simple: shape your hand as close to twenty\u2011one
-    as you can\u2014no larger, or you\u2019ll burst like a soap bubble."
-  - "Remember: if you lose the round, you take damage equal to your own gap from
-    the limit\u2014draw 14 against 21 and you\u2019ll eat 7 points; bust to 30 and
-    you\u2019ll swallow 9."
-  - Click the glowing Hit button to pluck a new card from the deck.
+    as you can -no larger, or you\u2019ll burst like a soap bubble."
+  - "Remember: if you lose the round, you take damage equal to your gap from the
+    limit - draw 14 against 21 and you\u2019ll eat 7 points; bust to 30 and you\u2019ll
+    swallow 9."
+  - Click the "Draw" button to pluck a new card from the deck.

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
 using UnityEngine;
+using Zenject;
 
 public class LookAtTransformHandler : MonoBehaviour
 {
@@ -11,6 +12,15 @@ public class LookAtTransformHandler : MonoBehaviour
     private CinemachineVirtualCamera _camera;
 
 
+    private IInventoryService _inventoryService;
+
+
+    [Inject]
+    private void ResolveDependencies(IInventoryService inventoryService)
+    {
+        _inventoryService = inventoryService;
+    }
+    
     private void Start()
     {
         _camera = cameraGameObject.GetComponent<CinemachineVirtualCamera>();
@@ -20,6 +30,7 @@ public class LookAtTransformHandler : MonoBehaviour
     private void Update()
     {
         if(!_camera.enabled) return;
+        if (_inventoryService.IsInventoryOpened) return;
         float distanceInFrontOfCamera = 1f;
 
         // Calculate the position
