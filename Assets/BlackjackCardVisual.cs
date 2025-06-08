@@ -64,19 +64,28 @@ public class BlackjackCardVisual : NetworkBehaviour
             {
                 if(cardVisual.cardID != e.DummyCardID)
                     continue;
+
                 cardVisual.cardID = e.OrginalCardID;
                 var card = _blackjackService.GetCardByID(e.OrginalCardID);
                 var uvCoordinates = GetUVCoordinatesForSprite(card.cardFacePath);
+                var scaleX  = uvCoordinates.z;
+                var scaleY  = uvCoordinates.w;
+                var offsetX = uvCoordinates.x;
+                var offsetY = uvCoordinates.y;
                 if (uvCoordinates != Vector4.zero)
                 {
-                    _mpb.SetVector("_BaseMap_ST", new Vector4(uvCoordinates.z, uvCoordinates.w, uvCoordinates.x, uvCoordinates.y));
                     _mpb.SetTexture("_BaseMap", cardsSpriteAtlas);
+                    _mpb.SetVector("_Tiling", new Vector2(scaleX, scaleY));
+                    _mpb.SetVector("_Offest", new Vector2(offsetX, offsetY));
+                    _mpb.SetFloat("_Dissolve", 0);
                     cardVisual.particleSystemGameObject.SetActive(false);
                 }
                 else
                 {
-                    _mpb.SetVector("_BaseMap_ST", new Vector4(1, 1, 0, 0));
                     _mpb.SetTexture("_BaseMap", unknownCardTexture);
+                    _mpb.SetVector("_Tiling", new Vector2(1, 1));
+                    _mpb.SetVector("_Offest", new Vector2(0, 0));
+                    _mpb.SetFloat("_Dissolve", 0);
                     cardVisual.particleSystemGameObject.SetActive(true);
                 }
                 cardVisual.cardMeshRenderer.SetPropertyBlock(_mpb);
@@ -119,6 +128,7 @@ public class BlackjackCardVisual : NetworkBehaviour
                 {
                     cardVisual.cardMeshRenderer.GetPropertyBlock(_mpb);
                     cardVisual.particleSystemGameObject.SetActive(false);
+                    _audioService.OnPlaySoundAtPosition(cardVisual.transform.position, "Audio/Audio_CardDestroy");
                     DOVirtual.Float(0f, 1f, 1.5f, v =>
                         {
                             _mpb.SetFloat("_Dissolve", v);
@@ -134,6 +144,7 @@ public class BlackjackCardVisual : NetworkBehaviour
             else
                 Debug.LogWarning("There is a child in CardsParent without CardVisual Component.");
         }
+        
     }
 
     private IEnumerator SpawnAndPositionCards(CardClientData card, Transform spawnPoint, float initialPositionOffset, PlayerType playerType, bool showParticles)

@@ -8,8 +8,6 @@ public class TutorialBlackjackScoring : MonoBehaviour
 {
     [SerializeField] private TutorialBlackjackLogic tutorialBlackjackLogic;
     
-    [SerializeField] private GameObject firstPlayerScoreObject;
-    [SerializeField] private GameObject secondPlayerScoreObject;
     
     [SerializeField] private TextMeshProUGUI playerOneScoreLabel;
     [SerializeField] private TextMeshProUGUI playerSecondScoreLabel;

@@ -21,9 +21,11 @@ public class WonderDeckCheats : NetworkBehaviour
     {
         if (Input.GetKeyDown(KeyCode.F1))
         {
-            CheatItemDeal(NetworkManager.ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2, "RemoveLastCard", 2);
-            //CheatItemDeal(NetworkManager.ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2, "HiddenDrawingOpponent", 2);
-            //CheatItemDeal(NetworkManager.ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2, "RevealOpponentCards", 2);
+            CheatItemDeal(NetworkManager.ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2, "RemoveLastCard", 1);
+            CheatItemDeal(NetworkManager.ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2, "RemoveOpponentCard", 1);
+            CheatItemDeal(NetworkManager.ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2, "HiddenDrawingOpponent", 1);
+            CheatItemDeal(NetworkManager.ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2, "RevealOpponentCards", 1);
+            CheatItemDeal(NetworkManager.ClientManager.Connection.IsHost ? PlayerType.Player1 : PlayerType.Player2, "RemovePersistentItem", 1);
         }
 
         if (Input.GetKeyDown(KeyCode.F2))

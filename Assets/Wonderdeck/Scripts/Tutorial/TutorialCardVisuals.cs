@@ -126,25 +126,34 @@ public class TutorialCardVisuals : MonoBehaviour
         {
             cardVisual.cardID = card.CardId;
             cardVisual.owner = playerType;
-
+            var uvCoordinates = GetUVCoordinatesForSprite(card.cardFacePath);
+            var scaleX  = uvCoordinates.z;
+            var scaleY  = uvCoordinates.w;
+            var offsetX = uvCoordinates.x;
+            var offsetY = uvCoordinates.y;
             if (!hidden)
             {
-                var uvCoordinates = GetUVCoordinatesForSprite(card.cardFacePath);
                 if (uvCoordinates != Vector4.zero)
                 {
-                    _mpb.SetVector("_BaseMap_ST", new Vector4(uvCoordinates.z, uvCoordinates.w, uvCoordinates.x, uvCoordinates.y));
                     _mpb.SetTexture("_BaseMap", cardsSpriteAtlas);
+                    _mpb.SetVector("_Tiling", new Vector2(scaleX, scaleY));
+                    _mpb.SetVector("_Offest", new Vector2(offsetX, offsetY));
+                    _mpb.SetFloat("_Dissolve", 0);
                 }
                 else
                 {
-                    _mpb.SetVector("_BaseMap_ST", new Vector4(1, 1, 0, 0));
                     _mpb.SetTexture("_BaseMap", unknownCardTexture);
+                    _mpb.SetVector("_Tiling", new Vector2(1, 1));
+                    _mpb.SetVector("_Offest", new Vector2(0, 0));
+                    _mpb.SetFloat("_Dissolve", 0);
                 }
             }
             else
             {
-                _mpb.SetVector("_BaseMap_ST", new Vector4(1, 1, 0, 0));
                 _mpb.SetTexture("_BaseMap", unknownCardTexture);
+                _mpb.SetVector("_Tiling", new Vector2(1, 1));
+                _mpb.SetVector("_Offest", new Vector2(0, 0));
+                _mpb.SetFloat("_Dissolve", 0);
                 _hiddenCard = cardVisual;
             }
             cardVisual.cardMeshRenderer.SetPropertyBlock(_mpb);
@@ -168,15 +177,23 @@ public class TutorialCardVisuals : MonoBehaviour
     public void RevealHiddenCards()
     {
         var uvCoordinates = GetUVCoordinatesForSprite(_blackjackService.GetCardByID(_hiddenCard.cardID).cardFacePath);
+        var scaleX  = uvCoordinates.z;
+        var scaleY  = uvCoordinates.w;
+        var offsetX = uvCoordinates.x;
+        var offsetY = uvCoordinates.y;
         if (uvCoordinates != Vector4.zero)
         {
-            _mpb.SetVector("_BaseMap_ST", new Vector4(uvCoordinates.z, uvCoordinates.w, uvCoordinates.x, uvCoordinates.y));
             _mpb.SetTexture("_BaseMap", cardsSpriteAtlas);
+            _mpb.SetVector("_Tiling", new Vector2(scaleX, scaleY));
+            _mpb.SetVector("_Offest", new Vector2(offsetX, offsetY));
+            _mpb.SetFloat("_Dissolve", 0);
         }
         else
         {
-            _mpb.SetVector("_BaseMap_ST", new Vector4(1, 1, 0, 0));
             _mpb.SetTexture("_BaseMap", unknownCardTexture);
+            _mpb.SetVector("_Tiling", new Vector2(1, 1));
+            _mpb.SetVector("_Offest", new Vector2(0, 0));
+            _mpb.SetFloat("_Dissolve", 0);
         }
         _hiddenCard.cardMeshRenderer.SetPropertyBlock(_mpb);
     }

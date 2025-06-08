@@ -7,8 +7,7 @@ public class TutorialPlayerHealthVisuals : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI firstPlayerHealthLabel;
     [SerializeField] private TextMeshProUGUI secondPlayerHealthLabel;
-    [SerializeField] private GameObject firstPlayerHealthBar;
-    [SerializeField] private GameObject secondPlayerHealthBar;
+
 
 
 
