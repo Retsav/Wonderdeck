@@ -30,13 +30,9 @@ public class VoiceActorManager : NetworkBehaviour
         _audioConfig = DebugConfigLoader.Instance.GetConfig<AudioConfig>();
 
         
-        hitVoiceLines = NetworkManager.ClientManager.Connection.IsHost
-            ? _audioConfig.callumVoiceLinesHitPaths
-            : _audioConfig.lilyVoiceLinesHitPaths;
+        hitVoiceLines = _audioConfig.lilyVoiceLinesHitPaths;
         
-        standVoiceLines = NetworkManager.ClientManager.Connection.IsHost
-            ? _audioConfig.callumVoiceLinesStandPaths
-            : _audioConfig.lilyVoiceLinesStandPaths;
+        standVoiceLines = _audioConfig.lilyVoiceLinesStandPaths;
 
         _blackjackService.CardRequestedClient += OnCardRequested;
         _blackjackService.EndTurnRequestedClient += OnEndTurnRequested;

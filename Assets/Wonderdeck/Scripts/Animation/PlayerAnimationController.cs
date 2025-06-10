@@ -8,8 +8,7 @@ using Zenject;
 
 public class PlayerAnimationController : NetworkBehaviour
 {
-    [SerializeField] private Animator animator;
-    [SerializeField] private NetworkAnimator networkAnimator;
+    [SerializeField] private List<NetworkAnimator> networkAnimator;
 
 
 
@@ -39,13 +38,16 @@ public class PlayerAnimationController : NetworkBehaviour
     private void OnCardRequestedClient(object sender, CardRequestedEventArgs e)
     {
         if(e.PlayerType == _playerType)
-            networkAnimator.SetTrigger("Draw");
+            foreach (var na in networkAnimator)
+                na.SetTrigger("Draw");
+            
     }
 
     private void OnEndTurnRequested(object sender, EndTurnRequestedEventArgs e)
     {
         if(e.CurrentPlayer == _playerType)
-            networkAnimator.SetTrigger("Draw");
+            foreach (var na in networkAnimator)
+                na.SetTrigger("Draw");
     }
 
     private void OnDestroy()
