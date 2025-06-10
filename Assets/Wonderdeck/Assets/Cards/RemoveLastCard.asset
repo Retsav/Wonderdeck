@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CardId: 09e76b84-7147-4537-9069-86164597d43a
   CardFace: {fileID: -650899384, guid: 2a99b63b33128b741989d9dceb88dfbe, type: 3}
-  CardBack: {fileID: 21300000, guid: b5c06a18d36928b49b7b1843d2d9750d, type: 3}
+  CardBack: {fileID: 21300000, guid: 2fd7f64e814458543ac1e6575f129323, type: 3}
   ItemIsPersistent: 0
   DrawCardEffects: []
   PlayCardEffects:
@@ -24,4 +24,4 @@ MonoBehaviour:
 
 '
   cardFacePath: ITEM_Additional|ITEM_Additional_5
-  cardBackPath: BackCard
+  cardBackPath: CardBack.PNG

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CardId: 74a3fb81-983c-43c6-93bb-8704dc079a72
   CardFace: {fileID: -1989564203, guid: 2a99b63b33128b741989d9dceb88dfbe, type: 3}
-  CardBack: {fileID: 21300000, guid: b5c06a18d36928b49b7b1843d2d9750d, type: 3}
+  CardBack: {fileID: 21300000, guid: 2fd7f64e814458543ac1e6575f129323, type: 3}
   ItemIsPersistent: 0
   DrawCardEffects: []
   PlayCardEffects:
@@ -22,4 +22,4 @@ MonoBehaviour:
   DiscardCardEffects: []
   description: Reveals your hidden cards.
   cardFacePath: ITEM_Additional|ITEM_Additional_3
-  cardBackPath: BackCard
+  cardBackPath: CardBack.PNG
